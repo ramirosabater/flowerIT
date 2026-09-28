@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FloWer — Sistemas a medida para negocios reales</title>
-<meta name="description" content="Desarrollo sistemas web a medida: turneros clínicos, control de asistencia con geolocalización y gestión de academias. Software que se usa todos los días.">
+<meta name="description" content="Desarrollo sistemas web a medida: turneros clínicos, control de asistencia, gestión de flotas, catálogos online con pedido por WhatsApp y apps de finanzas. Software que se usa todos los días.">
 <meta property="og:title" content="FloWer — Sistemas a medida">
-<meta property="og:description" content="Turneros, fichadas y gestión operativa. Software pensado para el día a día del negocio.">
+<meta property="og:description" content="Turneros, fichadas, flotas, catálogos online y finanzas. Software pensado para el día a día del negocio.">
 <meta name="theme-color" content="#1B1B18">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,6 +24,12 @@
     --red-ink:#5c0e0e;
     --teal:#0E5C56;
     --teal-ink:#0a3d39;
+    --blue:#1F4E9E;
+    --blue-ink:#122f60;
+    --lime:#9BD61E;
+    --lime-ink:#3a5200;
+    --plum:#5B3FA0;
+    --plum-ink:#35245e;
     --radius:14px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -57,17 +63,15 @@
     text-decoration:none; letter-spacing:-0.02em;
   }
   .brand span{color:var(--teal);}
-  .nav-links{display:none; gap:26px; font-size:13.5px; color:var(--ink-soft);}
+  .nav-links{display:none; gap:20px; font-size:13.5px; color:var(--ink-soft);}
   .nav-links a{text-decoration:none; transition:color .15s;}
   .nav-links a:hover{color:var(--ink);}
   .nav-cta{
     background:var(--ink); color:var(--paper); text-decoration:none;
     padding:8px 16px; border-radius:100px; font-size:13.5px; font-weight:500;
   }
-  @media(min-width:780px){
-    .nav-links{display:flex;}
-    nav .wrap{height:64px;}
-  }
+  @media(min-width:780px){ nav .wrap{height:64px;} }
+  @media(min-width:1000px){ .nav-links{display:flex;} }
 
   header.hero{padding:72px 0 56px;}
   @media(min-width:780px){ header.hero{padding:96px 0 72px;} }
@@ -99,9 +103,11 @@
   .btn-ghost:hover{background:var(--paper-raised);}
 
   .panels{
-    display:grid; grid-template-columns:1fr; gap:16px;
+    display:grid; grid-template-columns:1fr 1fr; gap:12px;
   }
   @media(min-width:720px){ .panels{grid-template-columns:repeat(3,1fr); gap:18px;} }
+  a.panel{display:block; text-decoration:none;}
+  a.panel:focus-visible{outline:2px solid var(--ink); outline-offset:3px;}
   .panel{
     background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius);
     overflow:hidden; box-shadow:0 16px 36px -20px rgba(27,27,24,0.32);
@@ -115,12 +121,17 @@
   }
   .panel-top .dots{display:flex; gap:5px;}
   .panel-top .dots span{width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.5); display:inline-block;}
-  .panel img{width:100%; height:140px; object-fit:cover; object-position:top;}
+  .panel img{width:100%; height:110px; object-fit:cover; object-position:top;}
+  .panel-top{white-space:nowrap; overflow:hidden;}
   @media(min-width:720px){ .panel img{height:150px;} }
   .panel-1 .panel-top{background:var(--teal);}
   .panel-2 .panel-top{background:var(--amber); color:#3a2a00;}
   .panel-2 .panel-top .dots span{background:rgba(0,0,0,0.3);}
   .panel-3 .panel-top{background:var(--red);}
+  .panel-4 .panel-top{background:var(--blue);}
+  .panel-5 .panel-top{background:var(--lime); color:#1f2b00;}
+  .panel-5 .panel-top .dots span{background:rgba(0,0,0,0.3);}
+  .panel-6 .panel-top{background:var(--plum);}
 
   .approach{
     padding:56px 0 20px;
@@ -188,12 +199,35 @@
     .gallery .tall img{height:220px;}
   }
 
+  .gallery .wide{grid-column:span 2;}
+  .gallery .wide img{height:190px;}
+  @media(min-width:860px){ .gallery .wide img{height:210px;} }
+  .gallery.phones img{height:220px;}
+  .gallery.phones a:last-child{grid-column:span 2;}
+  .gallery.phones a:last-child img{height:240px;}
+  @media(min-width:560px){
+    .gallery.phones{grid-template-columns:repeat(3,1fr);}
+    .gallery.phones a:last-child{grid-column:auto;}
+    .gallery.phones img, .gallery.phones a:last-child img{height:280px;}
+  }
+  .panel-6 img{object-position:center 70%;}
+  .live-link{margin-top:22px;}
+
   #turnero .project-tag{background:rgba(14,92,86,0.14); color:var(--teal-ink);}
   #turnero .status-bar{border-color:rgba(14,92,86,0.22);}
   #fichadas .project-tag{background:rgba(242,169,0,0.18); color:var(--amber-ink);}
   #fichadas .status-bar{border-color:rgba(242,169,0,0.28);}
   #pakua .project-tag{background:rgba(214,40,40,0.13); color:var(--red-ink);}
   #pakua .status-bar{border-color:rgba(214,40,40,0.22);}
+  #flota .project-tag{background:rgba(31,78,158,0.13); color:var(--blue-ink);}
+  #flota .status-bar{border-color:rgba(31,78,158,0.22);}
+  #admin .gallery img{object-position:left top;}
+  #admin .project-tag{background:rgba(31,78,158,0.13); color:var(--blue-ink);}
+  #admin .status-bar{border-color:rgba(31,78,158,0.22);}
+  #lubripower .project-tag{background:rgba(155,214,30,0.25); color:var(--lime-ink);}
+  #lubripower .status-bar{border-color:rgba(155,214,30,0.45);}
+  #miplata .project-tag{background:rgba(91,63,160,0.13); color:var(--plum-ink);}
+  #miplata .status-bar{border-color:rgba(91,63,160,0.22);}
 
   footer{
     background:var(--ink); color:var(--paper); padding:72px 0 36px; margin-top:12px;
@@ -224,9 +258,13 @@
   <div class="wrap">
     <a class="brand" href="#">Flo<span>Wer</span></a>
     <div class="nav-links">
-      <a href="#turnero">Turnero clínico</a>
-      <a href="#fichadas">Control de asistencia</a>
-      <a href="#pakua">Gestión de academia</a>
+      <a href="#turnero">Turnos</a>
+      <a href="#fichadas">Asistencia</a>
+      <a href="#pakua">Academias</a>
+      <a href="#flota">Flotas</a>
+      <a href="#admin">Administración</a>
+      <a href="#lubripower">Catálogo online</a>
+      <a href="#miplata">Finanzas</a>
     </div>
     <a class="nav-cta" href="https://wa.me/5492974263372" target="_blank" rel="noopener">Hablemos →</a>
   </div>
@@ -236,25 +274,37 @@
   <div class="wrap">
     <div class="eyebrow">Sistemas en uso real · Argentina</div>
     <h1>El software que corre por adentro de un negocio.</h1>
-    <p class="lead">Turneros, fichadas y gestión operativa. Sistemas a medida pensados para el día a día de quien los usa — no para una demo bonita.</p>
+    <p class="lead">Turneros, fichadas, flotas, catálogos online y finanzas. Sistemas a medida pensados para el día a día de quien los usa — no para una demo bonita.</p>
     <div class="hero-ctas">
       <a class="btn btn-primary" href="https://wa.me/5492974263372" target="_blank" rel="noopener">Contactar por WhatsApp</a>
       <a class="btn btn-ghost" href="#turnero">Ver proyectos ↓</a>
     </div>
 
     <div class="panels">
-      <div class="panel panel-1">
+      <a class="panel panel-1" href="#turnero">
         <div class="panel-top"><span>turnero · panel</span><div class="dots"><span></span><span></span><span></span></div></div>
         <img src="assets/turnero.png" alt="Panel de estadísticas del turnero médico" loading="lazy">
-      </div>
-      <div class="panel panel-2">
+      </a>
+      <a class="panel panel-2" href="#fichadas">
         <div class="panel-top"><span>fichadas · rr.hh.</span><div class="dots"><span></span><span></span><span></span></div></div>
         <img src="assets/fichadas3.png" alt="Dashboard de RRHH de fichadas" loading="lazy">
-      </div>
-      <div class="panel panel-3">
+      </a>
+      <a class="panel panel-3" href="#pakua">
         <div class="panel-top"><span>pakua · dirección</span><div class="dots"><span></span><span></span><span></span></div></div>
         <img src="assets/pakua2.png" alt="Panel de cobranzas de Pakua" loading="lazy">
-      </div>
+      </a>
+      <a class="panel panel-4" href="#flota">
+        <div class="panel-top"><span>flota · viajes</span><div class="dots"><span></span><span></span><span></span></div></div>
+        <img src="assets/flota1.png" alt="Calendario de viajes por ruta y camión" loading="lazy">
+      </a>
+      <a class="panel panel-5" href="#lubripower">
+        <div class="panel-top"><span>lubripower · tienda</span><div class="dots"><span></span><span></span><span></span></div></div>
+        <img src="assets/lubripower1.jpg" alt="Portada del catálogo online de LubriPower" loading="lazy">
+      </a>
+      <a class="panel panel-6" href="#miplata">
+        <div class="panel-top"><span>mi plata · app</span><div class="dots"><span></span><span></span><span></span></div></div>
+        <img src="assets/miplata1.png" alt="Inicio de Mi Plata con proyección" loading="lazy">
+      </a>
     </div>
   </div>
 </header>
@@ -285,7 +335,7 @@
   <div class="wrap">
     <div class="project-head">
       <div>
-        <div class="project-num">01 / 03</div>
+        <div class="project-num">01 / 07</div>
         <h2>Turnero + Historia Clínica</h2>
       </div>
       <span class="project-tag">Consultorios médicos</span>
@@ -322,7 +372,7 @@
   <div class="wrap">
     <div class="project-head">
       <div>
-        <div class="project-num">02 / 03</div>
+        <div class="project-num">02 / 07</div>
         <h2>Fichadas con geolocalización + Panel RR.HH.</h2>
       </div>
       <span class="project-tag">Control horario · Empresas</span>
@@ -359,7 +409,7 @@
   <div class="wrap">
     <div class="project-head">
       <div>
-        <div class="project-num">03 / 03</div>
+        <div class="project-num">03 / 07</div>
         <h2>Gestión de academia — Pakua Liga Sudamericana</h2>
       </div>
       <span class="project-tag">Academias · Gimnasios</span>
@@ -392,14 +442,162 @@
   </div>
 </section>
 
+<section class="project" id="flota">
+  <div class="wrap">
+    <div class="project-head">
+      <div>
+        <div class="project-num">04 / 07</div>
+        <h2>Gestión de flota pesada y viajes</h2>
+      </div>
+      <span class="project-tag">Transporte · Logística</span>
+    </div>
+
+    <div class="status-bar">
+      <b>47</b>&nbsp;viajes en el período<span class="status-sep">·</span>
+      <b>4</b>&nbsp;camiones en operación<span class="status-sep">·</span>
+      <b>11</b>&nbsp;rutas<span class="status-sep">·</span>
+      <b>Auto</b>&nbsp;planificación del mes
+    </div>
+
+    <div class="project-body">
+      <div class="project-desc">
+        <p>Para una empresa con flota de camiones que hasta ahora organizaba los viajes en planillas. Todo el mes en una sola grilla: cada fila es un día, cada columna una ruta, y cada viaje muestra el camión (por color) y el chofer asignado.</p>
+        <p>Un botón de <strong>planificación automática</strong> arma la distribución del mes, y el <strong>dashboard</strong> muestra qué camión, qué chofer y qué ruta concentran más viajes, junto con los gastos del período. Es parte de un sistema de gestión más amplio que también cubre sucursales, compras, pagos y <a href="#admin">tesorería</a>.</p>
+        <ul class="feature-list">
+          <li>Calendario mensual de viajes por ruta, camión y chofer</li>
+          <li>Planificación automática de viajes con un clic</li>
+          <li>Dashboard de viajes y gastos por camión, chofer y ruta, con filtro de fechas</li>
+          <li>Integrado con compras, pagos y tesorería de la empresa</li>
+        </ul>
+      </div>
+      <div class="gallery">
+        <a href="assets/flota1.png" class="wide"><img src="assets/flota1.png" alt="Grilla mensual de viajes por ruta y camión"></a>
+        <a href="assets/flota2.png" class="wide"><img src="assets/flota2.png" alt="Dashboard de viajes por camión y ruta"></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="project" id="admin">
+  <div class="wrap">
+    <div class="project-head">
+      <div>
+        <div class="project-num">05 / 07</div>
+        <h2>Compras, pagos y tesorería</h2>
+      </div>
+      <span class="project-tag">Administración · Empresas</span>
+    </div>
+
+    <div class="status-bar">
+      <b>PDF o foto</b>&nbsp;lectura automática de facturas<span class="status-sep">·</span>
+      <b>3</b>&nbsp;vistas de gasto<span class="status-sep">·</span>
+      <b>1 clic</b>&nbsp;de orden pagada a egreso de caja
+    </div>
+
+    <div class="project-body">
+      <div class="project-desc">
+        <p>El circuito administrativo completo, en el mismo sistema que la gestión de flota: proveedores, órdenes de compra, facturas, órdenes de pago y saldos de cada caja y banco.</p>
+        <p>Para cargar una factura alcanza con <strong>subir el PDF o una foto</strong>: el sistema lee los datos y completa el formulario, y el usuario solo revisa y guarda. Cuando una orden de pago se marca como pagada, se genera sola el <strong>egreso en la cuenta</strong> elegida, sin cargar nada dos veces.</p>
+        <ul class="feature-list">
+          <li>Proveedores y órdenes de compra con estado (pendiente / recibida)</li>
+          <li>Facturas asociadas a orden de compra, centro de costo y concepto</li>
+          <li>Tesorería con saldo actual por caja y banco, y movimientos trazables</li>
+          <li>Dashboard de gastos por centro de costo, concepto y proveedor</li>
+        </ul>
+      </div>
+      <div class="gallery">
+        <a href="assets/admin1.png"><img src="assets/admin1.png" alt="Carga de factura con lectura automática desde archivo"></a>
+        <a href="assets/admin2.png"><img src="assets/admin2.png" alt="Tesorería con cuentas y movimientos"></a>
+        <a href="assets/admin3.png" class="tall"><img src="assets/admin3.png" alt="Dashboard de gastos por centro de costo y proveedor"></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="project" id="lubripower">
+  <div class="wrap">
+    <div class="project-head">
+      <div>
+        <div class="project-num">06 / 07</div>
+        <h2>LubriPower — catálogo online con pedido por WhatsApp</h2>
+      </div>
+      <span class="project-tag">Comercios · Venta online</span>
+    </div>
+
+    <div class="status-bar">
+      <b>206</b>&nbsp;productos publicados<span class="status-sep">·</span>
+      <b>8</b>&nbsp;categorías<span class="status-sep">·</span>
+      <b>0</b>&nbsp;comisiones por venta<span class="status-sep">·</span>
+      <b>Pedido</b>&nbsp;directo a WhatsApp
+    </div>
+
+    <div class="project-body">
+      <div class="project-desc">
+        <p>Tienda online para un lubricentro que vende aceites, aditivos, filtros y productos de detailing. El cliente busca por producto o marca, filtra por categoría y arma su carrito sin registrarse.</p>
+        <p>Al confirmar, el pedido llega <strong>armado al WhatsApp del negocio</strong>, con cada producto y cantidad. El comercio confirma precio y disponibilidad en la conversación, sin pagar comisiones a una plataforma de e-commerce.</p>
+        <ul class="feature-list">
+          <li>Buscador y filtros por categoría con contador de productos</li>
+          <li>Etiquetas de oferta y destacado para empujar productos</li>
+          <li>Carrito con cantidades y envío del pedido por WhatsApp</li>
+          <li>Diseño con la identidad del negocio, pensado primero para el celular</li>
+        </ul>
+        <a class="btn btn-ghost live-link" href="https://lubripower.netlify.app/" target="_blank" rel="noopener">Ver sitio en vivo ↗</a>
+      </div>
+      <div class="gallery">
+        <a href="assets/lubripower2.jpg"><img src="assets/lubripower2.jpg" alt="Catálogo con buscador y categorías"></a>
+        <a href="assets/lubripower3.jpg"><img src="assets/lubripower3.jpg" alt="Carrito con envío del pedido por WhatsApp"></a>
+        <a href="assets/lubripower1.jpg" class="tall"><img src="assets/lubripower1.jpg" alt="Portada de LubriPower"></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="project" id="miplata">
+  <div class="wrap">
+    <div class="project-head">
+      <div>
+        <div class="project-num">07 / 07</div>
+        <h2>Mi Plata — finanzas personales en pesos y dólares</h2>
+      </div>
+      <span class="project-tag">App web · Finanzas personales</span>
+    </div>
+
+    <div class="status-bar">
+      <b>$ y US$</b>&nbsp;en paralelo<span class="status-sep">·</span>
+      <b>3 / 6 / 12</b>&nbsp;meses de proyección<span class="status-sep">·</span>
+      <b>10</b>&nbsp;bancos en el comparador de tasas<span class="status-sep">·</span>
+      <b>Privada</b>&nbsp;por usuario
+    </div>
+
+    <div class="project-body">
+      <div class="project-desc">
+        <p>App para ordenar la plata del mes: ingresos, gastos y ahorros en pesos y en dólares, con el disponible real sumando todas las cuentas. Los gastos se cargan a mano o <strong>subiendo el resumen</strong> de la tarjeta o el banco.</p>
+        <p>Proyecta cómo va a estar el saldo en los próximos meses según ingresos y gastos fijos, y calcula cómo crecen los plazos fijos si se renuevan. El <strong>comparador de tasas</strong> muestra si tu banco te paga por debajo del mercado.</p>
+        <ul class="feature-list">
+          <li>Disponible actual, ingresos y gastos del mes de un vistazo</li>
+          <li>Carga de gastos por resumen o manual, categorizados</li>
+          <li>Proyección de saldo a 3, 6 y 12 meses</li>
+          <li>Plazos fijos con renovación y comparación contra la tasa de otros bancos</li>
+        </ul>
+        <a class="btn btn-ghost live-link" href="https://calcmoney1.netlify.app/" target="_blank" rel="noopener">Probar la app ↗</a>
+      </div>
+      <div class="gallery phones">
+        <a href="assets/miplata1.png"><img src="assets/miplata1.png" alt="Inicio con disponible y proyección"></a>
+        <a href="assets/miplata2.png"><img src="assets/miplata2.png" alt="Gastos en pesos y dólares"></a>
+        <a href="assets/miplata3.png"><img src="assets/miplata3.png" alt="Comparador de tasas de plazo fijo"></a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer id="contacto">
   <div class="wrap">
     <h2>¿Tenés un proceso que todavía se maneja en papel o en planillas?</h2>
-    <p class="lead">Contame cómo funciona hoy tu consultorio, tu equipo o tu academia. Armamos juntos el sistema que lo resuelve.</p>
+    <p class="lead">Contame cómo funciona hoy tu consultorio, tu equipo, tu flota o tu comercio. Armamos juntos el sistema que lo resuelve.</p>
     <a class="btn btn-wsp" href="https://wa.me/5492974263372" target="_blank" rel="noopener">Escribime por WhatsApp →</a>
     <div class="foot-bottom">
       <span>FloWer — sistemas a medida</span>
-      <span>Buenos Aires, Argentina</span>
+      <span>Rada Tilly, Chubut</span>
     </div>
   </div>
 </footer>
