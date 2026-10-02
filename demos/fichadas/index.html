@@ -19,12 +19,20 @@ body { margin: 0; background: #eef1f4; color: #1f2d38; font-family: system-ui, -
 #toast { transition: opacity .25s, transform .25s; }
 #toast.oculto { opacity: 0; transform: translate(-50%, 12px); pointer-events: none; }
 input[type=number]::-webkit-inner-spin-button { opacity: .4; }
+
+/* Clases de Corrección/Auditoría (mismas que src/admin/Fichadas.jsx y Auditoria.jsx) */
+.border-\[\#223c7e\]\/40{border-color:rgba(34,60,126,.4)}
+.border-\[\#e5484d\]\/40{border-color:rgba(229,72,77,.4)}
+.items-end{align-items:flex-end}
+.min-w-\[200px\]{min-width:200px}
+.text-\[\#223c7e\]{--tw-text-opacity:1;color:rgb(34 60 126/var(--tw-text-opacity))}
+.w-28{width:7rem}
 </style>
 </head>
 <body>
 <div id="demo-top">
   <div class="bg-[#1f2d38] text-white text-xs px-3 h-[38px] flex items-center justify-between gap-2">
-    <span class="truncate"><a href="../../proyectos.html#fichadas" style="text-decoration:underline;text-underline-offset:3px;opacity:.85;margin-right:10px">← FloWer</a><b>Demo con datos ficticios</b></span>
+    <span class="truncate"><b>Demo con datos ficticios</b> · FloWer</span>
     <a href="https://wa.me/5492975212008" target="_blank" rel="noopener" class="shrink-0 font-bold bg-[#e1251b] text-white rounded-full px-3 py-1 hover:opacity-90">Quiero uno así →</a>
   </div>
   <div class="tricolor"></div>
@@ -50,7 +58,7 @@ input[type=number]::-webkit-inner-spin-button { opacity: .4; }
    así la demo siempre muestra "el mes actual".
    ===================================================================== */
 const DEMO_DATA = {
-  empresa: { nombre: "Distribuidora Del Sur S.A.", emailAdmin: "rrhh@delsur-demo.com.ar" },
+  empresa: { nombre: "Distribuidora Del Sur S.A.", emailAdmin: "rrhh@delsur.ejemplo.com.ar" },
   usuarioDemo: 112,          // legajo con el que entra la App del empleado (es encargado de un equipo)
   pinDemo: "1234",
 
@@ -96,9 +104,9 @@ const DEMO_DATA = {
     { legajo: 111, apellido: "Juárez", nombre: "Carolina", sector: "Expedición", horario_id: "h2", responsable_legajo: 130, locales_asignados: ["d1"], activo: true, tardanza: 0.07 },
     { legajo: 112, apellido: "Herrera", nombre: "Martín", sector: "Depósito", horario_id: "h5", responsable_legajo: null, locales_asignados: ["d1"], activo: true, tardanza: 0.10 },
     { legajo: 113, apellido: "Ledesma", nombre: "Facundo", sector: "Depósito", horario_id: "h5", responsable_legajo: 112, locales_asignados: ["d1"], activo: true, tardanza: 0.02 },
-    { legajo: 114, apellido: "López", nombre: "Valeria", sector: "Ventas", horario_id: "h3", responsable_legajo: 120, locales_asignados: ["d2"], activo: true, tardanza: 0.10 },
+    { legajo: 114, apellido: "Lucero", nombre: "Valeria", sector: "Ventas", horario_id: "h3", responsable_legajo: 120, locales_asignados: ["d2"], activo: true, tardanza: 0.10 },
     { legajo: 115, apellido: "Martínez", nombre: "Hernán", sector: "Mantenimiento", horario_id: "h1", responsable_legajo: 130, locales_asignados: ["d1", "d2", "d3"], activo: true, tardanza: 0.15 },
-    { legajo: 116, apellido: "Molina", nombre: "Florencia", sector: "Administración", horario_id: "h4", responsable_legajo: 105, locales_asignados: ["d1"], activo: true, tardanza: 0.04 },
+    { legajo: 116, apellido: "Miranda", nombre: "Florencia", sector: "Administración", horario_id: "h4", responsable_legajo: 105, locales_asignados: ["d1"], activo: true, tardanza: 0.04 },
     { legajo: 117, apellido: "Morales", nombre: "Nicolás", sector: "Depósito", horario_id: "h5", responsable_legajo: 112, locales_asignados: ["d1"], activo: true, tardanza: 0.14 },
     { legajo: 118, apellido: "Navarro", nombre: "Agustina", sector: "Ventas", horario_id: "h3", responsable_legajo: 120, locales_asignados: ["d3"], activo: true, tardanza: 0.02 },
     { legajo: 119, apellido: "Ortiz", nombre: "Ramón", sector: "Logística", horario_id: "h2", responsable_legajo: 130, locales_asignados: ["d1"], activo: true, tardanza: 0.20 },
@@ -117,7 +125,7 @@ const DEMO_DATA = {
     { legajo: 132, apellido: "Aguirre", nombre: "Rocío", sector: "Administración", horario_id: "h4", responsable_legajo: 105, locales_asignados: ["d1"], activo: true, tardanza: 0.02 },
     { legajo: 133, apellido: "Paz", nombre: "Brian", sector: "Expedición", horario_id: "h1", responsable_legajo: 130, locales_asignados: ["d1"], activo: true, tardanza: 0.27 },
     { legajo: 134, apellido: "Ojeda", nombre: "Tomás", sector: "Mantenimiento", horario_id: null, responsable_legajo: 130, locales_asignados: [], activo: true, tardanza: 0.05 },
-    { legajo: 135, apellido: "Peralta", nombre: "Gabriela", sector: "Ventas", horario_id: "h3", responsable_legajo: 120, locales_asignados: ["d2"], activo: false, tardanza: 0.10 },
+    { legajo: 135, apellido: "Ponce", nombre: "Gabriela", sector: "Ventas", horario_id: "h3", responsable_legajo: 120, locales_asignados: ["d2"], activo: false, tardanza: 0.10 },
   ],
 
   // Solicitudes de ausencia. desde = días desde hoy (negativo = pasado), dias = duración.
@@ -144,6 +152,22 @@ const DEMO_DATA = {
     { legajo: 104, tipo: "dia_libre", desde: -8, dias: 1, motivo: "", estado: "rechazada", resolucion: "Coincide con el inventario mensual" },
     { legajo: 110, tipo: "dia_libre", desde: 4, dias: 1, motivo: "Partido del torneo", estado: "rechazada", resolucion: "Ese día hay carga de camiones" },
     { legajo: 121, tipo: "vacaciones", desde: 6, dias: 14, motivo: "", estado: "rechazada", resolucion: "Pedir con 30 días de anticipación" },
+  ],
+
+  // Historial inicial de la pestaña Auditoría. dias = días desde hoy (negativo = pasado), hora = [h, m].
+  auditoriaInicial: [
+    { dias: -1, hora: [17, 42], accion: "Agregó fichada manual (salida) al legajo 108", detalle: "Se olvidó de fichar al retirarse" },
+    { dias: -1, hora: [9, 15], accion: "Aprobó ausencia del legajo 132", detalle: "Día libre" },
+    { dias: -2, hora: [11, 3], accion: "Editó fichada del legajo 110", detalle: "timestamp" },
+    { dias: -3, hora: [16, 20], accion: "Cambió el horario del legajo 115", detalle: "Mañana Lun-Vie (07 a 15)" },
+    { dias: -4, hora: [10, 48], accion: "Rechazó ausencia del legajo 104", detalle: "Coincide con el inventario mensual" },
+    { dias: -6, hora: [8, 55], accion: "Reseteó el PIN del legajo 127", detalle: null },
+    { dias: -7, hora: [12, 30], accion: "Borró fichada del legajo 119", detalle: "Fichada duplicada" },
+    { dias: -9, hora: [15, 10], accion: "Dio de baja al legajo 131", detalle: "Inactivo" },
+    { dias: -12, hora: [9, 40], accion: "Creó el empleado 134", detalle: "Ojeda, Tomás" },
+    { dias: -15, hora: [18, 5], accion: "Recalculó estados de fichadas (período anterior)", detalle: "37 de 2.904 corregidas" },
+    { dias: -20, hora: [10, 0], accion: "Agregó feriado", detalle: "Día del Respeto a la Diversidad Cultural" },
+    { dias: -26, hora: [14, 22], accion: "Modificó regla de recargo", detalle: "Sábado desde 13:00 · 100%" },
   ],
 
   // Parámetros del generador de fichadas (determinístico: mismos datos en cada recarga)
@@ -394,6 +418,22 @@ const S = {
     rep: { alcance: "todos", sector: "", legajo: "", refMes: mesInicial(), ok: null, error: null, bajando: "" },
   },
 };
+// ---- Corrección de fichadas y Auditoría (en memoria) ----
+const aInput = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+S.a.corr = { legajo: "", refMes: mesInicial(), nTipo: "entrada", nCuando: aInput(new Date()), recalc: null };
+const AUDITORIA = [];
+let audId = 1;
+function auditar(accion, detalle, cuando) {
+  AUDITORIA.unshift({ id: audId++, creado_en: (cuando || new Date()).toISOString(), accion, detalle: detalle || null, quien: DEMO_DATA.empresa.emailAdmin });
+}
+(function auditoriaInicial() {
+  const hoy0 = new Date(); hoy0.setHours(0, 0, 0, 0);
+  DEMO_DATA.auditoriaInicial.slice().reverse().forEach((x) => {
+    const c = sumarDias(hoy0, x.dias); c.setHours(x.hora[0], x.hora[1], 0, 0);
+    AUDITORIA.unshift({ id: audId++, creado_en: c.toISOString(), accion: x.accion, detalle: x.detalle || null, quien: x.quien || DEMO_DATA.empresa.emailAdmin });
+  });
+})();
+
 // Meses anteriores al de referencia ya figuran aprobados por el encargado
 for (let i = 1; i <= 8; i++) S.e.verif[keyMes(mover(mesInicial(), -i))] = { estado: "aprobado" };
 
@@ -698,10 +738,8 @@ const VERSION_COMPLETA = {
   plantillas: ["🕒", "Horarios de turnos", "Armado de turnos por bloques: turnos partidos, sábados y tolerancia en minutos. Cada empleado tiene su turno y el sistema calcula solo si llegó a horario, tarde o se retiró antes."],
   sectores: ["🏷️", "Sectores", "Alta, renombre y baja de sectores para agrupar al personal y filtrar reportes y rankings."],
   depositos: ["📍", "Depósitos / sucursales", "Cada depósito tiene su ubicación GPS y un radio en metros: al fichar se valida si el empleado está dentro o fuera."],
-  fichadas: ["✎", "Corrección de fichadas", "RR.HH. puede agregar, editar o borrar fichadas de un empleado y recalcular los estados del período con los horarios actuales."],
   dispositivos: ["📱", "Dispositivos", "Control antifraude: detecta celulares usados por más de una persona, empleados con varios aparatos y fichajes remotos fuera de un depósito."],
   aprobaciones: ["✓", "Aprobaciones", "Observaciones que los encargados marcaron al cerrar el período, para que RR.HH. las apruebe o rechace con un comentario."],
-  auditoria: ["🗂️", "Auditoría de cambios", "Registro de cada cambio hecho en el panel: quién lo hizo, qué cambió y cuándo."],
   config: ["⚙️", "Configuración", "Reglas de recargo de horas (50% / 100%) por día y franja horaria, y calendario de feriados."],
 };
 
@@ -719,7 +757,7 @@ function vLoginAdmin() {
 
 function vAdmin() {
   const a = S.a;
-  const contenido = { dashboard: vDashboard, presentismo: vPresentismo, empleados: vEmpleados, reportes: vReportes, ausencias: vAusenciasAdmin }[a.vista];
+  const contenido = { dashboard: vDashboard, presentismo: vPresentismo, empleados: vEmpleados, reportes: vReportes, ausencias: vAusenciasAdmin, fichadas: vFichadas, auditoria: vAuditoria }[a.vista];
   return `<div class="w-full"><div class="max-w-6xl mx-auto px-4 py-5">
     <div class="bg-white rounded-2xl shadow-md border border-[#e3e8ed] overflow-hidden mb-4">
       <div class="h-1.5 w-full" style="background:linear-gradient(90deg,#223c7e 0%,#223c7e 42%,#2ba9e0 42%,#2ba9e0 68%,#e1251b 68%,#e1251b 100%)"></div>
@@ -751,6 +789,90 @@ function vVersionCompleta(id) {
       <button data-a="tab" data-v="dashboard" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#f1f4f7] border border-[#cfd6dd] text-[#5c6b78]">← Volver al Dashboard</button>
       <a href="https://wa.me/5492975212008" target="_blank" rel="noopener" class="px-4 py-2 rounded-lg text-sm font-bold bg-[#e1251b] text-white">Quiero uno así</a>
     </div></div>`;
+}
+
+/* ---- Corrección de fichadas (src/admin/Fichadas.jsx) ---- */
+function vFichadas() {
+  const c = S.a.corr;
+  const { desde, hasta } = calcularPeriodo(c.refMes);
+  const emps = DATA.empleados.slice().sort((x, y) => x.apellido.localeCompare(y.apellido));
+  const lista = c.legajo ? fichajesEn(desde, hasta, Number(c.legajo)).slice().sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) : [];
+  const badge = (f) => {
+    const malo = f.estado === "tarde" || f.estado === "salida_anticipada";
+    const bg = f.estado === "tarde" ? "rgba(229,72,77,.1)" : f.estado === "salida_anticipada" ? "rgba(225,37,27,.1)" : "rgba(22,163,74,.1)";
+    return `<span class="text-[11px] px-2 py-1 rounded" style="background-color:${bg};color:${malo ? "#e5484d" : "#16a34a"}">${esc(f.estado)}${f.minutos_tarde ? ` ${f.minutos_tarde}m` : ""}</span>`;
+  };
+  return `<div class="max-w-2xl">
+    <h2 class="text-base font-bold mb-1">Corrección de fichadas</h2>
+    <p class="text-[#94a1ab] text-xs mb-4">Elegí un empleado para ver, editar, agregar o borrar sus fichadas del período.</p>
+    <div class="flex gap-3 flex-wrap mb-4">
+      <select data-corr="legajo" aria-label="Empleado" class="flex-1 min-w-[200px] bg-[#f1f4f7] border border-[#cfd6dd] rounded-lg px-3 py-2 text-sm outline-none">
+        <option value="">— Elegí un empleado —</option>
+        ${emps.map((e) => `<option value="${e.legajo}" ${String(c.legajo) === String(e.legajo) ? "selected" : ""}>${esc(e.apellido)}, ${esc(e.nombre)} (${e.legajo})</option>`).join("")}
+      </select>
+      <div class="rounded-lg bg-[#f1f4f7] border border-[#cfd6dd] px-2 flex items-center">
+        <button data-a="corrMes" data-d="-1" class="text-[#5c6b78] px-2 text-lg" aria-label="Mes anterior">‹</button>
+        <span class="text-xs font-semibold px-1">${etiquetaPeriodo(desde)}</span>
+        <button data-a="corrMes" data-d="1" class="text-[#5c6b78] px-2 text-lg" aria-label="Mes siguiente">›</button>
+      </div>
+      <button data-a="corrRecalcular" ${c.recalc ? "disabled" : ""} class="px-3 py-2 rounded-lg text-xs font-semibold border border-[#223c7e]/40 text-[#223c7e] disabled:opacity-50">${c.recalc || "↻ Recalcular estados del período"}</button>
+    </div>
+    ${c.legajo ? `<div class="bg-white border border-[#e3e8ed] rounded-xl p-3 mb-4 shadow-sm flex gap-2 items-end flex-wrap">
+      <div><label class="text-[10px] uppercase tracking-wider text-[#94a1ab]">Tipo</label>
+        <select data-corr="nTipo" class="block bg-[#f1f4f7] border border-[#cfd6dd] rounded-lg px-2.5 py-2 text-sm outline-none mt-1">
+          <option value="entrada" ${c.nTipo === "entrada" ? "selected" : ""}>Entrada</option><option value="salida" ${c.nTipo === "salida" ? "selected" : ""}>Salida</option></select></div>
+      <div><label class="text-[10px] uppercase tracking-wider text-[#94a1ab]">Fecha y hora</label>
+        <input type="datetime-local" data-corr="nCuando" value="${c.nCuando}" class="block bg-[#f1f4f7] border border-[#cfd6dd] rounded-lg px-2.5 py-2 text-sm outline-none mt-1" /></div>
+      <button data-a="corrAgregar" class="px-4 py-2 rounded-lg font-bold text-sm bg-[#16a34a] text-white">+ Agregar fichada</button>
+    </div>` : ""}
+    ${!c.legajo ? `<div class="rounded-xl p-3 text-xs border" style="background-color:rgba(43,169,224,.1);border-color:rgba(43,169,224,.4);color:#1f6f96">💡 Probá con <b>${esc(nombreDe(110))}</b>: tiene varias llegadas tarde. Cambiá la hora de una fichada y el estado se recalcula solo; cada cambio queda en <b>Auditoría</b>.</div>`
+      : lista.length === 0 ? `<p class="text-[#94a1ab] text-sm italic">No hay fichadas en este período.</p>`
+      : `<div class="space-y-2">${lista.map((f) => `<div class="bg-white border border-[#e3e8ed] rounded-xl p-3 flex items-center gap-2 flex-wrap shadow-sm">
+          <select data-corr="tipo" data-id="${f.id}" aria-label="Tipo" class="bg-[#f1f4f7] border border-[#cfd6dd] rounded-lg px-2 py-1.5 text-xs outline-none">
+            <option value="entrada" ${f.tipo === "entrada" ? "selected" : ""}>🟢 Entrada</option><option value="salida" ${f.tipo === "salida" ? "selected" : ""}>🔴 Salida</option></select>
+          <input type="datetime-local" data-corr="ts" data-id="${f.id}" value="${aInput(new Date(f.timestamp))}" aria-label="Fecha y hora" class="bg-[#f1f4f7] border border-[#cfd6dd] rounded-lg px-2 py-1.5 text-xs outline-none" />
+          ${badge(f)}
+          ${f.manual ? `<span class="text-[10px] text-[#94a1ab]">✎ manual</span>` : ""}
+          <button data-a="corrBorrar" data-id="${f.id}" class="ml-auto text-xs text-[#e5484d] px-2 py-1 rounded-lg border border-[#e5484d]/40">Borrar</button>
+        </div>`).join("")}</div>`}
+  </div>`;
+}
+function estadoCorr(tipo, fecha, legajo) {
+  const est = calcularEstado(tipo, fecha, horarioDe(empPorLegajo(legajo)));
+  return { estado: est.estado, minutos_tarde: est.minutosTarde || 0 };
+}
+function corrEditar(f, campo, valor) {
+  const fecha = campo === "ts" ? new Date(valor) : new Date(f.timestamp);
+  if (isNaN(fecha)) return;
+  const tipo = campo === "tipo" ? valor : f.tipo;
+  const e = estadoCorr(tipo, fecha, f.legajo);
+  Object.assign(f, { tipo, timestamp: fecha.toISOString(), estado: e.estado, minutos_tarde: e.minutos_tarde });
+  DATA.fichajes.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  auditar(`Editó fichada del legajo ${f.legajo}`, campo === "ts" ? "timestamp" : "tipo");
+  render(); toast(`✓ Fichada actualizada · estado: <b>${esc(e.estado)}</b>${e.minutos_tarde ? ` ${e.minutos_tarde}m` : ""}. Queda registrado en Auditoría.`);
+}
+
+/* ---- Auditoría (src/admin/Auditoria.jsx) ---- */
+function listaAuditoriaHTML() {
+  const q = (S.a.audBusqueda || "").trim().toLowerCase();
+  const lista = AUDITORIA.filter((l) => !q || (l.quien + " " + l.accion + " " + (l.detalle || "")).toLowerCase().includes(q));
+  if (!lista.length) return `<p class="text-[#94a1ab] text-sm italic">No hay registros.</p>`;
+  return `<div class="bg-white border border-[#e3e8ed] rounded-xl overflow-hidden shadow-sm divide-y divide-[#f1f4f7]">
+    ${lista.map((l) => `<div class="px-4 py-2.5 flex items-start gap-3">
+      <span class="text-[10px] text-[#94a1ab] tabular-nums shrink-0 w-28">${new Date(l.creado_en).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
+      <div class="flex-1 min-w-0"><p class="text-sm">${esc(l.accion)}${l.detalle ? `<span class="text-[#94a1ab]"> · ${esc(l.detalle)}</span>` : ""}</p>
+        <p class="text-[10px] text-[#94a1ab]">${esc(l.quien)}</p></div></div>`).join("")}</div>`;
+}
+function vAuditoria() {
+  return `<div class="max-w-2xl">
+    <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+      <h2 class="text-base font-bold">Auditoría de cambios</h2>
+      <button data-a="audActualizar" class="text-xs px-3 py-1.5 rounded-lg border border-[#e3e8ed] bg-white text-[#5c6b78]">↻ Actualizar</button>
+    </div>
+    <input data-in="audBusqueda" value="${esc(S.a.audBusqueda || "")}" placeholder="Buscar por usuario o acción…" aria-label="Buscar en auditoría"
+      class="w-full max-w-sm mb-4 bg-[#f1f4f7] border border-[#cfd6dd] rounded-lg px-3 py-2 text-sm outline-none" />
+    <div id="aud-lista">${listaAuditoriaHTML()}</div>
+  </div>`;
 }
 
 function ranking(titulo, color, filas, vacio) {
@@ -997,7 +1119,7 @@ function render() {
   } else html = S.a.logueado ? vAdmin() : vLoginAdmin();
   $("#app").innerHTML = html;
   const act = document.querySelector('[data-a="tab"][data-activo]');
-  if (act && act.parentElement.scrollWidth > act.parentElement.clientWidth) act.parentElement.scrollLeft = act.offsetLeft - 8;
+  if (act && act.parentElement.scrollWidth > act.parentElement.clientWidth) { const p = act.parentElement; p.scrollLeft += act.getBoundingClientRect().left - p.getBoundingClientRect().left - 8; }
 }
 
 function simularUbicacion() {
@@ -1081,7 +1203,7 @@ const ACC = {
     S.e.ausMsg = { ok: true, t: "Solicitud enviada. Tu jefe la va a revisar." };
     render(); toast("📅 Solicitud creada en memoria (también aparece en Panel RR.HH. › Ausencias). " + AVISO);
   },
-  aprobarAus(el) { const s = DATA.ausencias.find((x) => x.id === +el.dataset.id); if (s) { s.estado = "aprobada"; render(); toast(`✓ Ausencia de ${esc(nombreDe(s.legajo))} aprobada.`); } },
+  aprobarAus(el) { const s = DATA.ausencias.find((x) => x.id === +el.dataset.id); if (s) { s.estado = "aprobada"; if (S.modo === "admin") auditar(`Aprobó ausencia del legajo ${s.legajo}`, TIPOS[s.tipo]); render(); toast(`✓ Ausencia de ${esc(nombreDe(s.legajo))} aprobada.`); } },
   rechazarAus(el) {
     const s = DATA.ausencias.find((x) => x.id === +el.dataset.id); if (!s) return;
     abrirModal(`<div class="p-5"><p class="text-sm font-bold mb-1">Rechazar solicitud</p>
@@ -1094,7 +1216,7 @@ const ACC = {
   },
   confirmarRechazo(el) {
     const s = DATA.ausencias.find((x) => x.id === +el.dataset.id);
-    if (s) { s.estado = "rechazada"; s.resolucion = (($("#motivoRech") || {}).value || "").trim(); }
+    if (s) { s.estado = "rechazada"; s.resolucion = (($("#motivoRech") || {}).value || "").trim(); if (S.modo === "admin") auditar(`Rechazó ausencia del legajo ${s.legajo}`, s.resolucion || TIPOS[s.tipo]); }
     cerrarModal(); render(); if (s) toast(`Solicitud de ${esc(nombreDe(s.legajo))} rechazada.`);
   },
   cerrarModal() { cerrarModal(); },
@@ -1115,19 +1237,70 @@ const ACC = {
     DATA.empleados.push({ legajo, apellido: n.apellido.trim(), nombre: n.nombre.trim(), sector: n.sector || null, horario_id: n.horario_id || null,
       responsable_legajo: n.responsable_legajo ? parseInt(n.responsable_legajo, 10) : null, locales_asignados: n.locales.filter(Boolean).filter((v, i, a) => a.indexOf(v) === i), activo: true, tardanza: 0 });
     S.a.nuevo = { legajo: "", apellido: "", nombre: "", sector: "", horario_id: "", responsable_legajo: "", locales: ["", "", ""], pin: "1234" };
+    auditar(`Creó el empleado ${legajo}`, `${n.apellido.trim()}, ${n.nombre.trim()}`);
     S.a.mostrarNuevo = false; S.a.busqueda = String(legajo); render();
     toast(`✓ Empleado ${legajo} creado en memoria. Se pierde al recargar.`);
   },
-  toggleActivo(el) { const e = empPorLegajo(el.dataset.leg); e.activo = !(e.activo !== false); refrescarLista(); },
+  toggleActivo(el) { const e = empPorLegajo(el.dataset.leg); e.activo = !(e.activo !== false); auditar(`${e.activo ? "Reactivó" : "Dio de baja"} al legajo ${e.legajo}`, e.activo ? "Activo" : "Inactivo"); refrescarLista(); },
   editarPin(el) { S.a.pinEdit = +el.dataset.leg; refrescarLista(); setTimeout(() => { const i = $("#pinNuevo"); if (i) i.focus(); }, 20); },
   cancelarPin() { S.a.pinEdit = null; refrescarLista(); },
   guardarPin(el) {
     const v = ($("#pinNuevo") || {}).value || "";
     if (v.length < 4) return toast("El PIN debe tener al menos 4 dígitos.");
-    const l = +el.dataset.leg; S.a.pinEdit = null; S.a.pinOk = l; refrescarLista();
+    const l = +el.dataset.leg; S.a.pinEdit = null; S.a.pinOk = l; auditar(`Reseteó el PIN del legajo ${l}`, null); refrescarLista();
     setTimeout(() => { if (S.a.pinOk === l) { S.a.pinOk = null; if (S.a.vista === "empleados") refrescarLista(); } }, 1800);
   },
   ausFiltro(el) { S.a.ausFiltro = el.dataset.v; render(); },
+  corrMes(el) { S.a.corr.refMes = mover(S.a.corr.refMes, +el.dataset.d); render(); },
+  corrAgregar() {
+    const c = S.a.corr; if (!c.legajo) return toast("Elegí un empleado.");
+    const fecha = new Date(c.nCuando); if (isNaN(fecha)) return toast("Fecha/hora inválida.");
+    const e = estadoCorr(c.nTipo, fecha, c.legajo);
+    DATA.fichajes.push({ id: nextId++, legajo: Number(c.legajo), tipo: c.nTipo, timestamp: fecha.toISOString(), estado: e.estado, minutos_tarde: e.minutos_tarde,
+      local_id: null, distancia_metros: null, autorizado: false, manual: true });
+    DATA.fichajes.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    auditar(`Agregó fichada manual (${c.nTipo}) al legajo ${c.legajo}`, c.nCuando.replace("T", " "));
+    const { desde, hasta } = calcularPeriodo(c.refMes);
+    if (fecha < desde || fecha > hasta) c.refMes = new Date(fecha.getFullYear(), fecha.getMonth(), 1);
+    render(); toast(`✓ Fichada manual agregada (${esc(e.estado)}). Queda registrado en Auditoría.`);
+  },
+  corrBorrar(el) {
+    const f = DATA.fichajes.find((x) => x.id === +el.dataset.id); if (!f) return;
+    abrirModal(`<div class="p-5"><p class="text-sm font-bold mb-1">¿Borrar esta fichada?</p>
+      <p class="text-xs text-[#5c6b78] mb-4">${esc(nombreDe(f.legajo))} · ${f.tipo} · ${new Date(f.timestamp).toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" })}</p>
+      <div class="flex gap-2"><button data-a="cerrarModal" class="flex-1 py-2.5 rounded-xl font-semibold text-xs bg-[#f1f4f7] border border-[#cfd6dd] text-[#5c6b78]">Cancelar</button>
+        <button data-a="corrBorrarOk" data-id="${f.id}" class="flex-1 py-2.5 rounded-xl font-bold text-xs bg-[#e5484d] text-white">Borrar</button></div></div>`);
+  },
+  corrBorrarOk(el) {
+    const f = DATA.fichajes.find((x) => x.id === +el.dataset.id);
+    if (f) { DATA.fichajes.splice(DATA.fichajes.indexOf(f), 1); auditar(`Borró fichada del legajo ${f.legajo}`, null); }
+    cerrarModal(); render(); toast("Fichada borrada. Queda registrado en Auditoría.");
+  },
+  corrRecalcular() {
+    const c = S.a.corr; const { desde, hasta } = calcularPeriodo(c.refMes);
+    abrirModal(`<div class="p-5"><p class="text-sm font-bold mb-1">Recalcular estados</p>
+      <p class="text-xs text-[#5c6b78] mb-4">¿Recalcular el estado de todas las fichadas de ${etiquetaPeriodo(desde)} con los horarios actuales?</p>
+      <div class="flex gap-2"><button data-a="cerrarModal" class="flex-1 py-2.5 rounded-xl font-semibold text-xs bg-[#f1f4f7] border border-[#cfd6dd] text-[#5c6b78]">Cancelar</button>
+        <button data-a="corrRecalcularOk" class="flex-1 py-2.5 rounded-xl font-bold text-xs bg-[#223c7e] text-white">Recalcular</button></div></div>`);
+  },
+  corrRecalcularOk() {
+    cerrarModal();
+    const c = S.a.corr; const { desde, hasta } = calcularPeriodo(c.refMes);
+    const todas = fichajesEn(desde, hasta, null); const cambios = [];
+    todas.forEach((f) => { const e = estadoCorr(f.tipo, new Date(f.timestamp), f.legajo); if (e.estado !== f.estado || e.minutos_tarde !== (f.minutos_tarde || 0)) cambios.push([f, e]); });
+    let i = 0; const total = todas.length;
+    (function paso() {
+      c.recalc = `Actualizando ${Math.min(total, i + 1).toLocaleString("es-AR")}/${total.toLocaleString("es-AR")}…`; if (S.a.vista === "fichadas") render();
+      i = Math.min(total, i + Math.ceil(total / 12));
+      if (i < total) return setTimeout(paso, 60);
+      cambios.forEach(([f, e]) => Object.assign(f, e));
+      c.recalc = null;
+      auditar(`Recalculó estados de fichadas (${etiquetaPeriodo(desde)})`, `${cambios.length.toLocaleString("es-AR")} de ${total.toLocaleString("es-AR")} corregidas`);
+      if (S.a.vista === "fichadas") render();
+      toast(`Listo: ${cambios.length.toLocaleString("es-AR")} de ${total.toLocaleString("es-AR")} fichadas corregidas.`);
+    })();
+  },
+  audActualizar() { render(); toast("↻ Auditoría actualizada."); },
   alcance(el) { S.a.rep.alcance = el.dataset.v; S.a.rep.error = null; S.a.rep.ok = null; render(); },
   mesRep(el) { S.a.rep.refMes = mover(S.a.rep.refMes, +el.dataset.d); S.a.rep.ok = null; S.a.rep.error = null; render(); },
   repDetalle() { generarReporte("detalle"); },
@@ -1147,12 +1320,21 @@ document.addEventListener("input", (ev) => {
   if (!el.dataset || !el.dataset.in) return;
   const p = el.dataset.in;
   if (p === "busqueda") { S.a.busqueda = el.value; refrescarLista(); return; }
+  if (p === "audBusqueda") { S.a.audBusqueda = el.value; const c = $("#aud-lista"); if (c) c.innerHTML = listaAuditoriaHTML(); return; }
   if (p.startsWith("nuevo.")) return setPath(S.a, p, el.value);
   if (p.startsWith("ausForm.")) return setPath(S.e, p, el.value);
   if (p.startsWith("rep.")) { setPath(S.a, p, el.value); S.a.rep.error = null; }
 });
 document.addEventListener("change", (ev) => {
   const el = ev.target;
+  if (el.dataset && el.dataset.corr) {
+    const k = el.dataset.corr, c = S.a.corr;
+    if (k === "legajo") { c.legajo = el.value; return render(); }
+    if (k === "nTipo" || k === "nCuando") { c[k] = el.value; return; }
+    if (k === "ts") return; // la fecha/hora se guarda al salir del campo (onBlur, igual que la app real)
+    const f = DATA.fichajes.find((x) => x.id === +el.dataset.id); if (f) corrEditar(f, k, el.value);
+    return;
+  }
   if (el.dataset && el.dataset.in && el.dataset.in.startsWith("rep.")) { setPath(S.a, el.dataset.in, el.value); S.a.rep.error = null; S.a.rep.ok = null; return render(); }
   if (!el.dataset || !el.dataset.campo) return;
   const e = empPorLegajo(el.dataset.leg), campo = el.dataset.campo;
@@ -1161,8 +1343,15 @@ document.addEventListener("change", (ev) => {
     tres[+el.dataset.i] = el.value; e.locales_asignados = tres.filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
   } else if (campo === "responsable_legajo") e.responsable_legajo = el.value === "" ? null : parseInt(el.value, 10);
   else e[campo] = el.value || null;
+  auditar(`Editó el legajo ${e.legajo}`, campo === "horario_id" ? "horario" : campo === "responsable_legajo" ? "responsable" : campo);
   S.a.guardado = e.legajo; refrescarLista();
   setTimeout(() => { if (S.a.guardado === e.legajo) { S.a.guardado = null; if (S.a.vista === "empleados") refrescarLista(); } }, 1400);
+});
+document.addEventListener("focusout", (ev) => {
+  const el = ev.target;
+  if (!el.dataset || el.dataset.corr !== "ts") return;
+  const f = DATA.fichajes.find((x) => x.id === +el.dataset.id);
+  if (f && el.value && el.value !== aInput(new Date(f.timestamp))) corrEditar(f, "ts", el.value);
 });
 document.addEventListener("keydown", (ev) => {
   if (ev.key === "Escape") cerrarModal();
