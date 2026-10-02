@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turnero · Demo · FloWer</title>
+<meta name="description" content="Demo navegable con datos ficticios de un sistema de turnos médicos con historia clínica, kiosco de auto-anuncio y sala de espera.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%230E5C63'/%3E%3Ctext x='24' y='33' font-family='Arial' font-weight='700' font-size='26' fill='white' text-anchor='middle'%3ET%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --petrol:#0E5C63; --petrol-dark:#0A4247; --petrol-light:#12777F;
+  --ink:#12211F; --mist:#F6F8F8;
+  --ink80:rgba(18,33,31,.8); --ink70:rgba(18,33,31,.7); --ink60:rgba(18,33,31,.6); --ink50:rgba(18,33,31,.5); --ink40:rgba(18,33,31,.4); --ink30:rgba(18,33,31,.3); --ink25:rgba(18,33,31,.25);
+  --line:rgba(0,0,0,.05); --line2:rgba(0,0,0,.10);
+  --strip:40px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--mist);color:var(--ink)}
+body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;padding-top:var(--strip)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:inherit;text-decoration:none}
+.tnum{font-variant-numeric:tabular-nums}
+.cap{text-transform:capitalize}
+.muted{color:var(--ink50)}
+.trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Franja demo */
+.demo-strip{position:fixed;top:0;left:0;right:0;height:var(--strip);z-index:300;display:flex;align-items:center;justify-content:center;gap:14px;padding:0 12px;background:#0A2A2E;color:#fff;font-size:13px;font-weight:600}
+.demo-strip .back{opacity:.85;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.demo-strip .back:hover{opacity:1}
+.demo-strip .txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.demo-strip .cta{flex:none;background:#fff;color:var(--petrol);padding:5px 12px;border-radius:999px;font-size:12.5px;font-weight:700}
+.demo-strip .tour{flex:none;color:#fff;opacity:.85;border:1px solid rgba(255,255,255,.35);padding:4px 10px;border-radius:999px;font-size:12px}
+@media (max-width:520px){.demo-strip{gap:8px;font-size:12px}.demo-strip .long{display:none}.demo-strip .tour{display:none}}
+
+/* Header app */
+header.app{position:sticky;top:var(--strip);z-index:20;border-bottom:1px solid var(--line);background:rgba(255,255,255,.92);backdrop-filter:blur(8px)}
+header.app .in{max-width:1152px;margin:0 auto;display:flex;align-items:center;gap:20px;padding:10px 16px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--petrol);flex:none}
+.logo i{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--petrol);color:#fff;font-style:normal}
+nav.main{display:flex;gap:2px;font-size:14px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+nav.main::-webkit-scrollbar{display:none}
+nav.main a{padding:6px 11px;border-radius:6px;color:var(--ink70);white-space:nowrap}
+nav.main a:hover{background:var(--mist);color:var(--ink)}
+nav.main a.on{background:var(--mist);color:var(--petrol);font-weight:600}
+.user{display:flex;align-items:center;gap:10px;flex:none}
+.user .n{font-size:13.5px;font-weight:500;text-align:right;line-height:1.2}
+.user .n small{display:block;font-size:11px;color:var(--ink40);font-weight:400}
+@media (max-width:860px){.user .n{display:none}header.app .in{gap:12px}}
+main{max-width:1152px;margin:0 auto;padding:24px 16px 60px}
+
+/* Genéricos */
+h1{font-size:24px;font-weight:600;letter-spacing:-.01em}
+h2{font-size:18px;font-weight:600}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.between{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px}
+.pad{padding:20px}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:500;background:var(--petrol);color:#fff;transition:background .15s}
+.btn:hover{background:var(--petrol-dark)}
+.btn.dark{background:rgba(18,33,31,.8)}.btn.dark:hover{background:var(--ink)}
+.btn.ghost{background:#fff;color:var(--ink70);border:1px solid var(--line2)}.btn.ghost:hover{border-color:var(--petrol);color:var(--petrol)}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn.wa{background:#25D366}.btn.wa:hover{filter:brightness(.95);background:#25D366}
+.mini{border-radius:6px;border:1px solid var(--line2);padding:4px 8px;font-size:12px;color:var(--ink70);background:rgba(255,255,255,.55)}
+.mini:hover{border-color:var(--petrol);color:var(--petrol);background:#fff}
+.mini.p{background:var(--petrol);color:#fff;border-color:var(--petrol);font-weight:500}
+.mini.po{border-color:rgba(14,92,99,.4);color:var(--petrol);font-weight:500}
+.pill{border-radius:999px;padding:6px 12px;font-size:13.5px;background:#fff;color:var(--ink70);box-shadow:0 0 0 1px var(--line)}
+.pill.on{background:var(--petrol);color:#fff;box-shadow:none}
+.lbl{font-size:12px}
+.lbl span{display:block;color:var(--ink60);margin-bottom:4px}
+.inp{border:1px solid var(--line2);border-radius:6px;padding:6px 8px;font-size:14px;background:#fff;outline:none}
+.inp:focus{border-color:var(--petrol)}
+.inp.lg{padding:10px 14px;border-radius:8px;width:100%}
+.k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink40)}
+.grid{display:grid;gap:12px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g6{grid-template-columns:repeat(6,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media (max-width:1000px){.g4,.g6{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:700px){.g3,.g4,.g6{grid-template-columns:repeat(2,1fr)}.g2,.g3.big{grid-template-columns:1fr}}
+.kpi{padding:16px}
+.kpi .v{font-size:24px;font-weight:600;margin-top:4px}
+.kpi.big{padding:20px}.kpi.big .v{font-size:28px}
+.up{color:#059669}.down{color:#e11d48}
+.delta{margin-left:8px;font-size:12px;font-weight:500}
+.bar{height:12px;border-radius:4px;background:var(--mist);flex:1}
+.bar>div{height:100%;border-radius:4px}
+.grid>*{min-width:0}
+@media (max-width:520px){.blbl{width:96px!important}.bat{display:none}.bval{width:auto!important;min-width:40px}}
+.empty{border:1px dashed var(--line2);background:#fff;border-radius:12px;padding:36px;text-align:center;color:var(--ink50)}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:500;white-space:nowrap}
+.chip .d{width:6px;height:6px;border-radius:50%}
+.ok-chip{border-radius:999px;background:#d1fae5;color:#065f46;padding:2px 8px;font-size:10.5px;font-weight:500;white-space:nowrap}
+.warn-chip{border-radius:999px;background:#fef3c7;color:#92400e;padding:4px 12px;font-size:12px;font-weight:500}
+
+/* Estados (paleta original del sistema) */
+.e-RESERVADO{--row:#7dd3fc;--brd:#38bdf8;--bar:#0284c7;--cb:#e0f2fe;--ct:#0c4a6e}
+.e-EN_ESPERA{--row:#fcd34d;--brd:#fbbf24;--bar:#d97706;--cb:#fef3c7;--ct:#78350f}
+.e-EN_CONSULTA{--row:#5eead4;--brd:#2dd4bf;--bar:#0f766e;--cb:#ccfbf1;--ct:#134e4a}
+.e-ATENDIDO{--row:#6ee7b7;--brd:#34d399;--bar:#047857;--cb:#d1fae5;--ct:#064e3b}
+.e-AUSENTE{--row:#d4d4d8;--brd:#a1a1aa;--bar:#52525b;--cb:#f4f4f5;--ct:#3f3f46}
+.e-CANCELADO{--row:#fda4af;--brd:#fb7185;--bar:#e11d48;--cb:#ffe4e6;--ct:#881337}
+.e-PENDIENTE{--row:#c4b5fd;--brd:#a78bfa;--bar:#7c3aed;--cb:#ede9fe;--ct:#4c1d95}
+.chip[class*="e-"]{background:var(--cb);color:var(--ct)}
+.chip[class*="e-"] .d{background:var(--bar)}
+.blk{background:var(--row);border:1px solid var(--brd);border-left:8px solid var(--bar)}
+
+/* Agenda */
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+.tabs button{border-radius:6px;padding:6px 12px;font-size:14px;color:var(--ink60)}
+.tabs button:hover{background:#fff}
+.tabs button.on{background:var(--petrol);color:#fff}
+.tabs .n{opacity:.7;margin-left:3px}
+.turnos{list-style:none;display:flex;flex-direction:column;gap:8px}
+.turno{display:grid;grid-template-columns:92px 1fr 200px 230px auto;gap:12px;border-radius:12px;padding:14px 16px;transition:transform .2s}
+.turno.flash{animation:flash 1.2s ease}
+@keyframes flash{0%{transform:scale(1.015);box-shadow:0 0 0 4px rgba(14,92,99,.35)}100%{transform:none;box-shadow:none}}
+.turno .h{font-size:18px;font-weight:600;color:var(--petrol)}
+.turno .c{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink50)}
+.turno .acts{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.turno .acts .row{gap:4px;justify-content:flex-end}
+.turno .s{font-size:13.5px}
+@media (max-width:980px){.turno{grid-template-columns:80px minmax(0,1fr)}.turno>div:nth-child(3),.turno>div:nth-child(4){grid-column:2}.turno .acts{grid-column:1/-1;align-items:flex-start}.turno .acts .row{justify-content:flex-start}}
+
+/* Calendario */
+.cal{overflow-x:auto}
+.cal .wk{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;min-width:900px}
+.cal .day{background:#fff;border:1px solid var(--line);border-radius:12px}
+.cal .dh{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:14px;font-weight:500;color:var(--ink80);border-radius:12px 12px 0 0}
+.cal .dh.hoy{background:rgba(14,92,99,.1);color:var(--petrol)}
+.cal .dh button{color:var(--ink40);font-size:18px;line-height:1}
+.cal .dh button:hover{color:var(--petrol)}
+.cal ul{list-style:none;padding:8px;min-height:120px;display:flex;flex-direction:column;gap:4px}
+.cal .t{display:block;width:100%;text-align:left;border-radius:8px;padding:5px 8px;font-size:12px}
+.cal .t:hover{filter:brightness(.95)}
+.cal .t .x{font-size:10px;color:var(--ink50)}
+.cal .t .d{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--bar);margin-right:5px;vertical-align:middle}
+.cal .t.canc .nm{text-decoration:line-through}
+
+/* Listas */
+.list{list-style:none;background:#fff;border:1px solid var(--line);border-radius:12px}
+.list>li+li{border-top:1px solid var(--line)}
+.list .it{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 20px;width:100%;text-align:left}
+.list .it:hover{background:var(--mist)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink40);font-weight:500;padding-bottom:8px}
+td{padding:8px 0;border-top:1px solid var(--line)}
+.r{text-align:right}
+
+/* Ficha */
+.datos{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:700px){.datos{grid-template-columns:repeat(2,1fr)}}
+textarea.inp{width:100%;padding:8px 12px;border-radius:8px;resize:vertical}
+.reg{padding:16px}
+.reg p{white-space:pre-wrap;font-size:14px;color:rgba(18,33,31,.9)}
+.adj{display:inline-flex;gap:6px;border:1px solid var(--line2);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--petrol);margin-top:8px}
+.adj:hover{background:var(--mist)}
+.estudios{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:700px){.estudios{grid-template-columns:repeat(2,1fr)}}
+.est{padding:8px}
+.est .th{height:96px;border-radius:8px;background:var(--mist);display:grid;place-items:center;font-size:30px}
+.est .th.img{background:linear-gradient(135deg,#1f2937,#4b5563);color:#e5e7eb;font-size:12px;letter-spacing:.08em}
+
+/* Pantallas completas (kiosco / sala / reserva) */
+.full{position:fixed;inset:var(--strip) 0 0 0;z-index:40;display:flex;flex-direction:column;background:var(--petrol);color:#fff;overflow:auto}
+.full .top{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;gap:12px}
+@media (max-width:600px){.full .top{flex-wrap:wrap;padding:12px 16px}.full .top .row{gap:12px!important}}
+.full .top .s{font-size:18px;font-weight:500;color:rgba(255,255,255,.8)}
+.full .top a,.full .top button{font-size:13.5px;color:rgba(255,255,255,.5)}
+.full .top a:hover,.full .top button:hover{color:rgba(255,255,255,.85)}
+.full .mid{flex:1;display:flex;align-items:center;justify-content:center;padding:0 20px 32px}
+.kio{width:100%;max-width:420px;text-align:center}
+.kio h1{font-size:36px;font-weight:600}
+.kio .disp{margin-top:28px;height:76px;border-radius:16px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:600;letter-spacing:.12em}
+.keys{margin-top:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.keys button{height:72px;border-radius:16px;font-size:28px;font-weight:600;background:rgba(255,255,255,.1);color:#fff;transition:transform .1s,background .15s}
+.keys button:hover{background:rgba(255,255,255,.2)}
+.keys button:active{transform:scale(.95)}
+.keys .mu{background:rgba(255,255,255,.05);color:rgba(255,255,255,.7)}
+.keys .ac{background:#fff;color:var(--petrol)}
+.keys button:disabled{opacity:.4;cursor:default}
+.hint{margin-top:22px;background:rgba(0,0,0,.18);border-radius:14px;padding:12px 14px;text-align:left;font-size:13px;color:rgba(255,255,255,.85)}
+.hint b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55);margin-bottom:6px}
+.hint button{display:flex;justify-content:space-between;width:100%;padding:5px 8px;border-radius:8px;color:#fff;text-align:left;gap:10px}
+.hint button:hover{background:rgba(255,255,255,.1)}
+.hint button span:last-child{color:rgba(255,255,255,.55);font-size:12px}
+.res{max-width:520px;text-align:center;color:#fff}
+.res .ic{margin:0 auto;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:48px;font-weight:700;animation:pop .35s ease}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:none;opacity:1}}
+.res h2{margin-top:24px;font-size:30px}
+.res p{margin-top:12px;font-size:18px;color:rgba(255,255,255,.8)}
+.sala .nm{margin-top:16px;font-size:clamp(44px,8vw,76px);font-weight:700;line-height:1.1;animation:pop .5s ease}
+.sala .cons{margin-top:22px;display:inline-block;border-radius:16px;background:#fff;color:var(--petrol);padding:14px 30px;font-size:28px;font-weight:600}
+.sala .otros{margin-top:52px;width:100%;max-width:900px}
+.sala .otros .g{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.sala .otros .g{grid-template-columns:1fr}}
+.sala .otro{display:flex;justify-content:space-between;align-items:center;border-radius:12px;background:rgba(255,255,255,.1);padding:14px 22px;font-size:22px}
+.sala .otro span:last-child{font-size:18px;color:rgba(255,255,255,.8)}
+.demo-ctl{position:absolute;right:16px;bottom:16px;background:#fff;color:var(--petrol);border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.demo-ctl small{display:block;font-size:10px;font-weight:500;color:var(--ink50)}
+
+.pub{position:fixed;inset:var(--strip) 0 0 0;z-index:40;background:var(--mist);overflow:auto;padding:32px 16px}
+.pub .w{max-width:520px;margin:0 auto}
+.slot input{position:absolute;opacity:0}
+.slot span{display:inline-block;border:1px solid var(--line2);border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer}
+.slot input:checked+span{background:var(--petrol);border-color:var(--petrol);color:#fff}
+.slots{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Modal */
+.ov{position:fixed;inset:var(--strip) 0 0 0;z-index:200;background:rgba(10,30,32,.45);display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:560px;max-height:calc(100vh - var(--strip) - 32px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal .mh{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.modal .mh button{font-size:22px;color:var(--ink40);line-height:1}
+.modal .mb{padding:20px}
+.modal .mf{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f2 .full2{grid-column:1/-1}
+@media (max-width:520px){.f2{grid-template-columns:1fr}}
+.f2 select,.f2 input{width:100%}
+.wa-head{background:#075E54;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;border-radius:16px 16px 0 0}
+.wa-head .av{width:34px;height:34px;border-radius:50%;background:#25D366;display:grid;place-items:center;font-weight:700}
+.wa-body{background:#ECE5DD;padding:16px}
+.bubble{background:#DCF8C6;border-radius:10px 0 10px 10px;padding:10px 12px;font-size:14px;max-width:90%;margin-left:auto;box-shadow:0 1px 1px rgba(0,0,0,.1)}
+.bubble a{color:#0b6bcb;text-decoration:underline;word-break:break-all;cursor:pointer}
+.phone{border:1px solid var(--line2);border-radius:16px;padding:18px;margin-top:14px;background:var(--mist)}
+
+/* Tour */
+.tour{max-width:520px}
+.tour ol{list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.tour li button{display:flex;gap:14px;text-align:left;width:100%;padding:10px;border-radius:10px}
+.tour li button:hover{background:var(--mist)}
+.tour .num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--petrol);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700}
+.tour b{display:block;font-size:15px}
+.tour small{font-size:13.5px;color:var(--ink60)}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:400;background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:opacity .2s,transform .2s;max-width:calc(100vw - 32px)}
+#toast.hide{opacity:0;transform:translate(-50%,10px);pointer-events:none}
+.note{font-size:12px;color:var(--ink40);margin-top:16px}
+.sp{height:24px}
+.mt1{margin-top:4px}.mt2{margin-top:8px}.mt3{margin-top:12px}.mt4{margin-top:16px}.mt5{margin-top:20px}.mt6{margin-top:24px}.mb3{margin-bottom:12px}.mb4{margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<div class="demo-strip" role="region" aria-label="Aviso de demo">
+  <a class="back" href="../../proyectos.html#turnero">← FloWer</a>
+  <span class="txt">Demo con datos ficticios<span class="long"> · nada se guarda</span></span>
+  <button class="tour" data-a="tour">Recorrido</button>
+  <a class="cta" href="https://wa.me/5492975212008" target="_blank" rel="noopener">Quiero uno así</a>
+</div>
+
+<div id="app"></div>
+<div id="modal"></div>
+<div id="toast" class="hide" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   DEMO_DATA — todos los datos son FICTICIOS. Editá libremente.
+   Organización, sedes, profesionales, pacientes, coberturas y montos
+   son inventados. Los turnos se generan alrededor de la fecha de hoy.
+   ===================================================================== */
+const DEMO_DATA = {
+  organizacion: "Centro Médico Bahía Serena",
+  usuario: { nombre: "Laura Méndez", rol: "Administración" },
+  sedes: [
+    { id: "centro", nombre: "Sede Centro" },
+    { id: "norte",  nombre: "Sede Barrio Norte" },
+  ],
+  profesionales: [
+    { id: "p1", prefijo: "Dra.", nombre: "Lucía",   apellido: "Ferreyra", especialidad: "Clínica médica", consultorio: "Consultorio 2" },
+    { id: "p2", prefijo: "Dr.",  nombre: "Martín",  apellido: "Quiroga",  especialidad: "Cardiología",    consultorio: "Consultorio 4" },
+    { id: "p3", prefijo: "Dra.", nombre: "Valeria", apellido: "Sosa",     especialidad: "Pediatría",      consultorio: "Consultorio 1" },
+    { id: "p4", prefijo: "Lic.", nombre: "Pablo",   apellido: "Herrera",  especialidad: "Kinesiología",   consultorio: "Box Kinesio" },
+  ],
+  // Días: 0=domingo … 6=sábado. Horario en "HH:MM". dur = minutos por turno.
+  horarios: [
+    { prof: "p1", sede: "centro", dias: [1,2,3,4,5], desde: "08:00", hasta: "12:00", dur: 20 },
+    { prof: "p1", sede: "centro", dias: [6],         desde: "09:00", hasta: "12:00", dur: 20 },
+    { prof: "p2", sede: "centro", dias: [1,3],       desde: "09:00", hasta: "12:00", dur: 30 },
+    { prof: "p2", sede: "norte",  dias: [2,4],       desde: "14:00", hasta: "18:00", dur: 30 },
+    { prof: "p3", sede: "norte",  dias: [1,3,5],     desde: "08:30", hasta: "12:30", dur: 20 },
+    { prof: "p4", sede: "centro", dias: [1,2,3,4,5], desde: "14:00", hasta: "18:00", dur: 30 },
+  ],
+  practicas: [
+    { id: "pr1", prof: "p1", nombre: "Consulta",           precio: 38000, video: false },
+    { id: "pr2", prof: "p1", nombre: "Videoconsulta",      precio: 32000, video: true  },
+    { id: "pr3", prof: "p2", nombre: "Consulta",           precio: 52000, video: false },
+    { id: "pr4", prof: "p2", nombre: "Electrocardiograma", precio: 30000, video: false },
+    { id: "pr5", prof: "p3", nombre: "Control niño sano",  precio: 40000, video: false },
+    { id: "pr6", prof: "p4", nombre: "Sesión",             precio: 25000, video: false },
+  ],
+  coberturas: ["Austral Salud 210", "Austral Salud 310", "Austral Salud 410", "Prevenir Plan 2", "OS Patagónica", "Particular"],
+  nombres: ["Sofía","Mateo","Valentina","Benjamín","Camila","Joaquín","Martina","Tomás","Lucía","Santiago","Julieta","Facundo","Agustina","Nicolás","Florencia","Lautaro","Micaela","Franco","Rocío","Gonzalo","Carla","Ignacio","Paula","Emiliano","Daniela","Federico","Antonella","Leandro","Belén","Iván","Natalia","Ezequiel","Milagros","Hernán","Lorena","Cristian","Silvina","Diego","Mariela","Sergio","Gabriela","Andrés","Noelia","Marcelo","Victoria","Raúl","Celeste","Esteban"],
+  apellidos: ["Acosta","Benítez","Castro","Díaz","Escobar","Figueroa","Giménez","Ibáñez","Juárez","Ledesma","Medina","Navarro","Ojeda","Paz","Ríos","Suárez","Toledo","Vera","Aguirre","Bustos","Coronel","Domínguez","Funes","Godoy","Cabrera","Luna","Molina","Núñez","Ortiz","Peralta","Quintana","Roldán","Sánchez","Torres","Villalba","Zárate","Arce","Barrios","Cáceres","Duarte","Farías","Gutiérrez","Lagos","Moreno","Páez","Romero","Salinas","Vázquez"],
+  hce: {
+    p1: ["Consulta por cefalea tensional de 1 semana. TA 120/80. Examen neurológico normal. Indico analgésicos y pautas de alarma.",
+         "Control de laboratorio: glucemia y perfil lipídico dentro de valores normales. Se refuerzan hábitos saludables.",
+         "Cuadro de vías aéreas superiores, afebril. Hidratación, reposo relativo. Control en 72 h si persiste.",
+         "Control anual. Sin antecedentes nuevos. Se solicita laboratorio de rutina y ECG."],
+    p2: ["ECG: ritmo sinusal, FC 72 lpm, sin alteraciones de la repolarización.",
+         "HTA en tratamiento. TA 135/85. Se ajusta dosis y se pide MAPA de 24 h.",
+         "Ecocardiograma sin hallazgos patológicos. Control en 6 meses."],
+    p3: ["Control de niño sano. Peso y talla en percentil 50. Vacunas al día.",
+         "Consulta por fiebre de 24 h. Otoscopia normal, fauces congestivas. Antitérmicos y control.",
+         "Control de crecimiento. Desarrollo psicomotor acorde a la edad."],
+    p4: ["Sesión 3/10 — lumbalgia mecánica. Movilidad mejorando, dolor 4/10. Ejercicios de core.",
+         "Evaluación inicial por esguince de tobillo grado I. Plan de 8 sesiones.",
+         "Sesión 6/10 — buena evolución. Se suman ejercicios de propiocepción."],
+  },
+  recetas: ["Ibuprofeno 400 mg — 1 comp. cada 8 h por 5 días.", "Enalapril 10 mg — 1 comp. por día.", "Paracetamol jarabe — 5 ml cada 6 h si fiebre.", "Amoxicilina 500 mg — 1 comp. cada 8 h por 7 días."],
+  estudios: [["Laboratorio_rutina.pdf","pdf"],["Rx_columna_lumbar.jpg","img"],["ECG_control.pdf","pdf"],["Ecografía_abdominal.pdf","pdf"]],
+};
+
+/* ============================ Utilidades ============================ */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pad = (n) => String(n).padStart(2, "0");
+const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const fromIso = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d, 12); };
+const addDays = (s, n) => { const d = fromIso(s); d.setDate(d.getDate() + n); return iso(d); };
+const diffDays = (a, b) => Math.round((fromIso(b) - fromIso(a)) / 86400000);
+const toMin = (h) => { const [a, b] = h.split(":").map(Number); return a * 60 + b; };
+const hhmm = (m) => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+const fmtDni = (v) => String(v).replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const pesos = (n) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
+const fLarga = (s) => new Intl.DateTimeFormat("es-AR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(fromIso(s));
+const fCorta = (s) => new Intl.DateTimeFormat("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(fromIso(s));
+const fDM = (s) => new Intl.DateTimeFormat("es-AR", { day: "2-digit", month: "2-digit" }).format(fromIso(s));
+const diaCorto = (s) => new Intl.DateTimeFormat("es-AR", { weekday: "short", day: "numeric" }).format(fromIso(s));
+const wd = (s) => fromIso(s).getDay();
+
+let seed = 20261;
+const rnd = () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const pick = (a) => a[Math.floor(rnd() * a.length)];
+
+const ESTADOS = ["RESERVADO","EN_ESPERA","EN_CONSULTA","ATENDIDO","AUSENTE","CANCELADO","PENDIENTE"];
+const LABEL = { RESERVADO:"Reservado", EN_ESPERA:"En espera", EN_CONSULTA:"En consulta", ATENDIDO:"Atendido", AUSENTE:"Ausente", CANCELADO:"Cancelado", PENDIENTE:"Pendiente" };
+const TRANS = {
+  RESERVADO:["EN_ESPERA","EN_CONSULTA","AUSENTE","CANCELADO"], EN_ESPERA:["EN_CONSULTA","ATENDIDO","AUSENTE","CANCELADO"],
+  EN_CONSULTA:["ATENDIDO","EN_ESPERA"], ATENDIDO:["EN_CONSULTA"], AUSENTE:["RESERVADO"], CANCELADO:["RESERVADO"], PENDIENTE:["RESERVADO","CANCELADO"],
+};
+const chip = (e) => `<span class="chip e-${e}"><span class="d"></span>${LABEL[e]}</span>`;
+
+/* ======================= Generación de datos ======================= */
+const D = DEMO_DATA;
+const HOY = iso(new Date());
+const realMin = new Date().getHours() * 60 + new Date().getMinutes();
+const NOW_MIN = Math.min(Math.max(realMin, 10 * 60 + 10), 11 * 60 + 20); // "reloj" de la demo para repartir estados de hoy
+
+const sedeById = Object.fromEntries(D.sedes.map((s) => [s.id, s]));
+const profById = Object.fromEntries(D.profesionales.map((p) => [p.id, p]));
+const pracById = Object.fromEntries(D.practicas.map((p) => [p.id, p]));
+const profLabel = (id) => { const p = profById[id]; return `${p.prefijo} ${p.apellido}, ${p.nombre}`; };
+const profCorto = (id) => { const p = profById[id]; return `${p.prefijo} ${p.apellido}`; };
+const pracLabel = (id) => { const p = pracById[id]; return `${profById[p.prof].especialidad} · ${p.nombre}`; };
+
+function horariosDe(prof, sede, fecha) {
+  let dia = wd(fecha);
+  if (fecha === HOY && (dia === 0 || dia === 6)) dia = 3; // la demo siempre tiene agenda "hoy"
+  return D.horarios.filter((h) => (!prof || h.prof === prof) && (!sede || h.sede === sede) && h.dias.includes(dia));
+}
+
+const S = {
+  pacientes: [], turnos: [], hce: [], recetas: [], estudios: [], nextId: 1,
+  agenda: { sede: "", estado: "" },
+  cal: { semana: 0, sede: "", prof: "", canc: false },
+  panel: null, rep: null,
+  q: "",
+  kio: { sede: "centro", dni: "", res: null, timer: null },
+  sala: { sede: "centro" },
+  rec: { fecha: null },
+  resv: { prac: "", sede: "", fecha: "", paso: 1, hecho: null },
+  modal: null, flash: null,
+};
+
+(function generar() {
+  const usados = new Set();
+  for (let i = 0; i < 52; i++) {
+    let nombre, apellido;
+    do { nombre = pick(D.nombres); apellido = pick(D.apellidos); } while (usados.has(nombre + apellido));
+    usados.add(nombre + apellido);
+    const cob = rnd() < .18 ? "Particular" : pick(D.coberturas.slice(0, 5));
+    const nac = `${1950 + Math.floor(rnd() * 70)}-${pad(1 + Math.floor(rnd() * 12))}-${pad(1 + Math.floor(rnd() * 28))}`;
+    S.pacientes.push({
+      id: "pa" + i, nombre, apellido,
+      dni: String(20000000 + Math.floor(rnd() * 25000000)),
+      tel: `297 555-${pad(Math.floor(rnd() * 100))}${pad(Math.floor(rnd() * 100))}`,
+      email: `${nombre}.${apellido}`.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "") + "@ejemplo.com",
+      cob, afiliado: cob === "Particular" ? "" : String(60000000000 + Math.floor(rnd() * 9999999999)),
+      nac, sexo: rnd() < .55 ? "F" : "M",
+      creado: i < 7 ? addDays(HOY, -Math.floor(rnd() * 20)) : addDays(HOY, -30 - Math.floor(rnd() * 500)),
+    });
+  }
+  for (let off = -62; off <= 24; off++) {
+    const fecha = addDays(HOY, off);
+    for (const h of horariosDe(null, null, fecha)) {
+      const fill = off < 0 ? .72 : off === 0 ? .85 : Math.max(.18, .8 - off * .028);
+      for (let m = toMin(h.desde); m + h.dur <= toMin(h.hasta); m += h.dur) {
+        if (rnd() > fill) continue;
+        const pracs = D.practicas.filter((p) => p.prof === h.prof);
+        const prac = (pracs.length > 1 && rnd() < .2) ? pracs[1] : pracs[0];
+        const pac = pick(S.pacientes);
+        let estado = "RESERVADO", llamado = null;
+        if (off < 0) {
+          const r = rnd(); estado = r < .8 ? "ATENDIDO" : r < .89 ? "AUSENTE" : "CANCELADO";
+        } else if (off === 0) {
+          if (m + h.dur <= NOW_MIN) { const r = rnd(); estado = r < .86 ? "ATENDIDO" : r < .95 ? "AUSENTE" : "CANCELADO"; }
+          else if (m <= NOW_MIN) { estado = "EN_CONSULTA"; llamado = Date.now() - (NOW_MIN - m) * 60000; }
+          else if (m <= NOW_MIN + 60 && rnd() < .8) estado = "EN_ESPERA";
+          else estado = rnd() < .07 ? "CANCELADO" : "RESERVADO";
+        } else if (rnd() < .06) estado = "CANCELADO";
+        S.turnos.push({
+          id: "t" + S.nextId++, fecha, min: m, dur: h.dur, pac: pac.id, prof: h.prof, sede: h.sede, prac: prac.id,
+          cob: pac.cob, estado, canal: prac.video ? "VIDEO" : "PRESENCIAL",
+          conf: off < 0 ? rnd() < .6 : rnd() < .55, llamado,
+        });
+      }
+    }
+  }
+  // Que cada profesional que atiende ahora tenga a alguien "En consulta" (para la pantalla de sala).
+  for (const pr of D.profesionales) {
+    const hoy = S.turnos.filter((t) => t.fecha === HOY && t.prof === pr.id);
+    if (!hoy.length || hoy.some((t) => t.estado === "EN_CONSULTA")) continue;
+    const ult = hoy.filter((t) => t.estado === "ATENDIDO" && t.min + t.dur >= NOW_MIN - 40).pop();
+    if (ult) { ult.estado = "EN_CONSULTA"; ult.llamado = Date.now() - (NOW_MIN - ult.min) * 60000; }
+  }
+  // Historia clínica, recetas y estudios a partir de turnos atendidos.
+  const porPac = {};
+  for (const t of S.turnos) if (t.estado === "ATENDIDO") (porPac[t.pac] ||= []).push(t);
+  for (const [pid, ts] of Object.entries(porPac)) {
+    ts.sort((a, b) => (b.fecha + hhmm(b.min)).localeCompare(a.fecha + hhmm(a.min)));
+    ts.slice(0, 3).forEach((t, i) => {
+      S.hce.push({ id: "h" + S.nextId++, pac: pid, prof: t.prof, fecha: t.fecha, texto: pick(D.hce[t.prof]), priv: rnd() < .12,
+        adj: i === 0 && rnd() < .3 ? pick(D.estudios)[0] : null });
+    });
+    if (rnd() < .45) S.recetas.push({ id: "r" + S.nextId++, pac: pid, prof: ts[0].prof, fecha: ts[0].fecha, texto: pick(D.recetas) });
+    if (rnd() < .35) { const e = pick(D.estudios); S.estudios.push({ id: "e" + S.nextId++, pac: pid, nombre: e[0], tipo: e[1], fecha: ts[ts.length - 1].fecha }); }
+  }
+  const def = defaultsRango();
+  S.panel = { ...def, sede: "", prof: "" };
+  S.rep = { ...def, sede: "", prof: "" };
+})();
+
+function defaultsRango() { return { desde: addDays(HOY, -29), hasta: HOY }; }
+function rangoMes() { return { desde: HOY.slice(0, 8) + "01", hasta: HOY }; }
+const pac = (id) => S.pacientes.find((p) => p.id === id);
+const pacNom = (p) => `${p.apellido}, ${p.nombre}`;
+const turnosHoy = () => S.turnos.filter((t) => t.fecha === HOY).sort((a, b) => a.min - b.min);
+const ordenar = (a, b) => (a.fecha === b.fecha ? a.min - b.min : a.fecha.localeCompare(b.fecha));
+
+/* ============================== Router ============================== */
+const RUTAS = { panel: pPanel, calendario: pCalendario, agenda: pAgenda, pacientes: pPacientes, paciente: pFicha, reportes: pReportes, kiosco: pKioscoIndex, recordatorios: pRecordatorios };
+const FULL = { "kiosco-pantalla": pKiosco, sala: pSala, reservar: pReservar };
+function ruta() { const h = location.hash.replace(/^#\/?/, ""); const [r, ...rest] = h.split("/"); return { r: r || "agenda", arg: rest.join("/") }; }
+function go(h) { if (location.hash === "#/" + h) render(); else location.hash = "/" + h; }
+window.addEventListener("hashchange", () => { window.scrollTo(0, 0); render(); });
+
+function render() {
+  const { r, arg } = ruta();
+  const app = $("#app");
+  if (FULL[r]) { app.innerHTML = FULL[r](arg); }
+  else {
+    const fn = RUTAS[r] || pAgenda;
+    const navR = r === "paciente" ? "pacientes" : r;
+    const links = [["panel","Panel"],["calendario","Calendario"],["agenda","Agenda"],["pacientes","Pacientes"],["reportes","Reportes"],["kiosco","Kiosco"],["recordatorios","Recordatorios"],["reservar","Reserva online ↗"]];
+    app.innerHTML = `
+      <header class="app"><div class="in">
+        <a class="logo" href="#/agenda"><i>T</i>Turnero</a>
+        <nav class="main">${links.map(([k, l]) => `<a href="#/${k}" class="${navR === k ? "on" : ""}">${l}</a>`).join("")}</nav>
+        <div class="user"><div class="n">${esc(D.usuario.nombre)}<small>${esc(D.usuario.rol)}</small></div>
+          <button class="btn ghost sm" data-a="salir">Salir</button></div>
+      </div></header>
+      <main>${fn(arg)}</main>`;
+  }
+  renderModal();
+  if (S.flash) { const el = document.getElementById("row-" + S.flash); if (el) { el.classList.add("flash"); } S.flash = null; }
+}
+
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.remove("hide"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.add("hide"), 2800); }
+
+/* ============================== Agenda ============================== */
+function pAgenda() {
+  const a = S.agenda;
+  const base = turnosHoy().filter((t) => !a.sede || t.sede === a.sede);
+  const cnt = { "": base.length }; ESTADOS.forEach((e) => (cnt[e] = base.filter((t) => t.estado === e).length));
+  const vis = a.estado ? base.filter((t) => t.estado === a.estado) : base;
+  const TABS = [["","Todos"],["RESERVADO","Reservados"],["EN_ESPERA","En espera"],["EN_CONSULTA","En consulta"],["ATENDIDO","Atendidos"],["AUSENTE","Ausentes"],["CANCELADO","Cancelados"]];
+  return `
+  <div class="between mb4">
+    <div><h1 class="cap">${fLarga(HOY)}</h1><p class="muted" style="font-size:14px">Agenda del día</p></div>
+    <div class="row" style="gap:12px">
+      <div class="row" style="gap:4px">
+        <button class="pill ${!a.sede ? "on" : ""}" data-a="agSede" data-v="">Todas las sedes</button>
+        ${D.sedes.map((s) => `<button class="pill ${a.sede === s.id ? "on" : ""}" data-a="agSede" data-v="${s.id}">${s.nombre}</button>`).join("")}
+      </div>
+      <button class="btn" data-a="nuevoTurno" data-v="${HOY}">+ Nuevo turno</button>
+    </div>
+  </div>
+  <div class="tabs">${TABS.map(([k, l]) => `<button class="${a.estado === k ? "on" : ""}" data-a="agEstado" data-v="${k}">${l}<span class="n tnum">${cnt[k]}</span></button>`).join("")}</div>
+  ${vis.length === 0 ? `<div class="empty">No hay turnos para mostrar con este filtro.</div>` : `<ul class="turnos">${vis.map(filaTurno).join("")}</ul>`}`;
+}
+function filaTurno(t) {
+  const p = pac(t.pac);
+  const clin = t.estado === "EN_ESPERA" || t.estado === "EN_CONSULTA";
+  return `<li id="row-${t.id}" class="turno blk e-${t.estado}">
+    <div><div class="h tnum">${hhmm(t.min)}</div><div class="c">${t.canal === "VIDEO" ? "Videoconsulta" : "Presencial"}</div></div>
+    <div style="min-width:0"><div class="row" style="gap:6px;flex-wrap:nowrap"><span class="trunc" style="font-weight:500">${esc(pacNom(p))}</span>${t.conf && t.estado !== "CANCELADO" ? `<span class="ok-chip">✓ Confirmado</span>` : ""}</div>
+      <div class="tnum s" style="color:var(--ink50)">DNI ${fmtDni(p.dni)} · ${p.tel}</div></div>
+    <div class="s"><div style="color:var(--ink80)">${esc(t.cob)}</div>${p.afiliado && t.cob === p.cob ? `<div class="tnum" style="color:var(--ink40)">${p.afiliado}</div>` : ""}</div>
+    <div class="s"><div style="color:var(--ink80)">${pracLabel(t.prac)}</div><div style="color:var(--ink40)">${profLabel(t.prof)}</div><div style="color:var(--ink30)">${sedeById[t.sede].nombre}</div></div>
+    <div class="acts">${chip(t.estado)}
+      <div class="row"><button class="mini ${clin ? "p" : "po"}" data-a="hce" data-v="${t.pac}">Historia clínica</button>
+      ${TRANS[t.estado].map((n) => `<button class="mini" data-a="trans" data-v="${t.id}|${n}">${LABEL[n]}</button>`).join("")}
+      <button class="mini" data-a="verTurno" data-v="${t.id}">Editar</button></div></div>
+  </li>`;
+}
+function transicion(id, nuevo) {
+  const t = S.turnos.find((x) => x.id === id); if (!t) return;
+  t.estado = nuevo;
+  if (nuevo === "EN_CONSULTA") t.llamado = Date.now();
+  S.flash = id;
+  const extra = nuevo === "EN_CONSULTA" ? " · aparece en la pantalla de sala de espera" : "";
+  toast(`${pacNom(pac(t.pac))} → ${LABEL[nuevo]}${extra}`);
+}
+
+/* ============================ Calendario ============================ */
+function semanaDias(off) {
+  const d = fromIso(HOY); const w = d.getDay(); const lunes = addDays(HOY, -(w === 0 ? 6 : w - 1) + off * 7);
+  return Array.from({ length: 7 }, (_, i) => addDays(lunes, i));
+}
+function pCalendario() {
+  const c = S.cal; const dias = semanaDias(c.semana);
+  const ts = S.turnos.filter((t) => t.fecha >= dias[0] && t.fecha <= dias[6] && (!c.sede || t.sede === c.sede) && (!c.prof || t.prof === c.prof) && (c.canc || t.estado !== "CANCELADO")).sort(ordenar);
+  return `
+  <div class="between mb4"><h1>Calendario</h1>
+    <div class="row" style="gap:4px"><button class="btn ghost sm" data-a="calSem" data-v="-1">‹</button><button class="btn ghost sm" data-a="calSem" data-v="0">Hoy</button><button class="btn ghost sm" data-a="calSem" data-v="1">›</button></div></div>
+  <div class="row mb4" style="gap:12px">
+    <label class="row" style="font-size:14px;gap:8px"><span class="muted">Sede</span><select class="inp" data-c="calSede"><option value="">Todas</option>${D.sedes.map((s) => `<option value="${s.id}" ${c.sede === s.id ? "selected" : ""}>${s.nombre}</option>`).join("")}</select></label>
+    <label class="row" style="font-size:14px;gap:8px"><span class="muted">Profesional</span><select class="inp" data-c="calProf"><option value="">Todos</option>${D.profesionales.map((p) => `<option value="${p.id}" ${c.prof === p.id ? "selected" : ""}>${p.apellido}, ${p.nombre}</option>`).join("")}</select></label>
+    <label class="row" style="font-size:14px;gap:6px;color:var(--ink70)"><input type="checkbox" data-c="calCanc" ${c.canc ? "checked" : ""}> Ver cancelados</label>
+  </div>
+  <div class="cal"><div class="wk">${dias.map((d) => {
+    const del = ts.filter((t) => t.fecha === d);
+    return `<div class="day"><div class="dh ${d === HOY ? "hoy" : ""}"><span class="cap">${diaCorto(d)}</span><button data-a="nuevoTurno" data-v="${d}" title="Nuevo turno">+</button></div>
+      <ul>${del.length === 0 ? `<li style="text-align:center;color:var(--ink25);font-size:12px;padding:8px">—</li>` : del.map((t) => { const p = pac(t.pac);
+        return `<li><button class="t blk e-${t.estado} ${t.estado === "CANCELADO" ? "canc" : ""}" data-a="verTurno" data-v="${t.id}"><div><span class="d"></span><span class="tnum" style="font-weight:500;color:var(--ink80)">${hhmm(t.min)}</span></div><div class="trunc nm" style="color:var(--ink80)">${esc(pacNom(p))}</div><div class="trunc x">${profById[t.prof].apellido}</div></button></li>`; }).join("")}</ul></div>`;
+  }).join("")}</div></div>`;
+}
+
+/* ========================== Panel / Reportes ========================== */
+function stats(f) {
+  const inR = (t, a, b) => t.fecha >= a && t.fecha <= b && (!f.sede || t.sede === f.sede) && (!f.prof || t.prof === f.prof);
+  const dias = Math.max(1, diffDays(f.desde, f.hasta) + 1);
+  const pDesde = addDays(f.desde, -dias), pHasta = addDays(f.desde, -1);
+  const ts = S.turnos.filter((t) => inR(t, f.desde, f.hasta));
+  const pv = S.turnos.filter((t) => inR(t, pDesde, pHasta));
+  const n = (arr, e) => arr.filter((t) => t.estado === e).length;
+  const precio = (t) => pracById[t.prac].precio;
+  const at = ts.filter((t) => t.estado === "ATENDIDO");
+  const ingresos = at.reduce((a, t) => a + precio(t), 0);
+  const prevIng = pv.filter((t) => t.estado === "ATENDIDO").reduce((a, t) => a + precio(t), 0);
+  const noCanc = ts.filter((t) => t.estado !== "CANCELADO");
+  const atendidos = at.length, aus = n(ts, "AUSENTE"), canc = n(ts, "CANCELADO");
+  const delta = (c, p) => (p > 0 ? Math.round(((c - p) / p) * 100) : null);
+  const grupo = (arr, key, val = () => 1) => { const m = {}; for (const t of arr) m[key(t)] = (m[key(t)] || 0) + val(t); return Object.entries(m).sort((a, b) => b[1] - a[1]); };
+  const dayList = Array.from({ length: Math.min(dias, 62) }, (_, i) => addDays(f.desde, i));
+  return {
+    dias, total: ts.length, atendidos, aus, canc, reservados: n(ts, "RESERVADO"),
+    pacAt: new Set(at.map((t) => t.pac)).size,
+    ingresos, proyectado: ts.filter((t) => t.estado === "RESERVADO").reduce((a, t) => a + precio(t), 0),
+    ticket: atendidos ? Math.round(ingresos / atendidos) : 0, promDia: Math.round((ts.length / dias) * 10) / 10,
+    pctCanc: ts.length ? Math.round((canc / ts.length) * 100) : null,
+    pctAus: atendidos + aus ? Math.round((aus / (atendidos + aus)) * 100) : null,
+    pctConf: noCanc.length ? Math.round((noCanc.filter((t) => t.conf).length / noCanc.length) * 100) : null,
+    nuevos: S.pacientes.filter((p) => p.creado >= f.desde && p.creado <= f.hasta).length,
+    video: ts.filter((t) => t.canal === "VIDEO").length,
+    dTurnos: delta(ts.length, pv.length), dAt: delta(atendidos, n(pv, "ATENDIDO")), dIng: delta(ingresos, prevIng), dCanc: delta(canc, n(pv, "CANCELADO")),
+    prev: { total: pv.length, at: n(pv, "ATENDIDO"), canc: n(pv, "CANCELADO"), ing: prevIng },
+    porEstado: ESTADOS.map((e) => [e, n(ts, e)]).filter((x) => x[1] > 0),
+    porCob: grupo(ts, (t) => t.cob), ingCob: grupo(at, (t) => t.cob, precio),
+    ingProf: grupo(at, (t) => t.prof, precio).map(([id, v]) => [id, v, at.filter((t) => t.prof === id).length]),
+    porProf: grupo(ts, (t) => t.prof),
+    top: grupo(ts, (t) => t.pac).slice(0, 5),
+    actividad: dayList.map((d) => [d, ts.filter((t) => t.fecha === d).length]),
+  };
+}
+const dl = (v) => (v === null || v === undefined ? "" : `<span class="delta ${v >= 0 ? "up" : "down"}">${v >= 0 ? "▲" : "▼"} ${Math.abs(v)}%</span>`);
+const kpi = (l, v, c = "", d, big) => `<div class="card kpi ${big ? "big" : ""}"><div class="k">${l}</div><div class="v tnum" style="${c ? "color:" + c : ""}">${v}${d !== undefined ? dl(d) : ""}</div></div>`;
+const barras = (rows, max, color, fmtV, w = "130px") => rows.map(([lbl, v, extra]) => `<li class="row" style="gap:10px;flex-wrap:nowrap"><span class="trunc blbl" style="width:${w};flex:none;font-size:12.5px;color:var(--ink70)">${lbl}</span><div class="bar"><div style="width:${(v / max) * 100}%;background:${color}"></div></div>${extra !== undefined ? `<span class="bat" style="width:50px;text-align:right;font-size:12px;color:var(--ink50)">${extra} at.</span>` : ""}<span class="tnum bval" style="width:96px;text-align:right;font-size:12.5px;font-weight:500">${fmtV(v)}</span></li>`).join("");
+function filtrosRango(f, key) {
+  return `<div class="row mt4" style="align-items:flex-end">
+    <label class="lbl"><span>Desde</span><input type="date" class="inp" id="${key}-desde" value="${f.desde}"></label>
+    <label class="lbl"><span>Hasta</span><input type="date" class="inp" id="${key}-hasta" value="${f.hasta}"></label>
+    <label class="lbl"><span>Sede</span><select class="inp" id="${key}-sede"><option value="">Todas</option>${D.sedes.map((s) => `<option value="${s.id}" ${f.sede === s.id ? "selected" : ""}>${s.nombre}</option>`).join("")}</select></label>
+    <label class="lbl"><span>Profesional</span><select class="inp" id="${key}-prof"><option value="">Todos</option>${D.profesionales.map((p) => `<option value="${p.id}" ${f.prof === p.id ? "selected" : ""}>${p.apellido}, ${p.nombre}</option>`).join("")}</select></label>
+    <button class="btn dark sm" data-a="aplicar" data-v="${key}">Aplicar</button>
+    <button class="btn ghost sm" data-a="rango" data-v="${key}|mes">Este mes</button>
+    <button class="btn ghost sm" data-a="rango" data-v="${key}|30">Últimos 30 días</button>
+  </div>`;
+}
+function pPanel() {
+  const f = S.panel, s = stats(f);
+  const maxDay = Math.max(1, ...s.actividad.map((x) => x[1]));
+  const comp = [["Turnos", s.total, s.prev.total, s.dTurnos, true], ["Atendidos", s.atendidos, s.prev.at, s.dAt, true], ["Cancelados", s.canc, s.prev.canc, s.dCanc, false], ["Ingresos", pesos(s.ingresos), pesos(s.prev.ing), s.dIng, true]];
+  const maxCob = Math.max(1, ...s.porCob.map((x) => x[1])), maxIC = Math.max(1, ...s.ingCob.map((x) => x[1])), maxIP = Math.max(1, ...s.ingProf.map((x) => x[1]));
+  return `
+  <div class="between"><h1>Panel</h1><span class="muted tnum" style="font-size:14px">${fCorta(f.desde)} al ${fCorta(f.hasta)}</span></div>
+  ${filtrosRango(f, "panel")}
+  <div class="grid g3 big mt5">${kpi("Ingresos estimados (atendidos)", pesos(s.ingresos), "#047857", s.dIng, 1)}${kpi("Proyectado (reservados)", pesos(s.proyectado), "var(--petrol)", undefined, 1)}${kpi("Ticket promedio", pesos(s.ticket), "", undefined, 1)}</div>
+  <div class="grid g4 mt3">
+    ${kpi("Turnos totales", s.total, "", s.dTurnos)}${kpi("Atendidos", s.atendidos, "#047857", s.dAt)}${kpi("Pacientes atendidos", s.pacAt)}${kpi("Prom. turnos/día", String(s.promDia).replace(".", ","))}
+    ${kpi("Cancelados", s.canc, "#e11d48")}${kpi("% Cancelación", s.pctCanc === null ? "—" : s.pctCanc + "%", "#e11d48")}${kpi("% Ausentismo", s.pctAus === null ? "—" : s.pctAus + "%", "#b45309")}${kpi("% Confirmación", s.pctConf === null ? "—" : s.pctConf + "%", "#0369a1")}
+    ${kpi("Pacientes nuevos", s.nuevos)}${kpi("Presenciales", s.total - s.video)}${kpi("Videoconsultas", s.video, "#0369a1")}
+  </div>
+  ${s.total ? `<section class="card pad mt6"><h2 class="mb3">Actividad por día</h2>
+    <div style="display:flex;align-items:flex-end;gap:2px;height:112px">${s.actividad.map(([d, v]) => `<div style="flex:1" title="${fDM(d)}: ${v} turno(s)"><div style="height:${Math.max(2, (v / maxDay) * 100)}px;background:rgba(14,92,99,.7);border-radius:3px 3px 0 0"></div></div>`).join("")}</div>
+    <div class="between tnum" style="font-size:10.5px;color:var(--ink40);margin-top:4px"><span>${fDM(s.actividad[0][0])}</span><span>${fDM(s.actividad[s.actividad.length - 1][0])}</span></div></section>` : ""}
+  <section class="card pad mt6"><h2 class="mb3">Comparación con período anterior</h2>
+    <div style="overflow-x:auto"><table><thead><tr><th>Indicador</th><th class="r">Actual</th><th class="r">Previo</th><th class="r">Variación</th></tr></thead><tbody>
+    ${comp.map(([l, a, p, d, bueno]) => `<tr><td style="color:var(--ink80)">${l}</td><td class="r tnum" style="font-weight:500">${a}</td><td class="r tnum muted">${p}</td><td class="r tnum" style="font-weight:500;color:${d === null ? "var(--ink40)" : (d >= 0) === bueno ? "#059669" : "#e11d48"}">${d === null ? "—" : (d >= 0 ? "▲ " : "▼ ") + Math.abs(d) + "%"}</td></tr>`).join("")}
+    </tbody></table></div></section>
+  <div class="grid g2 mt6" style="gap:16px">
+    ${!f.prof ? `<section class="card pad" style="grid-column:1/-1"><h2 class="mb3">Ingresos por profesional</h2><ul style="list-style:none;display:flex;flex-direction:column;gap:8px">${barras(s.ingProf.map(([id, v, n]) => [profById[id].apellido + ", " + profById[id].nombre, v, n]), maxIP, "#10b981", pesos, "170px")}</ul></section>` : ""}
+    <section class="card pad"><h2 class="mb3">Top pacientes</h2><ol style="list-style:none;display:flex;flex-direction:column;gap:8px">${s.top.map(([id, n], i) => `<li class="between" style="align-items:center;font-size:14px"><button data-a="hce" data-v="${id}" style="color:var(--ink80);text-align:left"><span style="color:var(--ink30);margin-right:8px">${i + 1}.</span>${esc(pacNom(pac(id)))}</button><span class="tnum" style="background:var(--mist);border-radius:999px;padding:2px 10px;color:var(--ink60)">${n} turno(s)</span></li>`).join("") || `<li class="muted">Sin datos en el período.</li>`}</ol></section>
+    <section class="card pad"><h2 class="mb3">Ingresos por cobertura</h2><ul style="list-style:none;display:flex;flex-direction:column;gap:8px">${barras(s.ingCob, maxIC, "#10b981", pesos)}</ul></section>
+    <section class="card pad"><h2 class="mb3">Por estado</h2><div class="row">${s.porEstado.map(([e, n]) => `<span class="chip e-${e}"><span class="d"></span>${LABEL[e]}: <span class="tnum">${n}</span></span>`).join("")}</div></section>
+    <section class="card pad"><h2 class="mb3">Turnos por cobertura</h2><ul style="list-style:none;display:flex;flex-direction:column;gap:6px">${barras(s.porCob.slice(0, 6), maxCob, "var(--petrol)", (v) => v)}</ul></section>
+  </div>
+  <p class="note">Los ingresos usan el precio cargado en cada práctica. La comparación es contra los ${s.dias} días anteriores al rango elegido.</p>`;
+}
+function pReportes() {
+  const f = S.rep, s = stats(f); const maxCob = Math.max(1, ...s.porCob.map((x) => x[1]));
+  return `<h1>Reportes</h1><p class="muted mt1" style="font-size:14px">Del ${fCorta(f.desde)} al ${fCorta(f.hasta)}.</p>
+  ${filtrosRango(f, "rep")}
+  <div class="grid g6 mt5">${kpi("Total turnos", s.total)}${kpi("Atendidos", s.atendidos, "#047857")}${kpi("Ausentes", s.aus, "#52525b")}${kpi("Cancelados", s.canc, "#e11d48")}${kpi("Reservados", s.reservados, "#0369a1")}${kpi("Ausentismo", s.pctAus === null ? "—" : s.pctAus + "%", "#b45309")}</div>
+  <section class="card pad mt6"><h2 class="mb3">Por estado</h2><div class="row">${s.porEstado.map(([e, n]) => `<span class="chip e-${e}" style="font-size:13.5px;padding:6px 12px"><span class="d" style="width:8px;height:8px"></span>${LABEL[e]}: <span class="tnum">${n}</span></span>`).join("") || `<span class="muted">Sin datos en el período.</span>`}</div></section>
+  <section class="card pad mt6"><h2 class="mb3">Por cobertura</h2><ul style="list-style:none;display:flex;flex-direction:column;gap:8px">${barras(s.porCob, maxCob, "var(--petrol)", (v) => v, "160px")}</ul></section>
+  ${!f.prof ? `<section class="card pad mt6"><h2 class="mb3">Por profesional</h2><table><tbody>${s.porProf.map(([id, n]) => `<tr><td style="color:var(--ink80)">${profById[id].apellido}, ${profById[id].nombre} <span class="muted">· ${profById[id].especialidad}</span></td><td class="r tnum muted">${n}</td></tr>`).join("")}</tbody></table></section>` : ""}
+  <div class="row mt4"><button class="btn ghost sm" data-a="exportar">⬇ Exportar CSV</button></div>`;
+}
+
+/* ============================== Pacientes ============================== */
+function pPacientes() {
+  return `<div class="between" style="align-items:center"><h1>Pacientes</h1><button class="btn" data-a="nuevoPaciente">+ Nuevo paciente</button></div>
+  <input class="inp lg mt4" style="max-width:440px" id="q" placeholder="Buscar por nombre, apellido o DNI…" value="${esc(S.q)}" autocomplete="off">
+  <ul class="list mt5" id="lista-pac">${listaPac()}</ul>`;
+}
+function listaPac() {
+  const q = S.q.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const ps = S.pacientes.filter((p) => !q || norm(p.nombre).includes(q) || norm(p.apellido).includes(q) || p.dni.includes(q.replace(/\D/g, "") || "~"))
+    .sort((a, b) => (a.apellido + a.nombre).localeCompare(b.apellido + b.nombre));
+  if (!ps.length) return `<li style="padding:32px;text-align:center" class="muted">Sin resultados.</li>`;
+  return ps.map((p) => `<li><button class="it" data-a="hce" data-v="${p.id}"><div style="min-width:0"><div class="trunc" style="font-weight:500;color:var(--petrol)">${esc(pacNom(p))}</div><div class="tnum muted" style="font-size:14px">DNI ${fmtDni(p.dni)} · ${p.tel}</div></div>
+    <div style="text-align:right;font-size:14px"><div style="color:var(--ink70)">${esc(p.cob)}</div><div style="color:var(--ink40)">${S.turnos.filter((t) => t.pac === p.id).length} turno(s)</div></div></button></li>`).join("");
+}
+function edad(nac) { const h = new Date(), n = fromIso(nac); let e = h.getFullYear() - n.getFullYear(); const m = h.getMonth() - n.getMonth(); if (m < 0 || (m === 0 && h.getDate() < n.getDate())) e--; return e; }
+function pFicha(id) {
+  const p = pac(id); if (!p) return `<div class="empty">Paciente no encontrado.</div>`;
+  const regs = S.hce.filter((r) => r.pac === id).sort((a, b) => b.fecha.localeCompare(a.fecha));
+  const recs = S.recetas.filter((r) => r.pac === id).sort((a, b) => b.fecha.localeCompare(a.fecha));
+  const ests = S.estudios.filter((r) => r.pac === id);
+  const ts = S.turnos.filter((t) => t.pac === id).sort((a, b) => ordenar(b, a)).slice(0, 50);
+  const dato = (l, v) => `<div><div class="k">${l}</div><div style="font-size:14px;color:rgba(18,33,31,.9)">${v}</div></div>`;
+  return `<div style="max-width:900px;margin:0 auto">
+  <div class="between mb4" style="align-items:center"><div class="row" style="gap:12px"><a href="#/pacientes" style="font-size:14px;color:var(--petrol)">← Pacientes</a><h1>${esc(pacNom(p))}</h1></div>
+    <div class="row"><button class="btn ghost sm" data-a="editarPac" data-v="${id}">Editar</button><button class="btn sm" data-a="nuevoTurno" data-v="${HOY}|${id}">+ Turno</button></div></div>
+  <div class="card pad datos">${dato("DNI", fmtDni(p.dni))}${dato("Nacimiento", `${fCorta(p.nac)} (${edad(p.nac)} años)`)}${dato("Sexo", p.sexo)}${dato("Cobertura", esc(p.cob))}${dato("N° afiliado", p.afiliado || "—")}${dato("Teléfono", p.tel)}${dato("Email", esc(p.email))}</div>
+
+  <section id="hce" class="mt6"><h2>Historia clínica</h2>
+    <div class="card mt3" style="padding:16px">
+      <textarea class="inp" id="hce-txt" rows="3" placeholder="Evolución, diagnóstico, indicaciones…"></textarea>
+      <div class="between mt2" style="align-items:center">
+        <div class="row" style="gap:14px;font-size:14px;color:var(--ink70)">
+          <label>Firma <select class="inp" id="hce-prof">${D.profesionales.map((x) => `<option value="${x.id}">${profCorto(x.id)}</option>`).join("")}</select></label>
+          <label>Visibilidad <select class="inp" id="hce-vis"><option value="0">Pública (profesionales)</option><option value="1">Privada (solo yo y admin)</option></select></label>
+          <button class="mini" data-a="adjuntar">📎 Adjuntar</button><span id="hce-adj" style="font-size:12px;color:var(--petrol)"></span>
+        </div>
+        <button class="btn" data-a="agregarHCE" data-v="${id}">Agregar registro</button>
+      </div>
+    </div>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:8px" class="mt3">
+      ${regs.length ? regs.map((r) => `<li class="card reg" id="row-${r.id}"><div class="between" style="font-size:12px;color:var(--ink50);align-items:center;margin-bottom:4px"><span>${profCorto(r.prof)} · ${fCorta(r.fecha)}</span>${r.priv ? `<span style="background:#f4f4f5;color:#52525b;border-radius:999px;padding:2px 8px">Privada</span>` : ""}</div><p>${esc(r.texto)}</p>${r.adj ? `<button class="adj" data-a="archivo">📎 ${esc(r.adj)}</button>` : ""}</li>`).join("") : `<li class="empty" style="padding:20px">Sin registros clínicos.</li>`}
+    </ul></section>
+
+  <section class="mt6"><h2>Estudios e imágenes</h2><p class="note" style="margin-top:4px">Fotos o PDFs de estudios. En el sistema real se guardan en forma privada.</p>
+    <div class="card mt3 row" style="padding:14px"><button class="btn ghost sm" data-a="subirEstudio" data-v="${id}">⬆ Subir estudio</button><span class="muted" style="font-size:12px">En la demo se agrega un archivo de ejemplo.</span></div>
+    ${ests.length ? `<div class="estudios mt3">${ests.map((e) => `<div class="card est"><button data-a="archivo" style="width:100%"><div class="th ${e.tipo === "img" ? "img" : ""}">${e.tipo === "img" ? "RX" : "📄"}</div></button><div class="trunc mt1" style="font-size:12px;color:var(--ink70)" title="${esc(e.nombre)}">${esc(e.nombre)}</div><div class="between" style="font-size:10.5px;color:var(--ink40)"><span>${fCorta(e.fecha)}</span><button data-a="borrarEstudio" data-v="${e.id}" style="color:#e11d48">Eliminar</button></div></div>`).join("")}</div>` : ""}
+  </section>
+
+  <section class="mt6"><h2>Recetas</h2>
+    <div class="card mt3" style="padding:16px"><textarea class="inp" id="rec-txt" rows="2" placeholder="Medicación, dosis, indicaciones…"></textarea>
+      <button class="btn ghost mt2" style="border-color:var(--petrol);color:var(--petrol)" data-a="agregarReceta" data-v="${id}">Agregar receta</button></div>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:8px" class="mt3">${recs.length ? recs.map((r) => `<li class="card reg" id="row-${r.id}"><div style="font-size:12px;color:var(--ink50);margin-bottom:4px">${profById[r.prof].apellido} · ${fCorta(r.fecha)}</div><p>${esc(r.texto)}</p></li>`).join("") : `<li class="empty" style="padding:20px">Sin recetas.</li>`}</ul></section>
+
+  <section class="mt6"><h2>Turnos</h2>
+    <ul class="list mt3">${ts.length ? ts.map((t) => `<li><button class="it" data-a="verTurno" data-v="${t.id}" style="font-size:14px"><div><span class="tnum" style="font-weight:500">${fCorta(t.fecha)} · ${hhmm(t.min)}</span><span class="muted" style="margin-left:8px">${pracLabel(t.prac)} — ${profById[t.prof].apellido} · ${sedeById[t.sede].nombre}</span></div>${chip(t.estado)}</button></li>`).join("") : `<li style="padding:24px;text-align:center" class="muted">Sin turnos.</li>`}</ul></section>
+  </div>`;
+}
+
+/* ============================== Kiosco ============================== */
+function pKioscoIndex() {
+  return `<h1>Kiosco y sala de espera</h1><p class="muted mt1" style="font-size:14px">Cada sede tiene su tablet de auto-anuncio y su pantalla de llamados. Abrilas en pantalla completa.</p>
+  <div class="grid g2 mt5" style="gap:16px">${D.sedes.map((s) => { const ts = turnosHoy().filter((t) => t.sede === s.id);
+    return `<div class="card pad"><div class="between" style="align-items:center"><h2>${s.nombre}</h2><span class="muted tnum" style="font-size:13px">${ts.length} turnos hoy</span></div>
+    <div class="row mt3" style="gap:6px">${["EN_ESPERA","EN_CONSULTA"].map((e) => `<span class="chip e-${e}"><span class="d"></span>${LABEL[e]}: ${ts.filter((t) => t.estado === e).length}</span>`).join("")}</div>
+    <div class="row mt4"><a class="btn" href="#/kiosco-pantalla/${s.id}">Abrir kiosco</a><a class="btn ghost" href="#/sala/${s.id}">Pantalla sala de espera</a></div></div>`; }).join("")}</div>
+  <p class="note">Probá: anunciate en el kiosco con uno de los DNI de ejemplo y después mirá la Agenda: el turno pasa solo a “En espera”.</p>`;
+}
+function pKiosco(sede) {
+  const k = S.kio; if (sedeById[sede]) k.sede = sede;
+  const s = sedeById[k.sede];
+  let body;
+  if (k.res) body = resultadoKiosco(k.res);
+  else {
+    const hoy = turnosHoy().filter((t) => t.sede === k.sede);
+    const vistos = new Set(); const ej = [];
+    for (const t of hoy) if (t.estado === "RESERVADO" && !vistos.has(t.pac) && ej.length < 3) { vistos.add(t.pac); ej.push([pac(t.pac), `turno ${hhmm(t.min)}`]); }
+    const canc = hoy.find((t) => t.estado === "CANCELADO" && !vistos.has(t.pac)); if (canc) ej.push([pac(canc.pac), "turno cancelado"]);
+    const esp = hoy.find((t) => t.estado === "EN_ESPERA" && !vistos.has(t.pac)); if (esp) ej.push([pac(esp.pac), "ya anunciado"]);
+    body = `<div class="kio"><h1>Bienvenido/a</h1><p style="margin-top:8px;font-size:18px;color:rgba(255,255,255,.7)">Ingresá tu DNI para anunciar tu llegada</p>
+      <div class="disp tnum">${k.dni ? fmtDni(k.dni) : `<span style="color:rgba(255,255,255,.3)">— — —</span>`}</div>
+      <div class="keys">${["1","2","3","4","5","6","7","8","9"].map((d) => `<button data-a="kKey" data-v="${d}">${d}</button>`).join("")}
+        <button class="mu" data-a="kBack" aria-label="Borrar">←</button><button data-a="kKey" data-v="0">0</button><button class="ac" data-a="kOk" ${k.dni.length < 6 ? "disabled" : ""}>OK</button></div>
+      <div class="hint"><b>Demo · DNI de prueba (tocá uno)</b>${ej.map(([p, x]) => `<button data-a="kFill" data-v="${p.dni}"><span class="tnum">${fmtDni(p.dni)} · ${esc(p.nombre)}</span><span>${x}</span></button>`).join("")}<button data-a="kFill" data-v="99999999"><span class="tnum">99.999.999</span><span>DNI inexistente</span></button></div></div>`;
+  }
+  return `<div class="full"><div class="top"><div class="s">${s.nombre}</div><div class="row" style="gap:18px">${D.sedes.filter((x) => x.id !== k.sede).map((x) => `<a href="#/kiosco-pantalla/${x.id}">Cambiar a ${x.nombre}</a>`).join("")}<a href="#/agenda">Salir del kiosco</a></div></div><div class="mid">${body}</div></div>`;
+}
+function resultadoKiosco(r) {
+  const fn = (n) => n.split(" ")[0];
+  const M = {
+    OK: ["✓", "background:#fff;color:var(--petrol)", `¡Listo, ${fn(r.pac || "")}!`, `Tomá asiento, ya avisamos a ${r.prof}. Tu turno es a las ${r.hora}.`],
+    YA: ["✓", "background:#fff;color:var(--petrol)", `${fn(r.pac || "")}, ya estás anunciado/a`, `Aguardá que te llamen. Turno de las ${r.hora}.`],
+    SIN_TURNO: ["!", "background:#fbbf24;color:var(--ink)", "No encontramos un turno para hoy", "Acercate a recepción para que te ayuden."],
+    CANCELADO: ["!", "background:#fbbf24;color:var(--ink)", "Tu turno figura cancelado", "Acercate a recepción para reprogramarlo."],
+    NO: ["?", "background:#fbbf24;color:var(--ink)", "No encontramos ese DNI", "Revisá el número o acercate a recepción."],
+  }[r.st];
+  return `<button class="res" data-a="kReset"><div class="ic" style="${M[1]}">${M[0]}</div><h2>${esc(M[2])}</h2><p>${esc(M[3])}</p>
+    ${r.st === "OK" ? `<p style="font-size:14px;margin-top:20px;background:rgba(0,0,0,.2);border-radius:12px;padding:10px 14px;color:rgba(255,255,255,.9)">Demo: en la Agenda este turno ya figura “En espera”.</p>` : ""}
+    <p style="margin-top:28px;font-size:14px;color:rgba(255,255,255,.4)">Tocá la pantalla para continuar</p></button>`;
+}
+function checkIn() {
+  const k = S.kio, dni = k.dni.replace(/\D/g, "");
+  const p = S.pacientes.find((x) => x.dni === dni);
+  let r;
+  if (!p) r = { st: "NO" };
+  else {
+    const t = turnosHoy().find((x) => x.pac === p.id && x.sede === k.sede);
+    const nom = `${p.nombre} ${p.apellido}`;
+    if (!t) r = { st: "SIN_TURNO", pac: nom };
+    else if (t.estado === "CANCELADO") r = { st: "CANCELADO", pac: nom };
+    else if (["EN_ESPERA","EN_CONSULTA","ATENDIDO"].includes(t.estado)) r = { st: "YA", pac: nom, hora: hhmm(t.min) };
+    else { t.estado = "EN_ESPERA"; r = { st: "OK", pac: nom, hora: hhmm(t.min), prof: profCorto(t.prof) }; }
+  }
+  k.res = r; clearTimeout(k.timer);
+  k.timer = setTimeout(() => { k.res = null; k.dni = ""; if (ruta().r === "kiosco-pantalla") render(); }, r.st === "OK" ? 9000 : 7000);
+}
+
+/* ============================ Sala de espera ============================ */
+const nombreCorto = (p) => `${p.nombre} ${p.apellido[0].toUpperCase()}.`;
+function pSala(sede) {
+  if (sedeById[sede]) S.sala.sede = sede;
+  const s = sedeById[S.sala.sede];
+  const lista = turnosHoy().filter((t) => t.sede === s.id && t.estado === "EN_CONSULTA").sort((a, b) => (b.llamado || 0) - (a.llamado || 0)).slice(0, 8);
+  const [act, ...resto] = lista;
+  const espera = turnosHoy().filter((t) => t.sede === s.id && t.estado === "EN_ESPERA").length;
+  return `<div class="full sala"><div class="top"><div class="s">${s.nombre}</div><div class="row" style="gap:18px"><span style="font-size:18px;color:rgba(255,255,255,.5)">Sala de espera</span>${D.sedes.filter((x) => x.id !== s.id).map((x) => `<a href="#/sala/${x.id}">Ver ${x.nombre}</a>`).join("")}<a href="#/agenda">Salir</a></div></div>
+  <div class="mid" style="flex-direction:column">
+    ${!act ? `<div style="text-align:center"><div style="font-size:30px;font-weight:500;color:rgba(255,255,255,.7)">Aguarde a ser llamado</div><div style="margin-top:8px;font-size:18px;color:rgba(255,255,255,.4)">Los pacientes en atención aparecerán acá.</div></div>`
+    : `<div style="width:100%;max-width:900px;text-align:center"><div style="font-size:18px;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.5)">Pasá por favor</div>
+      <div class="nm" key="${act.id}">${esc(nombreCorto(pac(act.pac)))}</div><div class="cons">${profById[act.prof].consultorio}</div></div>`}
+    ${resto.length ? `<div class="otros"><div style="text-align:center;font-size:13px;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.4);margin-bottom:12px">También llamando</div><div class="g">${resto.map((t) => `<div class="otro"><span>${esc(nombreCorto(pac(t.pac)))}</span><span>${profById[t.prof].consultorio}</span></div>`).join("")}</div></div>` : ""}
+  </div>
+  <div style="padding:14px;text-align:center;font-size:12px;color:rgba(255,255,255,.3)">Actualización automática · ${hhmm(new Date().getHours() * 60 + new Date().getMinutes())} hs</div>
+  <button class="demo-ctl" data-a="llamar" ${espera ? "" : "disabled style=\"opacity:.6\""}>📣 Llamar al próximo<small>Demo · ${espera} en espera</small></button></div>`;
+}
+function llamarSiguiente() {
+  const sede = S.sala.sede;
+  const sig = turnosHoy().find((t) => t.sede === sede && t.estado === "EN_ESPERA");
+  if (!sig) return toast("No hay pacientes en espera en esta sede.");
+  S.turnos.filter((t) => t.fecha === HOY && t.prof === sig.prof && t.estado === "EN_CONSULTA").forEach((t) => (t.estado = "ATENDIDO"));
+  sig.estado = "EN_CONSULTA"; sig.llamado = Date.now();
+}
+
+/* ============================ Recordatorios ============================ */
+function proximaFechaConTurnos() { for (let i = 1; i < 10; i++) { const f = addDays(HOY, i); if (S.turnos.some((t) => t.fecha === f && t.estado !== "CANCELADO")) return f; } return addDays(HOY, 1); }
+function pRecordatorios() {
+  const fecha = S.rec.fecha || (S.rec.fecha = proximaFechaConTurnos());
+  const ts = S.turnos.filter((t) => t.fecha === fecha && t.estado !== "CANCELADO").sort(ordenar);
+  const conf = ts.filter((t) => t.conf).length;
+  return `<h1>Recordatorios</h1><p class="muted mt1" style="font-size:14px">Turnos del <b>${fCorta(fecha)}</b>. Tocá “WhatsApp” para abrir el chat con el mensaje ya escrito.</p>
+  <div class="row mt4" style="align-items:flex-end"><label class="lbl"><span>Fecha</span><input type="date" class="inp" id="rec-fecha" value="${fecha}"></label><button class="btn dark sm" data-a="recVer">Ver</button>
+    <span class="muted tnum" style="font-size:13px;margin-left:8px">${conf} de ${ts.length} confirmados</span></div>
+  <ul style="list-style:none;display:flex;flex-direction:column;gap:8px" class="mt5">
+  ${ts.length ? ts.map((t) => { const p = pac(t.pac); return `<li class="card between" id="row-${t.id}" style="padding:16px;align-items:center"><div style="min-width:0"><div style="font-weight:500"><span class="tnum">${hhmm(t.min)}</span> · ${esc(pacNom(p))}</div><div class="tnum muted" style="font-size:14px">DNI ${fmtDni(p.dni)} · ${p.tel} · ${profCorto(t.prof)}</div></div>
+    <div class="row">${t.conf ? `<span class="ok-chip" style="font-size:12px;padding:4px 12px">✓ Confirmado</span>` : `<span class="warn-chip">Pendiente</span>`}<button class="btn wa sm" data-a="wa" data-v="${t.id}">WhatsApp</button></div></li>`; }).join("") : `<li class="empty">No hay turnos para esta fecha.</li>`}
+  </ul>
+  <p class="note">El mensaje incluye un link único para que el paciente confirme o cancele desde su celular. Cuando confirma, aparece el “✓ Confirmado” acá y en la agenda.</p>`;
+}
+
+/* =========================== Reserva online =========================== */
+function slotsLibres(prof, sede, fecha, durOverride) {
+  const hs = horariosDe(prof, sede, fecha); const out = [];
+  const tomados = S.turnos.filter((t) => t.prof === prof && t.fecha === fecha && t.estado !== "CANCELADO").map((t) => t.min);
+  for (const h of hs) for (let m = toMin(h.desde); m + h.dur <= toMin(h.hasta); m += h.dur) {
+    if (tomados.includes(m)) continue; if (fecha === HOY && m <= NOW_MIN) continue; if (fecha < HOY) continue; out.push(m);
+  }
+  return out;
+}
+function sedesDeProf(prof) { return [...new Set(D.horarios.filter((h) => h.prof === prof).map((h) => h.sede))]; }
+function pReservar() {
+  const r = S.resv;
+  const head = `<div class="row mb4" style="gap:10px;color:var(--petrol)"><span style="display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:var(--petrol);color:#fff;font-weight:600;font-size:18px">T</span><div><div style="font-weight:600;font-size:18px">${esc(D.organizacion)}</div><div style="font-size:12px;color:var(--ink50)">Reservá tu turno online</div></div></div>`;
+  const top = `<div class="row mb4" style="justify-content:space-between;font-size:13px"><span class="muted">Así lo ve el paciente desde el link público</span><a href="#/agenda" style="color:var(--petrol)">← Volver al sistema</a></div>`;
+  if (r.hecho) {
+    const t = S.turnos.find((x) => x.id === r.hecho); const p = pac(t.pac);
+    return `<div class="pub"><div class="w">${top}${head}<div class="card pad" style="text-align:center"><div style="margin:0 auto;width:64px;height:64px;border-radius:50%;background:#d1fae5;color:#047857;display:grid;place-items:center;font-size:30px;font-weight:700">✓</div>
+      <h2 class="mt3">¡Turno reservado, ${esc(p.nombre)}!</h2><p class="muted mt2" style="font-size:14px">${fLarga(t.fecha)} a las ${hhmm(t.min)} hs<br>${pracLabel(t.prac)} — ${profCorto(t.prof)}<br>${sedeById[t.sede].nombre}</p>
+      <p class="mt3" style="font-size:13px;color:var(--ink60)">Te vamos a mandar un recordatorio por WhatsApp el día anterior.</p>
+      <div class="row mt5" style="justify-content:center"><button class="btn" data-a="verEnAgenda" data-v="${t.id}">Verlo en el sistema</button><button class="btn ghost" data-a="resvOtra">Reservar otro</button></div></div></div></div>`;
+  }
+  const prac = r.prac ? pracById[r.prac] : null;
+  const sedes = prac ? sedesDeProf(prac.prof) : D.sedes.map((s) => s.id);
+  const paso2 = prac && r.sede && r.fecha;
+  const slots = paso2 ? slotsLibres(prac.prof, r.sede, r.fecha) : [];
+  return `<div class="pub"><div class="w">${top}${head}
+    <div class="card pad"><div class="k" style="font-weight:500">1 · Elegí el turno</div>
+      <label class="lbl mt3" style="display:block;font-size:14px"><span>Práctica</span><select class="inp lg" data-c="resvPrac"><option value="" disabled ${!r.prac ? "selected" : ""}>Elegí…</option>${D.practicas.map((p) => `<option value="${p.id}" ${r.prac === p.id ? "selected" : ""}>${pracLabel(p.id)} — ${profCorto(p.prof)}</option>`).join("")}</select></label>
+      <label class="lbl mt3" style="display:block;font-size:14px"><span>Sede</span><select class="inp lg" data-c="resvSede"><option value="" disabled ${!r.sede ? "selected" : ""}>Elegí…</option>${sedes.map((id) => `<option value="${id}" ${r.sede === id ? "selected" : ""}>${sedeById[id].nombre}</option>`).join("")}</select></label>
+      <label class="lbl mt3" style="display:block;font-size:14px"><span>Fecha</span><input type="date" class="inp lg" data-c="resvFecha" min="${HOY}" value="${r.fecha || ""}"></label>
+      ${prac && r.sede ? `<p class="mt2" style="font-size:12.5px;color:var(--ink50)">Próximos días con lugar: ${proximosDias(prac.prof, r.sede).map((d) => `<button data-a="resvDia" data-v="${d}" style="color:var(--petrol);text-decoration:underline;margin-right:6px" class="cap">${diaCorto(d)}</button>`).join("") || "—"}</p>` : ""}
+    </div>
+    ${paso2 ? `<div class="card pad mt4"><div class="k" style="font-weight:500">2 · Horario y tus datos</div>
+      ${!slots.length ? `<p class="mt3" style="background:#fffbeb;color:#92400e;border-radius:8px;padding:8px 12px;font-size:14px">No hay horarios disponibles ese día. Probá con otra fecha.</p>` : `
+      <div class="mt3" style="font-size:14px;color:var(--ink70)">Elegí un horario</div>
+      <div class="slots mt2">${slots.map((m, i) => `<label class="slot"><input type="radio" name="hora" value="${m}" ${i === 0 ? "checked" : ""}><span class="tnum">${hhmm(m)}</span></label>`).join("")}</div>
+      <div class="f2 mt5">
+        <label class="lbl"><span>Nombre *</span><input class="inp lg" id="rv-nombre" value="Ana"></label>
+        <label class="lbl"><span>Apellido *</span><input class="inp lg" id="rv-apellido" value="Prueba"></label>
+        <label class="lbl"><span>DNI *</span><input class="inp lg" id="rv-dni" inputmode="numeric" value="40123456"></label>
+        <label class="lbl"><span>Teléfono *</span><input class="inp lg" id="rv-tel" value="297 555-0000"></label>
+        <label class="lbl full2"><span>Cobertura</span><select class="inp lg" id="rv-cob">${D.coberturas.map((c) => `<option>${c}</option>`).join("")}</select></label>
+      </div>
+      <button class="btn mt4" style="width:100%;justify-content:center;padding:11px" data-a="reservar">Reservar turno</button>`}
+    </div>` : ""}
+  </div></div>`;
+}
+function proximosDias(prof, sede) { const out = []; for (let i = 0; i < 21 && out.length < 4; i++) { const f = addDays(HOY, i); if (slotsLibres(prof, sede, f).length) out.push(f); } return out; }
+
+/* =============================== Modales =============================== */
+function renderModal() {
+  const m = S.modal, el = $("#modal");
+  if (!m) { el.innerHTML = ""; return; }
+  let html = "";
+  if (m.t === "tour") html = modalTour();
+  if (m.t === "turno") html = modalTurno(m.id);
+  if (m.t === "nuevo") html = modalNuevo();
+  if (m.t === "wa") html = modalWA(m.id);
+  if (m.t === "pac") html = modalPac(m.id);
+  el.innerHTML = `<div class="ov" data-a="cerrarOv">${html}</div>`;
+}
+const mHead = (t) => `<div class="mh"><h2>${t}</h2><button data-a="cerrar" aria-label="Cerrar">×</button></div>`;
+function modalTour() {
+  const ej = S.hce.length ? S.hce[0].pac : S.pacientes[0].id;
+  const pasos = [
+    ["agenda", "Agenda del día", "Turnos con su estado en tiempo real. Tocá “En espera”, “En consulta” o “Atendido” para moverlos."],
+    ["kiosco-pantalla/centro", "Kiosco de auto-anuncio", "El paciente pone su DNI en la tablet y queda “En espera” solo. Hay DNI de prueba en pantalla."],
+    ["sala/centro", "Pantalla de sala de espera", "Llama a cada paciente por nombre y consultorio, sin gritar. Probá “Llamar al próximo”."],
+    ["paciente/" + ej, "Historia clínica", "Evoluciones firmadas, estudios y recetas por paciente. Agregá un registro."],
+    ["recordatorios", "Recordatorios por WhatsApp", "Mensaje listo con link para que el paciente confirme en un clic."],
+    ["reservar", "Reserva online", "La página pública donde el paciente saca turno solo, con horarios libres reales."],
+    ["panel", "Panel de números", "Ingresos, ausentismo, confirmación y comparación con el período anterior."],
+  ];
+  return `<div class="modal tour" data-stop><div class="mb"><h2 style="font-size:21px">Recorrido en 2 minutos</h2>
+    <p class="muted mt1" style="font-size:14px">Turnero con historia clínica para ${esc(D.organizacion)} (ficticio), con 2 sedes y 4 profesionales. Tocá un paso para ir directo.</p>
+    <ol>${pasos.map(([r, t, d], i) => `<li><button data-a="tourGo" data-v="${r}"><span class="num">${i + 1}</span><span><b>${t}</b><small>${d}</small></span></button></li>`).join("")}</ol>
+    <div class="row mt4" style="justify-content:flex-end"><button class="btn" data-a="tourGo" data-v="agenda">Empezar</button></div></div></div>`;
+}
+function modalTurno(id) {
+  const t = S.turnos.find((x) => x.id === id); const p = pac(t.pac);
+  const fila = (l, v) => `<div><div class="k">${l}</div><div style="font-size:14px">${v}</div></div>`;
+  return `<div class="modal" data-stop>${mHead("Turno")}
+    <div class="mb"><div class="between" style="align-items:center"><div><div style="font-size:18px;font-weight:600">${esc(pacNom(p))}</div><div class="muted tnum" style="font-size:13.5px">DNI ${fmtDni(p.dni)} · ${p.tel}</div></div>${chip(t.estado)}</div>
+      <div class="f2 mt4">${fila("Fecha", `<span class="cap">${fLarga(t.fecha)}</span>`)}${fila("Hora", `<span class="tnum">${hhmm(t.min)} hs</span> · ${t.canal === "VIDEO" ? "Videoconsulta" : "Presencial"}`)}${fila("Práctica", pracLabel(t.prac))}${fila("Profesional", profLabel(t.prof))}${fila("Sede", sedeById[t.sede].nombre)}${fila("Cobertura", esc(t.cob) + (t.conf ? ` <span class="ok-chip">✓ Confirmado</span>` : ""))}</div>
+      <div class="mt5"><div class="k mb3">Cambiar estado</div><div class="row" style="gap:6px">${TRANS[t.estado].map((n) => `<button class="mini" data-a="transM" data-v="${t.id}|${n}">${LABEL[n]}</button>`).join("")}</div></div></div>
+    <div class="mf"><button class="btn ghost sm" data-a="hce" data-v="${p.id}">Historia clínica</button>${t.fecha === HOY ? `<button class="btn sm" data-a="verEnAgenda" data-v="${t.id}">Ver en agenda</button>` : `<button class="btn sm" data-a="cerrar">Listo</button>`}</div></div>`;
+}
+function modalNuevo() {
+  const m = S.modal; const prac = pracById[m.prac];
+  const sedes = sedesDeProf(prac.prof); if (!sedes.includes(m.sede)) m.sede = sedes[0];
+  const slots = slotsLibres(prac.prof, m.sede, m.fecha);
+  const pacs = [...S.pacientes].sort((a, b) => (a.apellido + a.nombre).localeCompare(b.apellido + b.nombre));
+  return `<div class="modal" data-stop>${mHead("Nuevo turno")}<div class="mb"><div class="f2">
+    <label class="lbl full2"><span>Paciente</span><select class="inp" data-c="nPac"><option value="__nuevo" ${m.pac === "__nuevo" ? "selected" : ""}>+ Paciente nuevo…</option>${pacs.map((p) => `<option value="${p.id}" ${m.pac === p.id ? "selected" : ""}>${esc(pacNom(p))} — DNI ${fmtDni(p.dni)}</option>`).join("")}</select></label>
+    ${m.pac === "__nuevo" ? `<label class="lbl"><span>Nombre</span><input class="inp" id="n-nom" placeholder="Nombre"></label><label class="lbl"><span>Apellido</span><input class="inp" id="n-ape" placeholder="Apellido"></label><label class="lbl full2"><span>DNI</span><input class="inp" id="n-dni" inputmode="numeric" placeholder="Sin puntos"></label>` : ""}
+    <label class="lbl full2"><span>Práctica</span><select class="inp" data-c="nPrac">${D.practicas.map((p) => `<option value="${p.id}" ${m.prac === p.id ? "selected" : ""}>${pracLabel(p.id)} — ${profCorto(p.prof)} · ${pesos(p.precio)}</option>`).join("")}</select></label>
+    <label class="lbl"><span>Sede</span><select class="inp" data-c="nSede">${sedes.map((id) => `<option value="${id}" ${m.sede === id ? "selected" : ""}>${sedeById[id].nombre}</option>`).join("")}</select></label>
+    <label class="lbl"><span>Fecha</span><input type="date" class="inp" data-c="nFecha" min="${HOY}" value="${m.fecha}"></label>
+    <div class="full2"><div class="lbl"><span>Horario</span></div>${slots.length ? `<div class="slots">${slots.map((s, i) => `<label class="slot"><input type="radio" name="nhora" value="${s}" ${i === 0 ? "checked" : ""}><span class="tnum" style="padding:6px 10px;font-size:13px">${hhmm(s)}</span></label>`).join("")}</div>`
+      : `<p style="background:#fffbeb;color:#92400e;border-radius:8px;padding:8px 12px;font-size:13.5px">${profCorto(prac.prof)} no tiene horarios libres ese día en esa sede. Probá: ${proximosDias(prac.prof, m.sede).map((d) => `<button data-a="nDia" data-v="${d}" class="cap" style="color:var(--petrol);text-decoration:underline;margin-right:6px">${diaCorto(d)}</button>`).join("")}</p>`}</div>
+  </div></div><div class="mf"><button class="btn ghost sm" data-a="cerrar">Cancelar</button><button class="btn sm" data-a="guardarTurno" ${slots.length ? "" : "disabled style=\"opacity:.5\""}>Guardar turno</button></div></div>`;
+}
+function modalWA(id) {
+  const t = S.turnos.find((x) => x.id === id); const p = pac(t.pac); const m = S.modal;
+  const link = `turnero.app/confirmar/${t.id}x${p.dni.slice(-4)}`;
+  const msg = `Hola ${esc(p.nombre)}, le recordamos su turno el ${fCorta(t.fecha)} a las ${hhmm(t.min)} hs con ${profCorto(t.prof)} en ${sedeById[t.sede].nombre}. Para confirmar o cancelar, entrá acá: `;
+  return `<div class="modal" data-stop style="max-width:440px"><div class="wa-head"><div class="av">${esc(p.nombre[0])}</div><div style="flex:1"><div style="font-weight:600">${esc(pacNom(p))}</div><div style="font-size:12px;opacity:.8">${p.tel}</div></div><button data-a="cerrar" style="color:#fff;font-size:22px">×</button></div>
+    <div class="wa-body"><div class="bubble">${msg}<a data-a="waLink">${link}</a><div style="text-align:right;font-size:10.5px;color:rgba(0,0,0,.45);margin-top:4px">${hhmm(new Date().getHours() * 60 + new Date().getMinutes())} ✓✓</div></div>
+      <p style="text-align:center;font-size:11.5px;color:rgba(0,0,0,.55);margin-top:10px">Demo: no se envía ningún WhatsApp. Tocá el link para ver lo que ve el paciente.</p></div>
+    ${m.link ? `<div class="mb"><div class="k">Así lo ve el paciente</div><div class="phone"><div style="font-weight:600;color:var(--petrol)">${esc(D.organizacion)}</div>
+      <div class="mt2" style="font-size:14px">${esc(p.nombre)}, tenés turno el <b class="cap">${fLarga(t.fecha)}</b> a las <b>${hhmm(t.min)} hs</b> con ${profCorto(t.prof)} (${profById[t.prof].especialidad}) en ${sedeById[t.sede].nombre}.</div>
+      ${t.estado === "CANCELADO" ? `<div class="mt3" style="background:#ffe4e6;color:#881337;border-radius:8px;padding:10px;font-size:14px;font-weight:500">Turno cancelado. ¡Gracias por avisar!</div>`
+        : t.conf ? `<div class="mt3" style="background:#d1fae5;color:#065f46;border-radius:8px;padding:10px;font-size:14px;font-weight:500">✓ ¡Turno confirmado! Te esperamos.</div>`
+        : `<div class="row mt3"><button class="btn sm" data-a="pConf" data-v="${t.id}">Confirmar asistencia</button><button class="btn ghost sm" data-a="pCanc" data-v="${t.id}" style="color:#e11d48">Cancelar turno</button></div>`}</div></div>` : ""}
+  </div>`;
+}
+function modalPac(id) {
+  const p = id ? pac(id) : { nombre: "", apellido: "", dni: "", tel: "", cob: "Particular", email: "" };
+  return `<div class="modal" data-stop>${mHead(id ? "Editar paciente" : "Nuevo paciente")}<div class="mb"><div class="f2">
+    <label class="lbl"><span>Nombre *</span><input class="inp" id="p-nom" value="${esc(p.nombre)}"></label><label class="lbl"><span>Apellido *</span><input class="inp" id="p-ape" value="${esc(p.apellido)}"></label>
+    <label class="lbl"><span>DNI *</span><input class="inp" id="p-dni" inputmode="numeric" value="${p.dni}"></label><label class="lbl"><span>Teléfono</span><input class="inp" id="p-tel" value="${esc(p.tel)}"></label>
+    <label class="lbl"><span>Cobertura</span><select class="inp" id="p-cob">${D.coberturas.map((c) => `<option ${c === p.cob ? "selected" : ""}>${c}</option>`).join("")}</select></label><label class="lbl"><span>Email</span><input class="inp" id="p-mail" value="${esc(p.email)}"></label>
+  </div></div><div class="mf"><button class="btn ghost sm" data-a="cerrar">Cancelar</button><button class="btn sm" data-a="guardarPac" data-v="${id || ""}">Guardar</button></div></div>`;
+}
+
+/* =============================== Acciones =============================== */
+const val = (id) => ($("#" + id)?.value ?? "").trim();
+const A = {
+  tour() { S.modal = { t: "tour" }; renderModal(); },
+  tourGo(v) { S.modal = null; go(v); renderModal(); },
+  cerrar() { S.modal = null; renderModal(); },
+  cerrarOv(v, e) { if (e.target.classList.contains("ov")) A.cerrar(); },
+  salir() { toast("En la demo no hay sesión: ya entraste como usuario de prueba."); },
+  agSede(v) { S.agenda.sede = v; render(); },
+  agEstado(v) { S.agenda.estado = v; render(); },
+  trans(v) { const [id, n] = v.split("|"); transicion(id, n); render(); },
+  transM(v) { const [id, n] = v.split("|"); transicion(id, n); render(); },
+  verTurno(v) { S.modal = { t: "turno", id: v }; renderModal(); },
+  verEnAgenda(v) { S.modal = null; S.agenda = { sede: "", estado: "" }; S.resv.hecho = null; S.flash = v; const t = S.turnos.find((x) => x.id === v);
+    if (t.fecha === HOY) { go("agenda"); setTimeout(() => document.getElementById("row-" + v)?.scrollIntoView({ block: "center", behavior: "smooth" }), 60); }
+    else { const w = Math.floor(diffDays(semanaDias(0)[0], t.fecha) / 7); S.cal = { semana: w, sede: "", prof: "", canc: false }; go("calendario"); } },
+  hce(v) { S.modal = null; go("paciente/" + v); },
+  nuevoTurno(v) { const [fecha, p] = (v || HOY).split("|"); S.modal = { t: "nuevo", fecha: fecha < HOY ? HOY : fecha, prac: "pr1", sede: "centro", pac: p || S.pacientes[0].id }; renderModal(); },
+  nDia(v) { S.modal.fecha = v; renderModal(); },
+  guardarTurno() {
+    const m = S.modal; const h = document.querySelector('input[name="nhora"]:checked'); if (!h) return;
+    let pid = m.pac;
+    if (pid === "__nuevo") {
+      const nombre = val("n-nom"), apellido = val("n-ape"), dni = val("n-dni").replace(/\D/g, "");
+      if (!nombre || !apellido || dni.length < 6) return toast("Completá nombre, apellido y DNI.");
+      pid = crearPaciente({ nombre, apellido, dni, tel: "", cob: "Particular", email: "" });
+    }
+    const prac = pracById[m.prac]; const dur = horariosDe(prac.prof, m.sede, m.fecha)[0]?.dur || 20;
+    const t = { id: "t" + S.nextId++, fecha: m.fecha, min: +h.value, dur, pac: pid, prof: prac.prof, sede: m.sede, prac: prac.id, cob: pac(pid).cob, estado: "RESERVADO", canal: prac.video ? "VIDEO" : "PRESENCIAL", conf: false, llamado: null };
+    S.turnos.push(t); S.modal = null; toast(`Turno creado: ${fCorta(t.fecha)} ${hhmm(t.min)} · ${pacNom(pac(pid))}`); A.verEnAgenda(t.id);
+  },
+  nuevoPaciente() { S.modal = { t: "pac", id: null }; renderModal(); },
+  editarPac(v) { S.modal = { t: "pac", id: v }; renderModal(); },
+  guardarPac(v) {
+    const d = { nombre: val("p-nom"), apellido: val("p-ape"), dni: val("p-dni").replace(/\D/g, ""), tel: val("p-tel"), cob: val("p-cob"), email: val("p-mail") };
+    if (!d.nombre || !d.apellido || d.dni.length < 6) return toast("Completá nombre, apellido y DNI.");
+    if (v) { Object.assign(pac(v), d); S.modal = null; toast("Paciente actualizado (solo en esta demo)."); render(); }
+    else { const id = crearPaciente(d); S.modal = null; toast("Paciente creado (solo en esta demo)."); go("paciente/" + id); }
+  },
+  adjuntar() { const e = pick(D.estudios); S._adj = e[0]; $("#hce-adj").textContent = "📎 " + e[0] + " (ejemplo)"; toast("Demo: se adjunta un archivo de ejemplo, no se sube nada."); },
+  archivo() { toast("En la demo los archivos son de ejemplo y no se abren."); },
+  agregarHCE(v) {
+    const texto = val("hce-txt"); if (!texto) { $("#hce-txt").focus(); return toast("Escribí la evolución primero."); }
+    const r = { id: "h" + S.nextId++, pac: v, prof: val("hce-prof"), fecha: HOY, texto, priv: val("hce-vis") === "1", adj: S._adj || null };
+    S._adj = null; S.hce.push(r); S.flash = r.id; toast("Registro agregado a la historia clínica."); render();
+    setTimeout(() => document.getElementById("hce")?.scrollIntoView({ behavior: "smooth" }), 50);
+  },
+  agregarReceta(v) { const texto = val("rec-txt"); if (!texto) return toast("Escribí la receta primero."); const r = { id: "r" + S.nextId++, pac: v, prof: "p1", fecha: HOY, texto }; S.recetas.push(r); S.flash = r.id; toast("Receta agregada."); render(); },
+  subirEstudio(v) { const e = pick(D.estudios); S.estudios.unshift({ id: "e" + S.nextId++, pac: v, nombre: e[0], tipo: e[1], fecha: HOY }); toast("Demo: se agregó un estudio de ejemplo."); render(); },
+  borrarEstudio(v) { S.estudios = S.estudios.filter((e) => e.id !== v); toast("Estudio eliminado."); render(); },
+  calSem(v) { S.cal.semana = v === "0" ? 0 : S.cal.semana + Number(v); render(); },
+  aplicar(k) { S[k] = { desde: val(k + "-desde") || S[k].desde, hasta: val(k + "-hasta") || S[k].hasta, sede: val(k + "-sede"), prof: val(k + "-prof") }; if (S[k].desde > S[k].hasta) [S[k].desde, S[k].hasta] = [S[k].hasta, S[k].desde]; render(); },
+  rango(v) { const [k, r] = v.split("|"); Object.assign(S[k], r === "mes" ? rangoMes() : defaultsRango()); render(); },
+  exportar() {
+    const f = S.rep; const ts = S.turnos.filter((t) => t.fecha >= f.desde && t.fecha <= f.hasta && (!f.sede || t.sede === f.sede) && (!f.prof || t.prof === f.prof)).sort(ordenar);
+    const rows = [["Fecha","Hora","Paciente","DNI","Cobertura","Práctica","Profesional","Sede","Estado","Precio"], ...ts.map((t) => { const p = pac(t.pac); return [fCorta(t.fecha), hhmm(t.min), pacNom(p), p.dni, t.cob, pracLabel(t.prac), profLabel(t.prof), sedeById[t.sede].nombre, LABEL[t.estado], pracById[t.prac].precio]; })];
+    const csv = "﻿" + rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = `turnos_demo_${f.desde}_${f.hasta}.csv`; a.click();
+    toast(`CSV con ${ts.length} turnos (datos ficticios).`);
+  },
+  kKey(d) { if (S.kio.dni.length < 9) S.kio.dni += d; render(); },
+  kBack() { S.kio.dni = S.kio.dni.slice(0, -1); render(); },
+  kFill(v) { S.kio.dni = v; render(); },
+  kOk() { if (S.kio.dni.length >= 6) { checkIn(); render(); } },
+  kReset() { clearTimeout(S.kio.timer); S.kio.res = null; S.kio.dni = ""; render(); },
+  llamar() { llamarSiguiente(); render(); },
+  recVer() { S.rec.fecha = val("rec-fecha") || S.rec.fecha; render(); },
+  wa(v) { S.modal = { t: "wa", id: v, link: false }; renderModal(); },
+  waLink() { S.modal.link = true; renderModal(); },
+  pConf(v) { const t = S.turnos.find((x) => x.id === v); t.conf = true; S.flash = v; toast("El paciente confirmó: ya figura ✓ Confirmado en la agenda."); render(); },
+  pCanc(v) { const t = S.turnos.find((x) => x.id === v); t.estado = "CANCELADO"; toast("El paciente canceló: el horario queda libre para otro turno."); render(); },
+  resvDia(v) { S.resv.fecha = v; render(); },
+  resvOtra() { S.resv = { prac: "", sede: "", fecha: "", paso: 1, hecho: null }; render(); },
+  reservar() {
+    const r = S.resv; const h = document.querySelector('input[name="hora"]:checked'); if (!h) return;
+    const d = { nombre: val("rv-nombre"), apellido: val("rv-apellido"), dni: val("rv-dni").replace(/\D/g, ""), tel: val("rv-tel"), cob: val("rv-cob"), email: "" };
+    if (!d.nombre || !d.apellido || d.dni.length < 6 || !d.tel) return toast("Completá nombre, apellido, DNI y teléfono.");
+    let p = S.pacientes.find((x) => x.dni === d.dni); const pid = p ? p.id : crearPaciente(d);
+    const prac = pracById[r.prac]; const dur = horariosDe(prac.prof, r.sede, r.fecha)[0]?.dur || 20;
+    const t = { id: "t" + S.nextId++, fecha: r.fecha, min: +h.value, dur, pac: pid, prof: prac.prof, sede: r.sede, prac: prac.id, cob: d.cob, estado: "RESERVADO", canal: prac.video ? "VIDEO" : "PRESENCIAL", conf: true, llamado: null };
+    S.turnos.push(t); r.hecho = t.id; render(); window.scrollTo(0, 0);
+  },
+};
+function crearPaciente(d) {
+  const id = "pa" + S.nextId++;
+  S.pacientes.push({ id, nombre: d.nombre, apellido: d.apellido, dni: d.dni, tel: d.tel || "—", email: d.email || "—", cob: d.cob || "Particular", afiliado: "", nac: "1990-01-01", sexo: "—", creado: HOY });
+  return id;
+}
+const C = {
+  calSede(v) { S.cal.sede = v; render(); }, calProf(v) { S.cal.prof = v; render(); }, calCanc(v, el) { S.cal.canc = el.checked; render(); },
+  nPac(v) { S.modal.pac = v; renderModal(); }, nPrac(v) { S.modal.prac = v; renderModal(); }, nSede(v) { S.modal.sede = v; renderModal(); }, nFecha(v) { if (v) { S.modal.fecha = v < HOY ? HOY : v; renderModal(); } },
+  resvPrac(v) { S.resv.prac = v; const ss = sedesDeProf(pracById[v].prof); if (!ss.includes(S.resv.sede)) S.resv.sede = ss[0]; if (!S.resv.fecha) S.resv.fecha = proximosDias(pracById[v].prof, S.resv.sede)[0] || HOY; render(); },
+  resvSede(v) { S.resv.sede = v; render(); }, resvFecha(v) { if (v) { S.resv.fecha = v < HOY ? HOY : v; render(); } },
+};
+
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-a]"); if (!el) return;
+  const a = el.dataset.a;
+  if (a === "cerrarOv") { if (e.target === el) A.cerrar(); return; }
+  if (el.tagName === "A" && !el.getAttribute("href")) e.preventDefault();
+  if (A[a]) { e.preventDefault(); A[a](el.dataset.v, e); }
+});
+document.addEventListener("change", (e) => { const el = e.target.closest("[data-c]"); if (el && C[el.dataset.c]) C[el.dataset.c](el.value, el); });
+document.addEventListener("input", (e) => { if (e.target.id === "q") { S.q = e.target.value; $("#lista-pac").innerHTML = listaPac(); } });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && S.modal) A.cerrar();
+  if (ruta().r === "kiosco-pantalla" && !S.kio.res) {
+    if (/^\d$/.test(e.key)) A.kKey(e.key); else if (e.key === "Backspace") A.kBack(); else if (e.key === "Enter") A.kOk();
+  }
+});
+
+render();
+if (!location.hash) S.modal = { t: "tour" }, renderModal();
+</script>
+</body>
+</html>
