@@ -1,0 +1,2460 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#223C7E">
+<title>Gestión Austral · Demo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='2' y='2' width='44' height='44' rx='12' fill='%23223C7E'/%3E%3Cpath d='M24 9c6 8 10 13 10 19a10 10 0 0 1-20 0c0-6 4-11 10-19z' fill='%23009FE3'/%3E%3Ccircle cx='35' cy='13' r='4' fill='%23E30613'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* ===== Estilos tomados tal cual de la app real (index.html) ===== */
+  :root{
+    color-scheme: light;
+    --bg:#f7f6f2;
+    --surface:#ffffff;
+    --surface-2:#f0eee6;
+    --ink:#18160f;
+    --ink-2:#5c584c;
+    --muted:#8d8877;
+    --border:rgba(24,22,15,0.12);
+    --border-strong:rgba(24,22,15,0.22);
+    --accent:#1472cc;
+    --accent-ink:#ffffff;
+    --ghost-bg:rgba(24,22,15,0.04);
+    --today:rgba(20,114,204,0.10);
+    --danger:#e30613;
+    --shadow: 0 12px 28px -12px rgba(24,22,15,0.28), 0 2px 6px -2px rgba(24,22,15,0.16);
+
+    --truck-13:#2a78d6; --truck-13-ink:#ffffff;
+    --truck-20:#c85a20; --truck-20-ink:#ffffff;
+    --truck-32:#158a63; --truck-32-ink:#ffffff;
+    --truck-17:#a97600; --truck-17-ink:#ffffff;
+    --truck-41:#c15c85; --truck-41-ink:#ffffff;
+    --truck-4000:#6a3fb5; --truck-4000-ink:#ffffff;
+    --truck-x:#8d8877; --truck-x-ink:#ffffff;
+
+    --chart-route:#158a63;
+    --chart-driver:#a97600;
+    --chart-helper:#c15c85;
+    --chart-weekday:#1472cc;
+    --chart-source:#6b6656;
+    --chart-cargo:#6a3fb5;
+    --chart-branch:#b5453f;
+    --chart-company:#158a63;
+    --chart-occasional:#8046c9;
+    --chart-gastos:#0c7d8a;
+
+    /* Paleta categórica "divertida" para las pastillas de Sucursales, Empresas
+       y Eventuales — un color distinto por destino, elegido por hash del id
+       (ver destColorVar/destInkVar), igual de vívida que los colores de camión. */
+    --dest-1:#2a78d6;  --dest-1-ink:#ffffff;
+    --dest-2:#c85a20;  --dest-2-ink:#ffffff;
+    --dest-3:#158a63;  --dest-3-ink:#ffffff;
+    --dest-4:#a97600;  --dest-4-ink:#ffffff;
+    --dest-5:#c15c85;  --dest-5-ink:#ffffff;
+    --dest-6:#6a3fb5;  --dest-6-ink:#ffffff;
+    --dest-7:#1d8f96;  --dest-7-ink:#ffffff;
+    --dest-8:#b5453f;  --dest-8-ink:#ffffff;
+    --dest-9:#5a7d2a;  --dest-9-ink:#ffffff;
+    --dest-10:#8046c9; --dest-10-ink:#ffffff;
+    --dest-11:#c98f1c; --dest-11-ink:#141413;
+    --dest-12:#3f6fa8; --dest-12-ink:#ffffff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#0e0e0c;
+      --surface:#1a1a17;
+      --surface-2:#232320;
+      --ink:#f6f5f0;
+      --ink-2:#c4c1b5;
+      --muted:#8d8877;
+      --border:rgba(255,255,255,0.12);
+      --border-strong:rgba(255,255,255,0.22);
+      --accent:#3b9dfb;
+      --accent-ink:#0e0e0c;
+      --ghost-bg:rgba(255,255,255,0.05);
+      --today:rgba(59,157,251,0.14);
+      --danger:#ff4452;
+      --shadow: 0 12px 28px -12px rgba(0,0,0,0.55), 0 2px 6px -2px rgba(0,0,0,0.4);
+
+      --truck-13:#5b9ce8; --truck-13-ink:#0e0e0c;
+      --truck-20:#e08a4f; --truck-20-ink:#0e0e0c;
+      --truck-32:#2fb589; --truck-32-ink:#0e0e0c;
+      --truck-17:#d1a233; --truck-17-ink:#0e0e0c;
+      --truck-41:#e08fac; --truck-41-ink:#0e0e0c;
+      --truck-4000:#a98bea; --truck-4000-ink:#0e0e0c;
+      --truck-x:#a6a294; --truck-x-ink:#0e0e0c;
+
+      --chart-route:#2fb589;
+      --chart-driver:#d1a233;
+      --chart-helper:#e08fac;
+      --chart-weekday:#3b9dfb;
+      --chart-source:#a6a294;
+      --chart-cargo:#a98bea;
+      --chart-branch:#e8837c;
+      --chart-company:#2fb589;
+      --chart-occasional:#bd93f0;
+      --chart-gastos:#3ecfe0;
+
+      --dest-1:#5b9ce8;  --dest-1-ink:#0e0e0c;
+      --dest-2:#e08a4f;  --dest-2-ink:#0e0e0c;
+      --dest-3:#2fb589;  --dest-3-ink:#0e0e0c;
+      --dest-4:#d1a233;  --dest-4-ink:#0e0e0c;
+      --dest-5:#e08fac;  --dest-5-ink:#0e0e0c;
+      --dest-6:#a98bea;  --dest-6-ink:#0e0e0c;
+      --dest-7:#4fc2c9;  --dest-7-ink:#0e0e0c;
+      --dest-8:#e8837c;  --dest-8-ink:#0e0e0c;
+      --dest-9:#9ec25a;  --dest-9-ink:#0e0e0c;
+      --dest-10:#bd93f0; --dest-10-ink:#0e0e0c;
+      --dest-11:#e6bd4d; --dest-11-ink:#0e0e0c;
+      --dest-12:#7ea8dd; --dest-12-ink:#0e0e0c;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#0e0e0c;
+    --surface:#1a1a17;
+    --surface-2:#232320;
+    --ink:#f6f5f0;
+    --ink-2:#c4c1b5;
+    --muted:#8d8877;
+    --border:rgba(255,255,255,0.12);
+    --border-strong:rgba(255,255,255,0.22);
+    --accent:#3b9dfb;
+    --accent-ink:#0e0e0c;
+    --ghost-bg:rgba(255,255,255,0.05);
+    --today:rgba(59,157,251,0.14);
+    --danger:#ff4452;
+    --shadow: 0 12px 28px -12px rgba(0,0,0,0.55), 0 2px 6px -2px rgba(0,0,0,0.4);
+
+    --truck-13:#5b9ce8; --truck-13-ink:#0e0e0c;
+    --truck-20:#e08a4f; --truck-20-ink:#0e0e0c;
+    --truck-32:#2fb589; --truck-32-ink:#0e0e0c;
+    --truck-17:#d1a233; --truck-17-ink:#0e0e0c;
+    --truck-41:#e08fac; --truck-41-ink:#0e0e0c;
+    --truck-4000:#a98bea; --truck-4000-ink:#0e0e0c;
+    --truck-x:#a6a294; --truck-x-ink:#0e0e0c;
+
+    --chart-route:#2fb589;
+    --chart-driver:#d1a233;
+    --chart-helper:#e08fac;
+    --chart-weekday:#3b9dfb;
+    --chart-source:#a6a294;
+    --chart-cargo:#a98bea;
+    --chart-branch:#e8837c;
+    --chart-company:#2fb589;
+    --chart-occasional:#bd93f0;
+    --chart-gastos:#3ecfe0;
+
+    --dest-1:#5b9ce8;  --dest-1-ink:#0e0e0c;
+    --dest-2:#e08a4f;  --dest-2-ink:#0e0e0c;
+    --dest-3:#2fb589;  --dest-3-ink:#0e0e0c;
+    --dest-4:#d1a233;  --dest-4-ink:#0e0e0c;
+    --dest-5:#e08fac;  --dest-5-ink:#0e0e0c;
+    --dest-6:#a98bea;  --dest-6-ink:#0e0e0c;
+    --dest-7:#4fc2c9;  --dest-7-ink:#0e0e0c;
+    --dest-8:#e8837c;  --dest-8-ink:#0e0e0c;
+    --dest-9:#9ec25a;  --dest-9-ink:#0e0e0c;
+    --dest-10:#bd93f0; --dest-10-ink:#0e0e0c;
+    --dest-11:#e6bd4d; --dest-11-ink:#0e0e0c;
+    --dest-12:#7ea8dd; --dest-12-ink:#0e0e0c;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;}
+  .num{font-family:"IBM Plex Mono","SF Mono",monospace; font-variant-numeric:tabular-nums;}
+
+  .shell{max-width:1180px; margin:0 auto; padding:20px 20px 64px;}
+
+  .topbar{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-bottom:16px; border-bottom:1px solid var(--border); margin-bottom:18px;}
+  .brand{display:flex; flex-direction:row; align-items:center; gap:12px;}
+  .brand-logo{height:42px; width:auto; flex:none; display:block;}
+  .brand-text{display:flex; flex-direction:column; gap:2px;}
+  .brand h1{font-size:22px; font-weight:700; margin:0; letter-spacing:-0.01em;}
+  .brand .tag{font-size:12.5px; color:var(--ink-2);}
+  .who{display:flex; align-items:center; gap:8px;}
+  .who label{font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted);}
+  .who input{font-family:inherit; font-size:13px; border:1px solid var(--border); background:var(--surface); color:var(--ink); border-radius:7px; padding:6px 9px; width:150px;}
+  .who input:focus{outline:2px solid var(--accent); outline-offset:1px;}
+
+  .toolbar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px;}
+  .monthnav{display:flex; align-items:center; gap:10px;}
+  .monthnav button{width:32px; height:32px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--ink); font-size:15px; cursor:pointer;}
+  .monthnav button:hover{border-color:var(--border-strong);}
+  .monthnav .label{font-size:16px; font-weight:600; min-width:190px; text-align:center; text-transform:capitalize;}
+  .btn{font-family:inherit; font-size:13px; font-weight:600; border-radius:8px; border:1px solid var(--border-strong); background:var(--surface); color:var(--ink); padding:8px 13px; cursor:pointer; display:inline-flex; align-items:center; gap:7px;}
+  .btn:hover{border-color:var(--accent);}
+  .btn.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent);}
+  .btn.primary:hover{filter:brightness(1.05);}
+  .btn.ghost{border-color:transparent; background:transparent;}
+  .btn.ghost:hover{background:var(--ghost-bg);}
+  .btn:disabled{opacity:0.5; cursor:default;}
+
+  .banner{display:none; align-items:center; gap:8px; font-size:13px; padding:9px 12px; border-radius:8px; background:var(--surface-2); border:1px solid var(--border); color:var(--ink-2); margin-bottom:14px;}
+  .banner.show{display:flex;}
+  .banner.err{color:var(--danger); border-color:var(--danger);}
+
+  .stripe{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+  .chip-stat{display:flex; align-items:center; gap:7px; background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:5px 12px 5px 8px; font-size:12.5px;}
+  .swatch{width:11px; height:11px; border-radius:3px; flex:none;}
+  .chip-stat .n{font-weight:600; font-family:"IBM Plex Mono",monospace;}
+  .chip-stat .lbl{color:var(--ink-2);}
+  .chip-stat.total{background:var(--surface-2); font-weight:600;}
+
+  .gridwrap{background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:auto; box-shadow:0 1px 0 rgba(0,0,0,0.02); max-height:72vh;}
+  table.grid{border-collapse:separate; border-spacing:0; width:100%; font-size:12px;}
+  table.grid th, table.grid td{border-bottom:1px solid var(--border); border-right:1px solid var(--border); padding:0; white-space:nowrap;}
+  table.grid th{position:sticky; top:0; background:var(--surface-2); z-index:2; font-size:10px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-2); padding:5px 5px; text-align:center; font-weight:600;}
+  table.grid th.corner{left:0; z-index:3; text-align:left;}
+  table.grid td.daycell{position:sticky; left:0; background:var(--surface); z-index:1; padding:3px 8px; text-align:left; min-width:82px;}
+  table.grid tr.today td.daycell, table.grid tr.today td{background:var(--today);}
+  table.grid tr.weekend td.daycell{color:var(--muted);}
+  .daynum{font-weight:600; font-family:"IBM Plex Mono",monospace; font-size:11.5px;}
+  .dayname{font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:0.03em; margin-left:4px;}
+
+  td.cell{padding:2px; text-align:center; cursor:pointer; min-width:76px; vertical-align:middle;}
+  td.cell:hover{background:var(--ghost-bg);}
+  .pill{position:relative; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; min-width:70px; min-height:24px; border-radius:6px; font-family:"IBM Plex Mono",monospace; font-weight:600; padding:3px 5px;}
+  .pill .truck-no{font-size:11.5px; line-height:1.1;}
+  .pill .crew{font-size:9px; font-weight:500; line-height:1.2; max-width:80px; white-space:normal; word-break:break-word; text-align:center; opacity:0.95;}
+  .pill .unit-tag{font-size:8.5px; font-weight:500; opacity:0.7; margin-left:2px;}
+  .pill.cargo::after{content:"📦"; position:absolute; top:-7px; right:-7px; width:19px; height:19px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; background:var(--surface); border:1.5px solid var(--border-strong); border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,0.3);}
+  .pill .note-badge{position:absolute; bottom:-7px; right:-7px; width:19px; height:19px; display:flex; align-items:center; justify-content:center; font-size:11px; line-height:1; background:var(--surface); border:1.5px solid var(--border-strong); border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,0.3); cursor:help;}
+  .pill.ghost{background:transparent; border:1.5px dashed var(--border-strong); color:var(--muted); font-weight:500;}
+  .cell.empty:hover::after{content:"+"; color:var(--muted); font-size:14px;}
+  .cell-pills{display:flex; flex-direction:column; align-items:center; gap:2px;}
+  .cell-add-btn{display:block; width:100%; max-width:70px; margin:3px auto 0; border:1.5px dashed var(--border-strong); background:transparent; color:var(--muted); font-family:inherit; font-size:11px; font-weight:600; border-radius:6px; padding:2px 0; cursor:pointer; opacity:0; transition:opacity .15s, border-color .15s, color .15s;}
+  .cell.multi:hover .cell-add-btn{opacity:1;}
+  .cell-add-btn:hover{border-color:var(--accent); color:var(--accent);}
+
+  .legend{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:14px; font-size:12.5px; color:var(--ink-2);}
+  .legend .item{display:flex; align-items:center; gap:6px;}
+  .legend .ghostkey{width:14px; height:14px; border-radius:4px; border:1.5px dashed var(--border-strong);}
+
+  /* Pestaña con permiso "ver" (o sin permiso) para el perfil actual: se ve
+     pero no se puede crear, editar ni borrar nada ahí. */
+  body.tab-readonly .day-wrap tr.day-row,
+  body.tab-readonly table.day-table tr.day-row{cursor:default; pointer-events:none;}
+  body.tab-readonly .day-wrap tr.day-row:hover td,
+  body.tab-readonly table.day-table tr.day-row:hover td{background:inherit;}
+  body.tab-readonly td.cell{cursor:default; pointer-events:none;}
+  body.tab-readonly td.cell.empty:hover::after{content:none;}
+  body.tab-readonly .cell-add-btn{display:none;}
+  body.tab-readonly .edit-action{display:none;}
+  body.no-autoplan #autoplan-btn, body.no-autoplan #branch-autoplan-btn{display:none;}
+  body.tab-readonly .legend{display:none;}
+
+  .overlay{position:fixed; inset:0; background:rgba(10,9,6,0.45); display:none; align-items:center; justify-content:center; z-index:50; padding:16px;}
+  .overlay.show{display:flex;}
+  #login-overlay{z-index:100; background:var(--bg);}
+  .modal{background:var(--surface); border-radius:14px; box-shadow:var(--shadow); width:100%; max-width:380px; padding:20px; border:1px solid var(--border);}
+  #cell-modal, #visit-modal{max-width:420px;}
+  .modal h3{margin:0 0 2px; font-size:16px;}
+  .modal .sub{font-size:12.5px; color:var(--ink-2); margin-bottom:14px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom:5px;}
+  .field select, .field textarea, .field input[type=text], .field input[type=password]{width:100%; font-family:inherit; font-size:14px; border:1px solid var(--border); background:var(--bg); color:var(--ink); border-radius:8px; padding:8px 10px;}
+  .field textarea{resize:vertical; min-height:56px;}
+  .suggest-hint{font-size:12px; color:var(--accent); background:var(--ghost-bg); border-radius:7px; padding:6px 9px; margin-bottom:12px; display:flex; gap:6px; align-items:center;}
+  .modal-actions{display:flex; justify-content:space-between; gap:8px; margin-top:16px;}
+  .modal-actions .left{display:flex; gap:8px;}
+
+  .settings-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:520px){ .settings-grid{grid-template-columns:1fr;} .modal.wide{max-width:480px;} }
+  .modal.wide{max-width:600px; max-height:calc(100vh - 32px); display:flex; flex-direction:column;}
+  .settings-body{overflow-y:auto; flex:1 1 auto; min-height:0; margin:0 -4px; padding:0 4px;}
+  /* Igual que .settings-body, para cualquier otro modal "wide" con contenido
+     que puede no entrar en la pantalla (p.ej. Factura): el título/subtítulo
+     y los botones de abajo quedan fijos, y solo el medio scrollea. */
+  .modal-scroll-body{overflow-y:auto; flex:1 1 auto; min-height:0; margin:0 -4px; padding:0 4px;}
+  .settings-col h4{font-size:12px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin:0 0 8px;}
+  .setting-row{display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--border);}
+  .setting-row input[type=text]{flex:1; font-size:13px; padding:5px 8px;}
+  .setting-row .scope-select, .truck-card-top .scope-select{flex:none; font-family:inherit; font-size:11.5px; border:1px solid var(--border); background:var(--bg); color:var(--ink-2); border-radius:6px; padding:5px 6px; max-width:150px;}
+  .toggle{width:30px; height:18px; border-radius:999px; background:var(--border-strong); position:relative; cursor:pointer; flex:none; border:none;}
+  .toggle.on{background:var(--accent);}
+  .toggle .knob{position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:var(--surface); transition:left .15s;}
+  .toggle.on .knob{left:14px;}
+  .addrow{display:flex; gap:6px; margin-top:8px;}
+  .addrow input{flex:1; font-size:13px; padding:6px 8px; border-radius:7px; border:1px solid var(--border); background:var(--bg); color:var(--ink); font-family:inherit;}
+
+  .truck-card{padding:8px 0; border-bottom:1px solid var(--border);}
+  .truck-card-top{display:flex; align-items:center; gap:8px;}
+  .truck-card-top input[type=text]{flex:1; font-size:13px; padding:5px 8px;}
+  .truck-card-sub{display:flex; gap:6px; margin-top:6px; padding-left:38px;}
+  .truck-card-sub input{flex:1; font-size:12px; padding:5px 7px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--ink); font-family:inherit;}
+
+  .role-card{padding:12px 0; border-bottom:1px solid var(--border);}
+  .role-card-top{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .role-card-top input[type=text]{flex:1; min-width:120px; font-size:13px; padding:5px 8px;}
+  .role-card-top .role-password{flex:1; min-width:120px;}
+  .role-manage-row{display:flex; align-items:center; gap:6px; margin-top:8px; font-size:12px; color:var(--sub);}
+  .role-permisos-grid{display:grid; grid-template-columns:1fr auto; gap:6px 10px; margin-top:8px; padding-left:2px;}
+  .role-permiso-row{display:flex; align-items:center; font-size:12px; color:var(--ink);}
+  .role-permiso-select{font-size:12px; padding:4px 6px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--ink); font-family:inherit;}
+  .role-card-del{margin-top:8px;}
+
+  .crew-fields{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .crew-fields.crew-fields-3{grid-template-columns:1fr 1fr 1fr;}
+
+  .cargo-header{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:5px;}
+  .cargo-unit-wrap{display:flex; align-items:center; gap:6px;}
+  .cargo-unit-wrap label{font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted);}
+  .cargo-unit-wrap input{width:110px; font-family:inherit; font-size:12.5px; border:1px solid var(--border); background:var(--bg); color:var(--ink); border-radius:6px; padding:5px 7px;}
+  .cargo-table-wrap{max-height:230px; overflow-y:auto; border:1px solid var(--border); border-radius:8px;}
+  table.cargo-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  table.cargo-table thead th{position:sticky; top:0; background:var(--surface-2); font-size:10.5px; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); font-weight:600; text-align:left; padding:6px 8px; border-bottom:1px solid var(--border);}
+  table.cargo-table thead th:last-child{text-align:right; width:84px;}
+  table.cargo-table td{padding:4px 8px; border-bottom:1px solid var(--border); color:var(--ink-2);}
+  table.cargo-table tr:last-child td{border-bottom:none;}
+  table.cargo-table tr:hover td{background:var(--ghost-bg);}
+  table.cargo-table td.cargo-qty-cell{width:84px;}
+  table.cargo-table input[type=number]{width:100%; font-family:inherit; font-size:12.5px; border:1px solid var(--border); background:var(--bg); color:var(--ink); border-radius:6px; padding:4px 6px;}
+  .cargo-empty{font-size:12.5px; color:var(--muted); padding:8px;}
+
+  .viewtabs{display:flex; gap:4px; margin-bottom:14px; border-bottom:1px solid var(--border);}
+  .viewtab{font-family:inherit; font-size:13.5px; font-weight:600; color:var(--ink-2); background:transparent; border:none; border-bottom:2px solid transparent; padding:9px 4px; margin-right:18px; cursor:pointer;}
+  .viewtab:hover{color:var(--ink);}
+  .viewtab.active{color:var(--ink); border-bottom-color:var(--accent);}
+
+  .dash-toolbar{display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+  .dash-toolbar label{font-size:12.5px; color:var(--ink-2);}
+  .dash-toolbar input[type=date]{font-family:inherit; font-size:13px; border:1px solid var(--border); background:var(--surface); color:var(--ink); border-radius:8px; padding:6px 9px;}
+  .dash-toolbar .dash-sep{color:var(--muted); font-size:12.5px;}
+  .dash-loading{font-size:12.5px; color:var(--ink-2); margin-bottom:12px;}
+
+  #toolbar-day input[type=date]{font-family:inherit; font-size:13px; border:1px solid var(--border); background:var(--surface); color:var(--ink); border-radius:8px; padding:6px 9px;}
+  .day-summary{font-size:12.5px; color:var(--ink-2); margin-bottom:10px;}
+  .day-wrap{background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:auto; box-shadow:0 1px 0 rgba(0,0,0,0.02);}
+  table.day-table{border-collapse:collapse; width:100%; font-size:13px;}
+  table.day-table th{position:sticky; top:0; background:var(--surface-2); z-index:1; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-2); padding:10px 14px; text-align:left; font-weight:600; border-bottom:1px solid var(--border);}
+  table.day-table td{padding:12px 14px; border-bottom:1px solid var(--border); vertical-align:top;}
+  table.day-table tr:last-child td{border-bottom:none;}
+  table.day-table tr.day-row{cursor:pointer;}
+  table.day-table tr.day-row:hover td{background:var(--ghost-bg);}
+  table.day-table tr.day-row.empty td{color:var(--muted);}
+  td.day-route{font-weight:700; font-size:14px; white-space:nowrap;}
+  .day-truck-pill{display:inline-flex; align-items:center; justify-content:center; min-width:34px; padding:4px 9px; border-radius:7px; font-family:"IBM Plex Mono",monospace; font-weight:700; font-size:13px;}
+  .day-cargo-chip{display:inline-block; background:color-mix(in srgb, var(--accent) 14%, var(--surface)); border-radius:6px; padding:4px 11px; font-size:14px; font-weight:700; margin:0 6px 6px 0; color:var(--ink);}
+  td.day-note{color:var(--ink-2); font-size:12.5px; max-width:220px; white-space:normal;}
+  .day-muted{color:var(--muted);}
+  .day-empty{padding:16px; color:var(--muted); font-size:13px;}
+
+  /* Compras: proveedores y órdenes de compra */
+  .compras-section-head{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:26px 0 12px;}
+  .compras-section-head:first-of-type{margin-top:0;}
+  .compras-section-head h3{margin:0; font-size:13.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-2);}
+  .oc-badge{display:inline-flex; align-items:center; padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:600; white-space:nowrap;}
+  .oc-badge.pendiente{background:color-mix(in srgb, var(--chart-driver) 18%, var(--surface)); color:var(--chart-driver);}
+  .oc-badge.aprobada{background:color-mix(in srgb, var(--accent) 16%, var(--surface)); color:var(--accent);}
+  .oc-badge.recibida{background:color-mix(in srgb, var(--chart-route) 16%, var(--surface)); color:var(--chart-route);}
+  .oc-badge.pagada{background:color-mix(in srgb, var(--chart-route) 16%, var(--surface)); color:var(--chart-route);}
+  #pom-facturas-list{max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:2px;}
+  #pom-facturas-list label.setting-row{cursor:pointer; gap:8px;}
+  #pom-facturas-list input[type=checkbox]{flex:none; width:16px; height:16px;}
+
+  /* Adjuntos (proveedores, facturas) */
+  .attach-list{display:flex; flex-direction:column; gap:6px; margin-bottom:8px;}
+  .attach-item{display:flex; align-items:center; gap:8px; font-size:12.5px; background:var(--surface-2); border-radius:7px; padding:6px 9px;}
+  .attach-item a{color:var(--accent); text-decoration:none; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .attach-item a:hover{text-decoration:underline;}
+  .attach-item .attach-size{color:var(--muted); font-size:11px; flex:none;}
+  .attach-item .attach-del{flex:none; border:none; background:transparent; color:var(--muted); cursor:pointer; font-size:14px; line-height:1; padding:2px 5px; border-radius:4px;}
+  .attach-item .attach-del:hover{color:var(--danger); background:var(--ghost-bg);}
+  .attach-add-row input[type=file]{font-size:12px; color:var(--ink-2); max-width:100%;}
+  .attach-empty{font-size:12px; color:var(--muted); margin-bottom:8px;}
+  .factura-read-row{display:flex; align-items:center; gap:10px; margin-bottom:14px; padding:10px 12px; background:var(--ghost-bg); border-radius:8px;}
+  .factura-read-row .sub2{font-size:12px; color:var(--ink-2); flex:1; margin:0;}
+  .factura-read-row label.btn{white-space:nowrap;}
+
+  /* Buscador de proveedor (combo), para no tener que scrollear un <select> con miles */
+  .combo{position:relative;}
+  .combo-menu{position:absolute; z-index:40; left:0; right:0; top:calc(100% + 4px); max-height:220px; overflow-y:auto; background:var(--surface); border:1px solid var(--border-strong); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.16);}
+  .combo-item{padding:8px 10px; font-size:13.5px; cursor:pointer;}
+  .combo-item:hover, .combo-item.active{background:var(--ghost-bg);}
+  .combo-empty{padding:8px 10px; font-size:12.5px; color:var(--muted);}
+
+  /* Tesorería: cuentas y movimientos */
+  .mov-origen-badge{display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:10.5px; font-weight:600; white-space:nowrap; background:var(--surface-2); color:var(--ink-2);}
+  .mov-origen-badge.auto{background:color-mix(in srgb, var(--accent) 14%, var(--surface)); color:var(--accent);}
+  .cuenta-saldo-neg{color:var(--danger);}
+
+  .kpi-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px;}
+  @media (max-width:760px){ .kpi-grid{grid-template-columns:repeat(2,1fr);} }
+  .kpi-tile{position:relative; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px 14px 20px; overflow:hidden;}
+  .kpi-tile::before{content:''; position:absolute; left:0; top:0; bottom:0; width:4px;}
+  .kpi-tile.tile-total::before{background:var(--accent);}
+  .kpi-tile.tile-truck::before{background:var(--truck-13);}
+  .kpi-tile.tile-driver::before{background:var(--chart-driver);}
+  .kpi-tile.tile-route::before{background:var(--chart-route);}
+  .kpi-tile .kpi-label{font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom:6px;}
+  .kpi-tile .kpi-value{font-size:19px; font-weight:700; font-family:"IBM Plex Mono",monospace;}
+
+  .dash-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:760px){ .dash-grid{grid-template-columns:1fr;} }
+  .panel{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px;}
+  .panel.panel-wide{grid-column:1 / -1;}
+  .panel h4{display:flex; align-items:center; gap:8px; font-size:12.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin:0 0 12px;}
+  .panel h4::before{content:''; width:9px; height:9px; border-radius:3px; flex:none;}
+  .panel-truck h4::before{background:var(--truck-13);}
+  .panel-route h4::before{background:var(--chart-route);}
+  .panel-driver h4::before{background:var(--chart-driver);}
+  .panel-helper h4::before{background:var(--chart-helper);}
+  .panel-weekday h4::before{background:var(--chart-weekday);}
+  .panel-source h4::before{background:var(--chart-source);}
+  .panel-cargo h4::before{background:var(--chart-cargo);}
+  .panel-cross h4::before{background:var(--accent);}
+  .panel-branch h4::before{background:var(--chart-branch);}
+  .panel-company h4::before{background:var(--chart-company);}
+  .panel-occasional h4::before{background:var(--chart-occasional);}
+  .panel-gastos h4::before{background:var(--chart-gastos);}
+
+  .dash-section-title{font-size:13.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-2); margin:26px 0 12px; padding-top:18px; border-top:1px solid var(--border);}
+  .kpi-tile.tile-branch::before{background:var(--chart-branch);}
+  .kpi-tile.tile-company::before{background:var(--chart-company);}
+  .kpi-tile.tile-occasional::before{background:var(--chart-occasional);}
+  .kpi-tile.tile-gastos::before{background:var(--chart-gastos);}
+
+  .barrow{display:grid; grid-template-columns:120px 1fr 34px; align-items:center; gap:8px; padding:4px 6px; margin:0 -6px; border-radius:6px; font-size:12.5px;}
+  .barrow:hover{background:var(--ghost-bg);}
+  .barrow.money{grid-template-columns:140px 1fr 94px;}
+  .barrow.money .barcount{font-variant-numeric:tabular-nums; text-align:right;}
+  .barname{color:var(--ink-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .bartrack{background:var(--surface-2); border-radius:5px; height:10px; overflow:hidden;}
+  .barfill{height:100%; border-radius:5px; transition:width .25s;}
+  .barcount{font-family:"IBM Plex Mono",monospace; font-weight:600; text-align:right;}
+  .bar-empty{font-size:12.5px; color:var(--muted); padding:8px 0;}
+  .bar-more{font-size:11.5px; color:var(--muted); padding-top:4px;}
+
+  .crosstab-wrap{overflow-x:auto; margin:0 -4px;}
+  table.crosstab{border-collapse:collapse; width:100%; font-size:12px; white-space:nowrap;}
+  table.crosstab th, table.crosstab td{padding:6px 10px; text-align:center; border-bottom:1px solid var(--border);}
+  table.crosstab thead th{font-size:10.5px; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); font-weight:600;}
+  table.crosstab th.corner, table.crosstab td.rowhead{position:sticky; left:0; background:var(--surface); text-align:left; font-weight:600; z-index:1;}
+  table.crosstab td.cnt{font-family:"IBM Plex Mono",monospace;}
+  table.crosstab td.total, table.crosstab th.total{font-weight:700; background:var(--surface-2);}
+  table.crosstab tbody tr:hover td{background:var(--ghost-bg);}
+  table.crosstab tbody tr:hover td.rowhead{background:var(--surface-2);}
+
+  .settings-tabs{display:flex; flex-wrap:wrap; gap:4px 16px; margin-bottom:14px; border-bottom:1px solid var(--border);}
+  .stabbtn{font-family:inherit; font-size:13px; font-weight:600; color:var(--ink-2); background:transparent; border:none; border-bottom:2px solid transparent; padding:8px 2px; margin:0; cursor:pointer; white-space:nowrap;}
+  .stabbtn:hover{color:var(--ink);}
+  .stabbtn.active{color:var(--ink); border-bottom-color:var(--accent);}
+
+  /* Configuración (⚙) — navegación por categorías a la izquierda, con
+     subpestañas por categoría a la derecha. Reemplaza la fila plana de 9
+     pestañas que había antes. */
+  .settings-layout{display:flex; gap:22px; align-items:stretch; flex:1 1 auto; min-height:0;}
+  .settings-nav{display:flex; flex-direction:column; gap:2px; width:196px; flex:0 0 196px; padding-right:16px; border-right:1px solid var(--border);}
+  .scatbtn{display:flex; align-items:center; gap:10px; font-family:inherit; font-size:13.5px; font-weight:600; color:var(--ink-2); background:transparent; border:none; border-left:3px solid transparent; border-radius:0 8px 8px 0; padding:10px 10px 10px 9px; margin:0; cursor:pointer; text-align:left; white-space:nowrap;}
+  .scatbtn .scat-icon{font-size:16px; line-height:1;}
+  .scatbtn:hover{background:var(--ghost-bg); color:var(--ink);}
+  .scatbtn.active{background:var(--ghost-bg); color:var(--ink); border-left-color:var(--accent);}
+  .settings-content{display:flex; flex-direction:column; flex:1 1 auto; min-width:0; min-height:0;}
+  .settings-subtabs{margin-bottom:14px; flex:0 0 auto;}
+  .settings-subtabs[hidden]{display:none;} /* .settings-tabs pone display:flex, que ganaría sobre [hidden] sin esto */
+  @media (max-width:640px){
+    .settings-layout{flex-direction:column;}
+    .settings-nav{flex-direction:row; flex-wrap:wrap; width:auto; padding-right:0; padding-bottom:12px; border-right:none; border-bottom:1px solid var(--border);}
+    .scatbtn{border-left:none; border-radius:8px;}
+    .scatbtn.active{border-left:none; box-shadow:inset 0 -3px 0 0 var(--accent);}
+  }
+
+  .toast{position:fixed; bottom:22px; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--bg); font-size:13px; padding:9px 16px; border-radius:8px; box-shadow:var(--shadow); z-index:60; opacity:0; transition:opacity .2s; pointer-events:none;}
+  .toast.show{opacity:1;}
+
+  ::selection{background:var(--accent); color:var(--accent-ink);}
+  #password-overlay{z-index:110;}
+  .user-email{font-size:12px; color:var(--ink-2); max-width:290px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .acceso-h{margin:22px 0 6px; font-size:13px;}
+  .usuario-row .usuario-email{flex:1; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  @media (max-width:640px){ .user-email{display:none;} }
+
+  /* ---- Factura: vista previa del archivo al costado del formulario ---- */
+  .factura-layout{display:flex; gap:16px; flex:1 1 auto; min-height:0;}
+  .factura-layout .modal-scroll-body{flex:1 1 0; min-width:0;}
+  #factura-modal.has-preview{max-width:min(1320px, calc(100vw - 32px)) !important; height:calc(100vh - 32px);}
+  #factura-modal.has-preview .modal-scroll-body{flex:0 0 470px; max-width:470px;}
+  .factura-preview{flex:1 1 0; min-width:0; display:flex; flex-direction:column; border:1px solid var(--border); border-radius:14px; background:var(--surface-2); overflow:hidden;}
+  .fm-preview-head{display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--surface); border-bottom:1px solid var(--border);}
+  .fm-preview-name{flex:1; min-width:0; font-size:12.5px; font-weight:600; color:var(--ink-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .fm-pv-btn{flex:none; border:1px solid var(--border); background:var(--surface-2); color:var(--ink); border-radius:8px; padding:5px 10px; font:inherit; font-size:12px; font-weight:600; cursor:pointer;}
+  .fm-pv-btn:hover{background:#e9eef6;}
+  .fm-preview-body{flex:1 1 auto; min-height:0; overflow:auto;}
+  .fm-preview-frame{display:block; width:100%; height:100%; border:0;}
+  .fm-preview-img{display:block; width:100%; height:auto; cursor:zoom-in;}
+  .fm-preview-img.zoom{width:200%; max-width:none; cursor:zoom-out;}
+  .fm-preview-fallback{padding:24px; font-size:13px; color:var(--ink-2);}
+  .attach-view{flex:none; border:0; background:var(--ghost-bg); color:var(--accent); font:inherit; font-size:11.5px; font-weight:600; padding:3px 8px; border-radius:6px; cursor:pointer;}
+  .attach-view:hover{background:rgba(34,60,126,0.14);}
+  @media (max-width:900px){
+    .factura-layout{flex-direction:column;}
+    .factura-preview{order:-1; flex:0 0 40vh;}
+    #factura-modal.has-preview .modal-scroll-body{flex:1 1 0; max-width:none;}
+  }
+
+  /* ---- Lista de facturas: acceso directo al archivo de Drive ---- */
+  .file-cell{white-space:nowrap;}
+  .file-none{color:var(--muted);}
+  .file-link{display:inline-block; font:inherit; font-size:12.5px; font-weight:600; color:var(--accent); text-decoration:none; background:var(--ghost-bg); border:0; padding:4px 10px; border-radius:999px; cursor:pointer;}
+  .file-link:hover{background:rgba(34,60,126,0.14);}
+  .file-menu{position:fixed; z-index:400; min-width:200px; max-width:320px; background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); padding:6px;}
+  .file-menu a{display:block; padding:7px 10px; border-radius:8px; color:var(--ink); text-decoration:none; font-size:12.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .file-menu a:hover{background:var(--surface-2); color:var(--accent);}
+
+  /* =====================================================================
+     TEMA DE LA APP — colores de marca: azul #223C7E · celeste #009FE3 · rojo #E30613
+     Estilo: fondo gris azulado, tarjetas blancas redondeadas y pestañas en
+     forma de píldora con la activa en rojo. Va al final para pisar lo anterior.
+     ===================================================================== */
+  :root{
+    --brand-navy:#223C7E; --brand-cyan:#009FE3; --brand-red:#E30613;
+    --bg:#edf0f4;
+    --surface:#ffffff;
+    --surface-2:#f3f5f9;
+    --ink:#1a2338;
+    --ink-2:#56627d;
+    --muted:#8b96ad;
+    --border:#e1e6ee;
+    --border-strong:#c9d2e0;
+    --accent:#223C7E;
+    --accent-ink:#ffffff;
+    --ghost-bg:rgba(34,60,126,0.07);
+    --today:rgba(0,159,227,0.10);
+    --danger:#E30613;
+    --shadow:0 18px 40px -18px rgba(26,35,56,0.38), 0 3px 8px -3px rgba(26,35,56,0.14);
+    --card-shadow:0 1px 2px rgba(26,35,56,0.05), 0 8px 24px -16px rgba(26,35,56,0.22);
+    --chart-weekday:#223C7E;
+  }
+  body{font-family:"Inter","IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  ::selection{background:rgba(0,159,227,0.25);}
+  [hidden]{display:none !important;}
+
+  /* Encabezado: tarjeta blanca con el logo arriba a la izquierda y franja tricolor */
+  .topbar{position:relative; overflow:hidden; align-items:center; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px 22px 14px; margin-bottom:12px; box-shadow:var(--card-shadow);}
+  .topbar::before{content:""; position:absolute; left:0; right:0; top:0; height:5px; background:linear-gradient(90deg,var(--brand-navy) 0 55%,var(--brand-cyan) 55% 80%,var(--brand-red) 80% 100%);}
+  .brand-logo{height:50px;}
+  .brand h1{font-size:22px; font-weight:800; color:var(--brand-navy); letter-spacing:-0.02em;}
+  .brand .tag{color:var(--ink-2);}
+  .user-email{background:var(--surface-2); border:1px solid var(--border); border-radius:999px; padding:6px 12px; font-size:12px; color:var(--ink-2);}
+  .who .btn.ghost{border-radius:10px;}
+
+  /* Pestañas: barra blanca redondeada; la activa en rojo */
+  .viewtabs{background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:8px; gap:4px; margin-bottom:16px; flex-wrap:wrap; box-shadow:var(--card-shadow);}
+  .viewtab{border:0; border-radius:12px; padding:11px 16px; margin:0; font-size:13.5px; font-weight:600; color:var(--ink-2); transition:background .12s,color .12s;}
+  .viewtab:hover{background:var(--surface-2); color:var(--ink);}
+  .viewtab.active{background:var(--brand-red); color:#fff; box-shadow:0 6px 14px -8px rgba(227,6,19,0.7);}
+
+  /* Botones */
+  .btn{border-radius:12px; padding:8px 14px; background:var(--surface-2); color:var(--ink); border:1px solid var(--border); font-weight:600;}
+  .btn:hover{border-color:var(--border-strong); background:#e9eef6;}
+  .btn.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent);}
+  .btn.primary:hover{background:#2c4b99; border-color:#2c4b99; filter:none;}
+  .btn.ghost{background:transparent; border-color:transparent;}
+  .btn.ghost:hover{background:var(--ghost-bg);}
+  .monthnav button{border-radius:10px; background:var(--surface);}
+  .monthnav .label{color:var(--brand-navy); font-weight:700;}
+
+  /* Tarjetas y tablas */
+  .gridwrap, .day-wrap{border-radius:20px; box-shadow:var(--card-shadow); border-color:var(--border);}
+  .chip-stat{border-radius:999px; background:var(--surface); border-color:var(--border); box-shadow:0 1px 2px rgba(26,35,56,0.04);}
+  .chip-stat.total{background:var(--brand-navy); color:#fff; border-color:var(--brand-navy);}
+  .chip-stat.total .lbl, .chip-stat.total .n{color:#fff;}
+  table.grid th{color:var(--ink-2);}
+  .modal{border-radius:20px; border:1px solid var(--border);}
+  .overlay{background:rgba(20,30,52,0.48);}
+  #login-overlay{background:var(--bg);}
+  .banner{border-radius:12px;}
+
+  /* Campos: fondo gris claro y esquinas redondeadas */
+  input[type=text], input[type=password], input[type=date], input[type=number], input[type=email], input[type=search], select, textarea{background:var(--surface-2); border-color:var(--border); border-radius:10px; color:var(--ink);}
+  .field input[type=text], .field input[type=password], .field select, .field textarea, .who input, .addrow input{border-radius:10px; background:var(--surface-2);}
+  .field input[type=date], .field input[type=number], .field input[type=email]{width:100%; box-sizing:border-box; font-family:inherit; font-size:14px; border:1px solid var(--border); border-radius:10px; padding:8px 10px; background:var(--surface-2); color:var(--ink);}
+  .field input[type=file]{font-family:inherit; font-size:12.5px; color:var(--ink-2); max-width:100%;}
+  .field input[type=file]::file-selector-button{font-family:inherit; font-weight:600; font-size:12.5px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink); border-radius:10px; padding:7px 12px; margin-right:10px; cursor:pointer;}
+  .field input[type=file]::file-selector-button:hover{background:#e9eef6; border-color:var(--border-strong);}
+  input:focus, select:focus, textarea:focus{outline:2px solid rgba(0,159,227,0.55); outline-offset:1px; border-color:var(--brand-cyan);}
+  .who input:focus{outline-color:rgba(0,159,227,0.55);}
+  .field label, .settings-col h4{color:var(--muted);}
+  select.scope-select{border:1px solid var(--border); background:var(--surface-2); border-radius:10px; padding:7px 10px; font-family:inherit; font-size:12.5px; color:var(--ink);}
+  .toggle.on{background:var(--brand-cyan);}
+  .suggest-hint{color:var(--brand-navy);}
+
+  /* Estado de la lectura de facturas */
+  .factura-read-status{margin:-6px 0 14px; padding:9px 12px; border-radius:10px; font-size:12.5px; background:var(--surface-2); color:var(--ink-2);}
+  .factura-read-status.ok{background:rgba(21,138,99,0.10); color:#0f6e4f;}
+  .factura-read-status.error{background:rgba(227,6,19,0.08); color:#b3050f;}
+  .factura-read-row label.btn.disabled{opacity:0.5; pointer-events:none;}
+
+  /* Arreglo: los modales que se abren DESDE Configuración (nuevo centro de costo / concepto)
+     quedaban tapados por el panel de Configuración porque tenían la misma capa. */
+  #centro-costo-overlay, #concepto-overlay, #tipo-retencion-overlay, #concepto-retencion-overlay{z-index:70;}
+  /* Los avisos siempre por encima de cualquier modal */
+  .toast{z-index:300;}
+
+  /* Login */
+  #login-modal{max-width:380px !important; padding:34px 30px 26px; border-radius:24px; position:relative; overflow:hidden; box-shadow:var(--shadow);}
+  #login-modal::before{content:""; position:absolute; left:0; right:0; top:0; height:5px; background:linear-gradient(90deg,var(--brand-navy) 0 55%,var(--brand-cyan) 55% 80%,var(--brand-red) 80% 100%);}
+  #login-modal .brand-logo{height:62px !important; margin:0 auto 8px !important; display:block;}
+  #login-modal h3{text-align:center; font-size:20px; font-weight:800; color:var(--brand-navy); margin-bottom:4px;}
+  #login-modal .sub{text-align:center; margin-bottom:18px;}
+  #login-modal .modal-actions{align-items:center;}
+  #password-overlay .modal{border-radius:22px;}
+
+  @media (max-width:640px){
+    .topbar{padding:18px 16px 12px;}
+    .viewtabs{padding:6px; border-radius:16px;}
+    .viewtab{padding:9px 12px;}
+  }
+
+  /* ---------- Ayuda in-app ---------- */
+  #help-btn{font-weight:800; font-size:16px; width:36px; padding:0;}
+  #help-overlay{z-index:90;}
+  #help-modal{max-width:720px; width:min(720px,94vw); max-height:88vh; display:flex; flex-direction:column; padding:0; overflow:hidden;}
+  #help-modal .help-head{padding:18px 20px 12px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px;}
+  #help-modal .help-head h3{margin:0; flex:1; font-size:18px;}
+  #help-search{flex:1; max-width:280px; font-family:inherit; font-size:13.5px; padding:8px 12px; border:1px solid var(--border); border-radius:10px; background:var(--surface-2); color:var(--ink);}
+  #help-search:focus{outline:none; border-color:var(--accent);}
+  #help-body{display:flex; flex:1; min-height:0; overflow:hidden;}
+  #help-nav{width:220px; flex-shrink:0; border-right:1px solid var(--border); overflow-y:auto; padding:10px 8px; background:var(--surface-2);}
+  #help-nav button{display:block; width:100%; text-align:left; font-family:inherit; font-size:13px; font-weight:500; color:var(--ink-2); background:transparent; border:none; border-radius:8px; padding:9px 12px; cursor:pointer; margin-bottom:2px;}
+  #help-nav button:hover{background:var(--ghost-bg); color:var(--ink);}
+  #help-nav button.active{background:var(--accent); color:var(--accent-ink); font-weight:600;}
+  #help-content{flex:1; overflow-y:auto; padding:18px 22px 28px;}
+  #help-content h4{margin:0 0 12px; font-size:16px; font-weight:700;}
+  #help-content ol{margin:0 0 14px; padding-left:22px;}
+  #help-content li{margin-bottom:8px; line-height:1.45; color:var(--ink);}
+  #help-content .help-tip{background:var(--today); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--ink-2); margin-top:12px;}
+  #help-content .help-tip strong{color:var(--ink);}
+  #help-empty{color:var(--muted); font-size:14px; padding:20px 0;}
+
+  .help-modes{display:flex; gap:4px; background:var(--surface-2); border-radius:10px; padding:3px;}
+  .help-mode{font-family:inherit; font-size:12.5px; font-weight:600; border:none; background:transparent; color:var(--ink-2); padding:6px 12px; border-radius:8px; cursor:pointer;}
+  .help-mode.active{background:var(--surface); color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+  #help-body-guides, #help-body-chat{flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden;}
+  #help-body{display:flex; flex:1; min-height:0; overflow:hidden;}
+  .help-img-wrap{margin:14px 0; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:var(--surface-2);}
+  .help-img{display:block; width:100%; height:auto;}
+  #help-chat-log{flex:1; overflow-y:auto; padding:16px 18px; display:flex; flex-direction:column; gap:10px;}
+  .help-chat-bubble{max-width:92%; padding:10px 14px; border-radius:14px; font-size:13.5px; line-height:1.45; word-break:break-word;}
+  .help-chat-bubble.user{align-self:flex-end; background:var(--accent); color:var(--accent-ink); border-bottom-right-radius:4px;}
+  .help-chat-bubble.assistant{align-self:flex-start; background:var(--surface-2); color:var(--ink); border-bottom-left-radius:4px;}
+  .help-chat-bubble.assistant ol{margin:8px 0 0; padding-left:20px;}
+  .help-chat-bubble.assistant li{margin-bottom:4px;}
+  .help-chat-input-row{display:flex; gap:8px; padding:12px 14px; border-top:1px solid var(--border);}
+  #help-chat-input{flex:1; font-family:inherit; font-size:13.5px; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:var(--surface); color:var(--ink);}
+  #help-chat-input:focus{outline:none; border-color:var(--accent);}
+  .help-chat-hint{font-size:11.5px; color:var(--muted); padding:0 14px 10px;}
+  #help-modal{max-width:780px;}
+
+  @media (max-width:640px){
+    #help-body{flex-direction:column;}
+    #help-nav{width:100%; border-right:none; border-bottom:1px solid var(--border); max-height:140px; display:flex; flex-wrap:wrap; gap:4px; padding:8px;}
+    #help-nav button{width:auto; flex:1 1 auto;}
+  }
+
+
+
+/* ===== Agregados solo para la demo ===== */
+:root{color-scheme:light;}
+body{padding-top:42px;}
+.demo-strip{position:fixed; top:0; left:0; right:0; z-index:500; height:42px; display:flex; align-items:center; justify-content:center; gap:14px; padding:0 14px; background:var(--brand-navy); color:#fff; font-size:13px; font-weight:600; box-shadow:0 2px 10px rgba(20,30,52,0.25);}
+.demo-strip span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.demo-strip a{flex:none; color:#fff; background:var(--brand-red); text-decoration:none; padding:6px 13px; border-radius:999px; font-size:12.5px; font-weight:700;}
+.demo-strip a:hover{filter:brightness(1.08);}
+.demo-strip a:focus-visible{outline:2px solid #fff; outline-offset:2px;}
+.viewtab.demo-off{opacity:0.42;}
+.viewtab.demo-off:hover{background:transparent; color:var(--ink-2);}
+.demo-search{font-family:inherit; font-size:12.5px; border:1px solid var(--border); background:var(--surface-2); border-radius:10px; padding:7px 10px; color:var(--ink); width:220px; max-width:100%;}
+.demo-note{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; color:var(--brand-navy); background:rgba(0,159,227,0.12); border-radius:999px; padding:3px 10px; margin-top:6px;}
+.overlay{padding-top:58px;}
+.modal:focus{outline:none;}
+.modal{max-height:calc(100vh - 74px); overflow-y:auto;}
+#proveedor-modal{max-height:calc(100vh - 74px) !important;}
+#factura-modal.has-preview{height:calc(100vh - 74px);}
+.modal.wide{max-height:calc(100vh - 74px);}
+.modal.wide{overflow:hidden;}
+#tour-modal{max-width:520px;}
+#tour-modal ol{margin:4px 0 6px; padding:0; list-style:none; counter-reset:paso;}
+#tour-modal li{counter-increment:paso; display:flex; gap:12px; align-items:flex-start; padding:10px 10px; border-radius:12px; cursor:pointer;}
+#tour-modal li:hover{background:var(--ghost-bg);}
+#tour-modal li::before{content:counter(paso); flex:none; width:24px; height:24px; border-radius:50%; background:var(--brand-navy); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:1px;}
+#tour-modal li b{display:block; font-size:13.5px; color:var(--ink);}
+#tour-modal li span{font-size:12.5px; color:var(--ink-2); line-height:1.4;}
+.fake-invoice{background:#fff; color:#1a2338; margin:14px; padding:18px 20px; border-radius:6px; box-shadow:0 2px 10px rgba(26,35,56,0.12); font-size:12px; line-height:1.5;}
+.fake-invoice .fi-top{display:flex; justify-content:space-between; gap:10px; border-bottom:2px solid #1a2338; padding-bottom:8px; margin-bottom:10px;}
+.fake-invoice .fi-letter{font-size:26px; font-weight:800; border:2px solid #1a2338; width:42px; height:42px; display:flex; align-items:center; justify-content:center;}
+.fake-invoice table{width:100%; border-collapse:collapse; margin:10px 0;}
+.fake-invoice th, .fake-invoice td{border-bottom:1px solid #e1e6ee; padding:5px 4px; text-align:left;}
+.fake-invoice td.r, .fake-invoice th.r{text-align:right;}
+.fake-invoice .fi-total{text-align:right; font-size:15px; font-weight:800;}
+.fake-invoice .fi-scan{position:relative; overflow:hidden;}
+.scanning .fake-invoice::after{content:""; position:absolute; left:0; right:0; height:40px; background:linear-gradient(180deg, transparent, rgba(0,159,227,0.25), transparent); animation:scan 1.1s linear infinite;}
+.fake-invoice{position:relative; overflow:hidden;}
+@keyframes scan{from{top:-40px;} to{top:100%;}}
+@media (prefers-reduced-motion: reduce){ .scanning .fake-invoice::after{animation:none;} }
+@media (max-width:640px){
+  .shell{padding:12px 10px 56px;}
+  .brand-logo{height:40px;}
+  .brand h1{font-size:19px;}
+  .brand .tag{font-size:11.5px;}
+  .monthnav .label{min-width:140px; font-size:15px;}
+  .demo-strip{font-size:12px; gap:8px;}
+  .compras-section-head{margin-top:18px;}
+  .compras-section-head > div{width:100%;}
+  .demo-search{width:100%;}
+  table.day-table td{padding:10px 10px;}
+  table.day-table th{padding:9px 10px;}
+  .barrow{grid-template-columns:96px 1fr 34px;}
+  .barrow.money{grid-template-columns:100px 1fr 96px;}
+  .crew-fields.crew-fields-3{grid-template-columns:1fr;}
+}
+@media (max-width:420px){ .demo-strip span .long{display:none;} }
+.demo-strip a.demo-back{background:transparent; padding:6px 4px; font-weight:600; opacity:.85; text-decoration:underline; text-underline-offset:3px;}
+.demo-strip a.demo-back:hover{opacity:1; filter:none;}
+
+</style>
+</head>
+<body>
+
+<div class="demo-strip" role="region" aria-label="Aviso de demo">
+  <a class="demo-back" href="../../proyectos.html#flota">← FloWer</a><span>Demo con datos ficticios</span>
+  <a href="https://wa.me/5492975212008" target="_blank" rel="noopener">Quiero uno así</a>
+</div>
+
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">
+      <svg class="brand-logo" viewBox="0 0 48 48" role="img" aria-label="Logo Distribuidora Austral"><rect x="2" y="2" width="44" height="44" rx="12" fill="#223C7E"/><path d="M24 9c6 8 10 13 10 19a10 10 0 0 1-20 0c0-6 4-11 10-19z" fill="#009FE3"/><circle cx="35" cy="13" r="4" fill="#E30613"/></svg>
+      <div class="brand-text">
+        <h1 id="brand-name">Gestión Austral</h1>
+        <div class="tag">Viajes, compras, pagos y tesorería en un solo lugar</div>
+      </div>
+    </div>
+    <div class="who">
+      <span class="user-email" id="user-email"></span>
+      <button class="btn ghost" id="pwd-btn" title="Cambiar mi contraseña">🔑</button>
+      <button class="btn ghost" id="help-btn" title="Ayuda">?</button>
+      <button class="btn ghost" id="settings-btn" title="Configuración">⚙</button>
+      <button class="btn ghost" id="logout-btn" title="Cerrar sesión">Salir</button>
+    </div>
+  </div>
+
+  <div class="viewtabs" id="viewtabs">
+    <button class="viewtab active" id="tab-grid">FlotaPesada</button>
+    <button class="viewtab demo-off" id="tab-branches" title="No incluida en la demo">Sucursales</button>
+    <button class="viewtab demo-off" id="tab-company" title="No incluida en la demo">Empresas</button>
+    <button class="viewtab demo-off" id="tab-occasional" title="No incluida en la demo">Eventuales</button>
+    <button class="viewtab" id="tab-compras">Compras</button>
+    <button class="viewtab" id="tab-pagos">Pagos</button>
+    <button class="viewtab" id="tab-tesoreria">Tesorería</button>
+    <button class="viewtab" id="tab-simulador">Simulación</button>
+    <button class="viewtab" id="tab-day">Día</button>
+    <button class="viewtab" id="tab-dashboard">Dashboard</button>
+  </div>
+
+  <!-- ================= FlotaPesada ================= -->
+  <div id="view-grid">
+    <div class="toolbar" id="toolbar-grid">
+      <div class="monthnav">
+        <button id="prev-month" aria-label="Mes anterior">‹</button>
+        <div class="label" id="month-label">—</div>
+        <button id="next-month" aria-label="Mes siguiente">›</button>
+        <button class="btn ghost" id="today-btn" style="margin-left:4px;">Hoy</button>
+      </div>
+      <button class="btn primary edit-action" id="autoplan-btn">✨ Planificar automáticamente</button>
+    </div>
+    <div class="stripe" id="stats-stripe"></div>
+    <div class="gridwrap">
+      <table class="grid" id="grid-table">
+        <thead><tr id="grid-head"></tr></thead>
+        <tbody id="grid-body"></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <div class="item"><span class="ghostkey"></span> sugerido por el historial — hacé clic para confirmarlo o cambiarlo</div>
+      <div class="item">El nombre debajo del número de camión es el chofer cargado ese día (puede variar de un día a otro)</div>
+      <div class="item">Si dos camiones hacen la misma ruta el mismo día, pasá el mouse sobre la celda y tocá "+ camión" para agregar el segundo</div>
+      <div class="item">En la demo los cambios quedan en memoria y se pierden al recargar la página</div>
+    </div>
+  </div>
+
+  <!-- ================= Día ================= -->
+  <div id="view-day" hidden>
+    <div class="toolbar" id="toolbar-day">
+      <div class="monthnav">
+        <button id="prev-day" aria-label="Día anterior">‹</button>
+        <div class="label" id="day-label">—</div>
+        <button id="next-day" aria-label="Día siguiente">›</button>
+        <button class="btn ghost" id="day-today-btn" style="margin-left:4px;">Hoy</button>
+      </div>
+      <input type="date" id="day-picker" aria-label="Elegir fecha">
+    </div>
+    <div class="day-summary" id="day-summary"></div>
+    <div class="day-wrap">
+      <table class="day-table" id="day-table">
+        <thead><tr><th>Ruta</th><th>Camión</th><th>Chofer</th><th>Ayudante</th><th>Carga</th><th>Nota</th></tr></thead>
+        <tbody id="day-body"></tbody>
+      </table>
+    </div>
+    <div class="legend"><div class="item">Hacé clic en cualquier fila para cargar o editar ese viaje</div></div>
+
+    <h3 class="dash-section-title">Sucursales</h3>
+    <div class="day-summary" id="day-branch-summary"></div>
+    <div class="day-wrap">
+      <table class="day-table">
+        <thead><tr><th>Sucursal</th><th>Camión</th><th>Chofer</th><th>Ayudante</th><th>Carga</th><th>Nota</th></tr></thead>
+        <tbody id="day-branch-body"></tbody>
+      </table>
+    </div>
+    <div class="legend"><div class="item">Hacé clic en cualquier fila para cargar o editar ese envío</div></div>
+
+    <h3 class="dash-section-title">Empresas</h3>
+    <div class="day-summary" id="day-company-summary"></div>
+    <div class="day-wrap">
+      <table class="day-table">
+        <thead><tr><th>Empresa</th><th>Camión</th><th>Chofer</th><th>Ayudante</th><th>Carga</th><th>Nota</th></tr></thead>
+        <tbody id="day-company-body"></tbody>
+      </table>
+    </div>
+    <div class="legend"><div class="item">Hacé clic en cualquier fila para cargar o editar ese envío</div></div>
+
+    <h3 class="dash-section-title">Eventuales</h3>
+    <div class="day-summary" id="day-occasional-summary"></div>
+    <div class="day-wrap">
+      <table class="day-table">
+        <thead><tr><th>Eventual</th><th>Camión</th><th>Chofer</th><th>Ayudante</th><th>Carga</th><th>Nota</th></tr></thead>
+        <tbody id="day-occasional-body"></tbody>
+      </table>
+    </div>
+    <div class="legend"><div class="item">Hacé clic en cualquier fila para cargar o editar ese envío</div></div>
+  </div>
+
+  <!-- ================= Dashboard ================= -->
+  <div id="view-dashboard" hidden>
+    <div class="dash-toolbar" id="toolbar-dashboard">
+      <label for="dash-from">Desde</label>
+      <input type="date" id="dash-from">
+      <span class="dash-sep">→</span>
+      <label for="dash-to">Hasta</label>
+      <input type="date" id="dash-to">
+    </div>
+    <div class="settings-tabs">
+      <button class="stabbtn active" id="dashsubbtn-viajes">Viajes</button>
+      <button class="stabbtn" id="dashsubbtn-gastos">Gastos</button>
+    </div>
+
+    <div id="dash-sub-viajes">
+      <div class="kpi-grid">
+        <div class="kpi-tile tile-total"><div class="kpi-label">Viajes en el período</div><div class="kpi-value" id="kpi-total">0</div></div>
+        <div class="kpi-tile tile-truck"><div class="kpi-label">Camión con más viajes</div><div class="kpi-value" id="kpi-truck">—</div></div>
+        <div class="kpi-tile tile-driver"><div class="kpi-label">Chofer con más viajes</div><div class="kpi-value" id="kpi-driver">—</div></div>
+        <div class="kpi-tile tile-route"><div class="kpi-label">Ruta con más viajes</div><div class="kpi-value" id="kpi-route">—</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="panel panel-truck"><h4>Viajes por camión</h4><div id="bar-truck"></div></div>
+        <div class="panel panel-route"><h4>Viajes por ruta</h4><div id="bar-route"></div></div>
+        <div class="panel panel-driver"><h4>Viajes por chofer</h4><div id="bar-driver"></div></div>
+        <div class="panel panel-helper"><h4>Viajes por ayudante</h4><div id="bar-helper"></div></div>
+        <div class="panel panel-weekday"><h4>Viajes por día de la semana</h4><div id="bar-weekday"></div></div>
+        <div class="panel panel-source"><h4>Origen de la carga</h4><div id="bar-source"></div></div>
+        <div class="panel panel-cargo panel-wide"><h4>Cantidad despachada por tipo de carga</h4><div id="bar-cargo"></div></div>
+        <div class="panel panel-cross panel-wide"><h4>Viajes por chofer y ruta</h4><div id="crosstab"></div></div>
+      </div>
+
+      <h3 class="dash-section-title">Sucursales</h3>
+      <div class="kpi-grid" style="margin-bottom:16px;">
+        <div class="kpi-tile tile-branch"><div class="kpi-label">Envíos a sucursales en el período</div><div class="kpi-value" id="kpi-branch-visits">0</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="panel panel-branch"><h4>Cantidad despachada por sucursal</h4><div id="bar-branch"></div></div>
+        <div class="panel panel-branch panel-wide"><h4>Cantidad despachada a sucursales por producto</h4><div id="bar-branch-cargo"></div></div>
+      </div>
+
+      <h3 class="dash-section-title">Empresas</h3>
+      <div class="kpi-grid" style="margin-bottom:16px;">
+        <div class="kpi-tile tile-company"><div class="kpi-label">Envíos a empresas en el período</div><div class="kpi-value" id="kpi-company-visits">0</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="panel panel-company"><h4>Cantidad despachada por empresa</h4><div id="bar-company"></div></div>
+        <div class="panel panel-company panel-wide"><h4>Cantidad despachada a empresas por producto</h4><div id="bar-company-cargo"></div></div>
+      </div>
+
+      <h3 class="dash-section-title">Eventuales</h3>
+      <div class="kpi-grid" style="margin-bottom:16px;">
+        <div class="kpi-tile tile-occasional"><div class="kpi-label">Envíos a eventuales en el período</div><div class="kpi-value" id="kpi-occasional-visits">0</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="panel panel-occasional"><h4>Cantidad despachada por eventual</h4><div id="bar-occasional"></div></div>
+        <div class="panel panel-occasional panel-wide"><h4>Cantidad despachada a eventuales por producto</h4><div id="bar-occasional-cargo"></div></div>
+      </div>
+    </div>
+
+    <div id="dash-sub-gastos" hidden>
+      <div class="kpi-grid" style="margin-bottom:16px;">
+        <div class="kpi-tile tile-gastos"><div class="kpi-label">Gasto total en el período</div><div class="kpi-value" id="kpi-gastos-total">$0,00</div></div>
+        <div class="kpi-tile tile-gastos"><div class="kpi-label">Facturas en el período</div><div class="kpi-value" id="kpi-gastos-facturas">0</div></div>
+        <div class="kpi-tile tile-gastos"><div class="kpi-label">Centro de costo con más gasto</div><div class="kpi-value" id="kpi-gastos-centro">—</div></div>
+        <div class="kpi-tile tile-gastos"><div class="kpi-label">Concepto con más gasto</div><div class="kpi-value" id="kpi-gastos-concepto">—</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="panel panel-gastos"><h4>Gasto por centro de costo</h4><div id="bar-gastos-centro"></div></div>
+        <div class="panel panel-gastos"><h4>Gasto por concepto</h4><div id="bar-gastos-concepto"></div></div>
+        <div class="panel panel-gastos panel-wide"><h4>Gasto por proveedor</h4><div id="bar-gastos-proveedor"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Compras ================= -->
+  <div id="view-compras" hidden>
+    <div class="toolbar" id="toolbar-compras">
+      <div style="font-size:12.5px; color:var(--ink-2);">Proveedores, compras y órdenes de compra</div>
+    </div>
+    <div class="settings-subtabs" style="display:flex; gap:18px; border-bottom:1px solid var(--border); margin-bottom:14px;">
+      <button class="stabbtn active" id="ctab-proveedores">Proveedores</button>
+      <button class="stabbtn" id="ctab-compra">Compra</button>
+      <button class="stabbtn" id="ctab-oc">Orden de compra</button>
+    </div>
+
+    <div id="csec-proveedores">
+      <div class="compras-section-head">
+        <h3>Proveedores</h3>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <input type="search" id="prov-search" class="demo-search" placeholder="Buscar proveedor, rubro o contacto..." aria-label="Buscar proveedor">
+          <button class="btn primary edit-action" id="new-proveedor-btn">+ Nuevo proveedor</button>
+        </div>
+      </div>
+      <div class="day-wrap">
+        <table class="day-table">
+          <thead><tr><th>Proveedor</th><th>Rubro</th><th>Contacto</th><th>Teléfono</th><th></th></tr></thead>
+          <tbody id="proveedores-body"></tbody>
+        </table>
+      </div>
+      <div class="legend"><div class="item">Hacé clic en un proveedor para editarlo</div></div>
+    </div>
+
+    <div id="csec-compra" hidden>
+      <div class="compras-section-head">
+        <h3>Compras (facturas)</h3>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <select id="factura-filter-estado" class="scope-select" style="max-width:170px;" aria-label="Filtrar por estado">
+            <option value="">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="pagada">Pagada</option>
+          </select>
+          <button class="btn primary edit-action" id="new-factura-btn">+ Nueva compra</button>
+        </div>
+      </div>
+      <div class="day-wrap">
+        <table class="day-table">
+          <thead><tr><th>Proveedor</th><th>N° Factura</th><th>Fecha</th><th>Orden de compra</th><th>Monto</th><th>Estado</th><th>Archivo</th></tr></thead>
+          <tbody id="facturas-body"></tbody>
+        </table>
+      </div>
+      <div class="legend"><div class="item">Una compra (factura) no necesita tener una orden de compra asociada</div></div>
+    </div>
+
+    <div id="csec-oc" hidden>
+      <div class="compras-section-head">
+        <h3>Órdenes de compra</h3>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <select id="oc-filter-estado" class="scope-select" style="max-width:170px;" aria-label="Filtrar por estado">
+            <option value="">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="aprobada">Aprobada</option>
+            <option value="recibida">Recibida</option>
+          </select>
+          <button class="btn primary edit-action" id="new-oc-btn">+ Nueva orden de compra</button>
+        </div>
+      </div>
+      <div class="day-wrap">
+        <table class="day-table">
+          <thead><tr><th>N°</th><th>Proveedor</th><th>Fecha</th><th>Descripción</th><th>Monto</th><th>Estado</th></tr></thead>
+          <tbody id="oc-body"></tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <div class="item">Hacé clic en una orden de compra para editarla</div>
+        <div class="item">Centros de costo y Conceptos se administran desde ⚙ → Compras y Tesorería</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Pagos ================= -->
+  <div id="view-pagos" hidden>
+    <div class="toolbar" id="toolbar-pagos">
+      <div style="font-size:12.5px; color:var(--ink-2);">Pagos y órdenes de pago</div>
+    </div>
+    <div class="settings-subtabs" style="display:flex; gap:18px; border-bottom:1px solid var(--border); margin-bottom:14px;">
+      <button class="stabbtn active" id="ptab-pago">Pago</button>
+      <button class="stabbtn" id="ptab-op">Orden de Pago</button>
+    </div>
+    <div id="psec-pago">
+      <div class="compras-section-head">
+        <h3>Registrar pago</h3>
+        <div style="font-size:12px; color:var(--ink-2);">Órdenes de pago pendientes</div>
+      </div>
+      <div class="day-wrap">
+        <table class="day-table">
+          <thead><tr><th>N°</th><th>Proveedor</th><th>Fecha</th><th>Monto</th><th></th></tr></thead>
+          <tbody id="pago-pend-body"></tbody>
+        </table>
+      </div>
+      <div class="compras-section-head" style="margin-top:18px;"><h3>Pagos realizados</h3></div>
+      <div class="day-wrap">
+        <table class="day-table">
+          <thead><tr><th>N°</th><th>Proveedor</th><th>Fecha</th><th>Medio</th><th>Cuenta</th><th>Monto</th></tr></thead>
+          <tbody id="pago-real-body"></tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <div class="item">"Registrar pago" abre la orden para elegir el medio (efectivo, cheque, transferencia) y la cuenta, y genera el egreso automáticamente</div>
+      </div>
+    </div>
+    <div id="psec-op" hidden>
+      <div class="compras-section-head">
+        <h3>Órdenes de pago</h3>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <select id="pago-filter-estado" class="scope-select" style="max-width:170px;" aria-label="Filtrar por estado">
+            <option value="">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="pagada">Pagada</option>
+          </select>
+          <button class="btn primary edit-action" id="new-pago-btn">+ Nueva orden de pago</button>
+        </div>
+      </div>
+      <div class="day-wrap">
+        <table class="day-table">
+          <thead><tr><th>N°</th><th>Proveedor</th><th>Fecha</th><th>Facturas</th><th>Monto</th><th>Estado</th></tr></thead>
+          <tbody id="pagos-body"></tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <div class="item">Una orden de pago puede agrupar varias facturas pendientes del mismo proveedor</div>
+        <div class="item">Hacé clic en una orden de pago para editarla</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Tesorería ================= -->
+  <div id="view-tesoreria" hidden>
+    <div class="toolbar" id="toolbar-tesoreria">
+      <div style="font-size:12.5px; color:var(--ink-2);">Deuda de proveedores, cuentas y movimientos de caja/banco</div>
+    </div>
+    <div class="compras-section-head">
+      <h3>Deuda de proveedores</h3>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <select id="deuda-proveedor-filter" class="scope-select" style="max-width:220px;" aria-label="Filtrar por proveedor"><option value="">Todos los proveedores</option></select>
+        <button class="btn" id="deuda-modo-resumido">Resumido</button>
+        <button class="btn" id="deuda-modo-detallado">Detallado</button>
+      </div>
+    </div>
+    <div id="deuda-total" style="font-size:13px; color:var(--ink-2); margin:2px 0 8px;"></div>
+    <div class="day-wrap">
+      <table class="day-table">
+        <thead id="deuda-head"></thead>
+        <tbody id="deuda-body"></tbody>
+      </table>
+    </div>
+    <div class="compras-section-head">
+      <h3>Cuentas</h3>
+      <button class="btn primary edit-action" id="new-cuenta-btn">+ Nueva cuenta</button>
+    </div>
+    <div class="day-wrap">
+      <table class="day-table">
+        <thead><tr><th>Cuenta</th><th>Tipo</th><th>Saldo inicial</th><th>Saldo actual</th><th>Notas</th></tr></thead>
+        <tbody id="cuentas-body"></tbody>
+      </table>
+    </div>
+    <div class="compras-section-head">
+      <h3>Movimientos</h3>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select id="mov-filter-cuenta" class="scope-select" style="max-width:200px;" aria-label="Filtrar por cuenta"><option value="">Todas las cuentas</option></select>
+        <button class="btn primary edit-action" id="new-movimiento-btn">+ Nuevo movimiento</button>
+      </div>
+    </div>
+    <div class="day-wrap">
+      <table class="day-table">
+        <thead><tr><th>Fecha</th><th>Cuenta</th><th>Concepto</th><th>Origen</th><th>Monto</th></tr></thead>
+        <tbody id="movimientos-body"></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <div class="item">El saldo actual de cada cuenta es el saldo inicial menos todos sus egresos cargados</div>
+      <div class="item">Al marcar una orden de pago como Pagada se elige la cuenta y se genera el egreso automáticamente — esos movimientos no se pueden editar ni borrar desde acá, solo cambiando la orden de pago</div>
+      <div class="item">Los movimientos cargados a mano (no ligados a una orden de pago) sí se pueden editar o borrar</div>
+    </div>
+  </div>
+
+  <!-- ================= Simulación ================= -->
+  <div id="view-simulador" hidden>
+    <div class="toolbar" id="toolbar-simulador">
+      <div style="font-size:12.5px; color:var(--ink-2);">Simulá qué facturas pagar con el disponible, priorizando por vencimiento</div>
+    </div>
+    <div class="compras-section-head">
+      <h3>Simulación de pagos</h3>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <label for="sim-disponible" style="font-size:12px;color:var(--ink-2);">Disponible</label>
+        <input type="text" id="sim-disponible" inputmode="decimal" class="scope-select" style="max-width:160px;" placeholder="(saldo de cuentas)">
+        <button class="btn primary" id="sim-auto-btn">Auto por vencimiento</button>
+        <button class="btn" id="sim-limpiar-btn">Limpiar</button>
+      </div>
+    </div>
+    <div id="sim-resumen" style="display:flex; gap:18px; flex-wrap:wrap; margin:6px 0 12px; font-size:13px;"></div>
+    <div class="day-wrap">
+      <table class="day-table">
+        <thead><tr><th style="width:34px;">✓</th><th>Vencimiento</th><th>Estado</th><th>Proveedor</th><th>Factura</th><th>Monto</th></tr></thead>
+        <tbody id="sim-body"></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <div class="item">Tildá las facturas para armar el pago. "Auto por vencimiento" selecciona las más urgentes hasta agotar el disponible.</div>
+      <div class="item">El disponible arranca en el saldo total de tus cuentas; podés escribir otro monto a mano.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Modal: viaje / envío ================= -->
+<div class="overlay" id="cell-overlay">
+  <div class="modal" id="cell-modal" role="dialog" aria-modal="true" aria-labelledby="cm-title">
+    <h3 id="cm-title">Ruta</h3>
+    <div class="sub" id="cm-sub">Fecha</div>
+    <div class="suggest-hint" id="cm-suggest" style="display:none;">💡 Sugerido según el historial de esta ruta</div>
+    <div class="field">
+      <label for="cm-truck">Camión</label>
+      <select id="cm-truck"></select>
+    </div>
+    <div class="crew-fields">
+      <div class="field"><label for="cm-driver">Chofer</label><select id="cm-driver"></select></div>
+      <div class="field"><label for="cm-helper">Ayudante</label><select id="cm-helper"></select></div>
+    </div>
+    <div class="field">
+      <div class="cargo-header">
+        <label style="margin-bottom:0;">Carga</label>
+        <div class="cargo-unit-wrap">
+          <label for="cm-cargo-unit" style="margin-bottom:0;">Unidad</label>
+          <input type="text" id="cm-cargo-unit" placeholder="ej: pallets" maxlength="20">
+        </div>
+      </div>
+      <div class="cargo-table-wrap"><table class="cargo-table">
+        <thead><tr><th>Producto</th><th>Cant.</th></tr></thead>
+        <tbody id="cm-cargo-body"></tbody>
+      </table></div>
+    </div>
+    <div class="field">
+      <label for="cm-note">Nota (opcional)</label>
+      <textarea id="cm-note" placeholder="Instrucciones para este viaje..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <div class="left">
+        <button class="btn" id="cm-cancel">Cancelar</button>
+        <button class="btn" id="cm-delete" style="display:none; color:var(--danger);">Eliminar</button>
+      </div>
+      <button class="btn primary" id="cm-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Modal: proveedor ================= -->
+<div class="overlay" id="proveedor-overlay">
+  <div class="modal" id="proveedor-modal" style="max-width:600px; max-height:88vh; overflow-y:auto;" role="dialog" aria-modal="true" aria-labelledby="pm-title">
+    <h3 id="pm-title">Nuevo proveedor</h3>
+    <div class="sub">Datos del proveedor</div>
+    <div class="field"><label for="pm-nombre">Nombre / Razón social</label><input type="text" id="pm-nombre" maxlength="80" placeholder="Ej: Repuestos del Sur S.A."></div>
+    <div class="crew-fields">
+      <div class="field"><label for="pm-cuit">CUIT</label><input type="text" id="pm-cuit" maxlength="20" placeholder="20-12345678-9"></div>
+      <div class="field"><label for="pm-rubro">Rubro</label><input type="text" id="pm-rubro" maxlength="40" placeholder="Ej: Repuestos"></div>
+    </div>
+    <div class="crew-fields">
+      <div class="field"><label for="pm-contacto">Contacto</label><input type="text" id="pm-contacto" maxlength="60" placeholder="Persona de contacto"></div>
+      <div class="field"><label for="pm-telefono">Teléfono</label><input type="text" id="pm-telefono" maxlength="30"></div>
+    </div>
+    <div class="crew-fields">
+      <div class="field"><label for="pm-email">Email</label><input type="text" id="pm-email" maxlength="80"></div>
+      <div class="field"><label for="pm-direccion">Dirección</label><input type="text" id="pm-direccion" maxlength="100"></div>
+    </div>
+    <div class="crew-fields">
+      <div class="field"><label for="pm-condicion-iva">Condición IVA</label>
+        <select id="pm-condicion-iva"><option value="">—</option><option>Responsable Inscripto</option><option>Monotributo</option><option>Exento</option><option>Consumidor Final</option><option>No Alcanzado</option></select></div>
+      <div class="field"><label for="pm-condicion-pago">Condición de pago</label>
+        <select id="pm-condicion-pago"><option value="">—</option><option>Cuenta Corriente</option><option>Contado</option><option>7 días</option><option>15 días</option><option>30 días</option><option>60 días</option></select></div>
+    </div>
+    <div class="crew-fields">
+      <div class="field"><label for="pm-localidad">Localidad</label><input type="text" id="pm-localidad" maxlength="60"></div>
+      <div class="field"><label for="pm-provincia">Provincia</label><input type="text" id="pm-provincia" maxlength="40"></div>
+    </div>
+    <div class="field"><label for="pm-notas">Notas (opcional)</label><textarea id="pm-notas" placeholder="Observaciones..."></textarea></div>
+    <div class="field">
+      <label for="pm-archivo-input">Archivos adjuntos</label>
+      <div class="attach-list" id="pm-archivos-list"></div>
+      <div class="attach-add-row"><input type="file" id="pm-archivo-input" accept="application/pdf,image/*" multiple></div>
+    </div>
+    <div class="modal-actions">
+      <div class="left">
+        <button class="btn" id="pm-cancel">Cancelar</button>
+        <button class="btn" id="pm-delete" style="display:none; color:var(--danger);">Eliminar</button>
+      </div>
+      <button class="btn primary" id="pm-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Modal: orden de compra ================= -->
+<div class="overlay" id="oc-overlay">
+  <div class="modal" id="oc-modal" style="max-width:420px;" role="dialog" aria-modal="true" aria-labelledby="ocm-title">
+    <h3 id="ocm-title">Nueva orden de compra</h3>
+    <div class="sub" id="ocm-sub">—</div>
+    <div class="field">
+      <label for="ocm-proveedor-input">Proveedor</label>
+      <div class="combo" id="ocm-combo"><input type="text" id="ocm-proveedor-input" placeholder="Buscar proveedor por nombre..." autocomplete="off"><div class="combo-menu" hidden></div></div>
+    </div>
+    <div class="crew-fields">
+      <div class="field"><label for="ocm-fecha">Fecha</label><input type="date" id="ocm-fecha"></div>
+      <div class="field"><label for="ocm-monto">Monto</label><input type="text" id="ocm-monto" inputmode="decimal" placeholder="0,00"></div>
+    </div>
+    <div class="field"><label for="ocm-descripcion">Descripción</label><textarea id="ocm-descripcion" placeholder="Qué se compra..."></textarea></div>
+    <div class="field"><label for="ocm-estado">Estado</label>
+      <select id="ocm-estado"><option value="pendiente">Pendiente</option><option value="aprobada">Aprobada</option><option value="recibida">Recibida</option></select></div>
+    <div class="modal-actions">
+      <div class="left">
+        <button class="btn" id="ocm-cancel">Cancelar</button>
+        <button class="btn" id="ocm-delete" style="display:none; color:var(--danger);">Eliminar</button>
+      </div>
+      <button class="btn primary" id="ocm-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Modal: factura ================= -->
+<div class="overlay" id="factura-overlay">
+  <div class="modal wide" id="factura-modal" style="max-width:660px;" role="dialog" aria-modal="true" aria-labelledby="fm-title">
+    <h3 id="fm-title">Nueva factura</h3>
+    <div class="sub">Datos de la factura — cargalos a mano o subí el archivo para completarlos automáticamente</div>
+    <div class="factura-layout">
+      <div class="modal-scroll-body">
+        <div class="factura-read-row" id="fm-read-row">
+          <div class="sub2">Subí el PDF o la foto de la factura y complete los campos por vos. Revisá los datos antes de guardar.</div>
+          <button type="button" class="btn" id="fm-read-btn">📄 Leer desde archivo</button>
+        </div>
+        <div class="factura-read-status" id="fm-read-status" role="status" hidden></div>
+        <div class="crew-fields">
+          <div class="field">
+            <label for="fm-proveedor-input">Proveedor</label>
+            <div class="combo" id="fm-combo"><input type="text" id="fm-proveedor-input" placeholder="Buscar proveedor por nombre..." autocomplete="off"><div class="combo-menu" hidden></div></div>
+          </div>
+          <div class="field"><label for="fm-oc">Orden de compra (opcional)</label><select id="fm-oc"></select></div>
+        </div>
+        <div class="crew-fields">
+          <div class="field"><label for="fm-centro-costo">Centro de costo</label><select id="fm-centro-costo"></select></div>
+          <div class="field"><label for="fm-concepto">Concepto</label><select id="fm-concepto"></select></div>
+        </div>
+        <div class="crew-fields">
+          <div class="field"><label for="fm-numero">N° de factura</label><input type="text" id="fm-numero" maxlength="40" placeholder="Ej: A-0001-00012345"></div>
+          <div class="field"><label for="fm-fecha">Fecha</label><input type="date" id="fm-fecha"></div>
+        </div>
+        <div class="crew-fields">
+          <div class="field"><label for="fm-vencimiento">Vencimiento</label><input type="date" id="fm-vencimiento"></div>
+          <div class="field"><label for="fm-monto">Monto</label><input type="text" id="fm-monto" inputmode="decimal" placeholder="0,00"></div>
+        </div>
+        <div class="field">
+          <label for="fm-archivo-input">Archivos adjuntos</label>
+          <div class="attach-list" id="fm-archivos-list"></div>
+          <div class="attach-add-row"><input type="file" id="fm-archivo-input" accept="application/pdf,image/*" multiple></div>
+        </div>
+        <div class="field"><label for="fm-notas">Notas (opcional)</label><textarea id="fm-notas" placeholder="Observaciones..."></textarea></div>
+      </div>
+      <aside class="factura-preview" id="fm-preview" hidden>
+        <div class="fm-preview-head">
+          <span class="fm-preview-name" id="fm-preview-name"></span>
+          <button type="button" class="fm-pv-btn" id="fm-preview-close" title="Ocultar la vista previa">✕</button>
+        </div>
+        <div class="fm-preview-body" id="fm-preview-body"></div>
+      </aside>
+    </div>
+    <div class="modal-actions">
+      <div class="left">
+        <button class="btn" id="fm-cancel">Cancelar</button>
+        <button class="btn" id="fm-delete" style="display:none; color:var(--danger);">Eliminar</button>
+      </div>
+      <button class="btn primary" id="fm-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Modal: orden de pago ================= -->
+<div class="overlay" id="pago-overlay">
+  <div class="modal wide" id="pago-modal" style="max-width:640px;" role="dialog" aria-modal="true" aria-labelledby="pom-title">
+    <h3 id="pom-title">Nueva orden de pago</h3>
+    <div class="sub" id="pom-sub">—</div>
+    <div class="modal-scroll-body">
+      <div class="crew-fields">
+        <div class="field">
+          <label for="pom-proveedor-input">Proveedor</label>
+          <div class="combo" id="pom-combo"><input type="text" id="pom-proveedor-input" placeholder="Buscar proveedor por nombre..." autocomplete="off"><div class="combo-menu" hidden></div></div>
+        </div>
+        <div class="field">
+          <label style="margin-bottom:2px;">Monto total</label>
+          <div class="num" id="pom-monto-total" style="font-size:16px; font-weight:700; padding:8px 0;">$0,00</div>
+        </div>
+      </div>
+      <div class="field">
+        <label style="margin-bottom:5px;">Facturas a pagar</label>
+        <div class="cargo-table-wrap" id="pom-facturas-list" style="padding:6px 8px;"></div>
+      </div>
+      <div class="crew-fields">
+        <div class="field"><label for="pom-fecha">Fecha</label><input type="date" id="pom-fecha"></div>
+        <div class="field"><label for="pom-medio">Medio de pago</label>
+          <select id="pom-medio"><option value="transferencia">Transferencia</option><option value="efectivo">Efectivo</option><option value="cheque">Cheque</option><option value="otro">Otro</option></select></div>
+      </div>
+      <div class="crew-fields">
+        <div class="field"><label for="pom-estado">Estado</label>
+          <select id="pom-estado"><option value="pendiente">Pendiente</option><option value="pagada">Pagada</option></select></div>
+        <div class="field" id="pom-cuenta-field" style="display:none;"><label for="pom-cuenta">Cuenta de pago</label><select id="pom-cuenta"></select></div>
+      </div>
+      <div class="field"><label for="pom-notas">Notas (opcional)</label><textarea id="pom-notas" placeholder="Observaciones..."></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <div class="left">
+        <button class="btn" id="pom-cancel">Cancelar</button>
+        <button class="btn" id="pom-delete" style="display:none; color:var(--danger);">Eliminar</button>
+      </div>
+      <button class="btn primary" id="pom-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Modal: cuenta ================= -->
+<div class="overlay" id="cuenta-overlay">
+  <div class="modal" id="cuenta-modal" style="max-width:420px;" role="dialog" aria-modal="true" aria-labelledby="ctam-title">
+    <h3 id="ctam-title">Nueva cuenta</h3>
+    <div class="sub">Cuenta de caja o banco</div>
+    <div class="field"><label for="ctam-nombre">Nombre</label><input type="text" id="ctam-nombre" maxlength="60" placeholder="Ej: Caja principal, Banco cuenta corriente"></div>
+    <div class="crew-fields">
+      <div class="field"><label for="ctam-tipo">Tipo</label><select id="ctam-tipo"><option value="caja">Caja</option><option value="banco">Banco</option></select></div>
+      <div class="field"><label for="ctam-saldo-inicial">Saldo inicial</label><input type="text" id="ctam-saldo-inicial" inputmode="decimal" placeholder="0,00"></div>
+    </div>
+    <div class="field"><label for="ctam-notas">Notas (opcional)</label><textarea id="ctam-notas" placeholder="Observaciones..."></textarea></div>
+    <div class="modal-actions">
+      <div class="left">
+        <button class="btn" id="ctam-cancel">Cancelar</button>
+        <button class="btn" id="ctam-delete" style="display:none; color:var(--danger);">Eliminar</button>
+      </div>
+      <button class="btn primary" id="ctam-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Modal: movimiento ================= -->
+<div class="overlay" id="movimiento-overlay">
+  <div class="modal" id="movimiento-modal" style="max-width:420px;" role="dialog" aria-modal="true" aria-labelledby="movm-title">
+    <h3 id="movm-title">Nuevo movimiento</h3>
+    <div class="sub">Egreso manual (no ligado a una orden de pago)</div>
+    <div class="field"><label for="movm-cuenta">Cuenta</label><select id="movm-cuenta"></select></div>
+    <div class="crew-fields">
+      <div class="field"><label for="movm-fecha">Fecha</label><input type="date" id="movm-fecha"></div>
+      <div class="field"><label for="movm-monto">Monto</label><input type="text" id="movm-monto" inputmode="decimal" placeholder="0,00"></div>
+    </div>
+    <div class="field"><label for="movm-concepto">Concepto</label><input type="text" id="movm-concepto" maxlength="80" placeholder="Ej: Sueldos, Impuestos, Combustible"></div>
+    <div class="modal-actions">
+      <div class="left">
+        <button class="btn" id="movm-cancel">Cancelar</button>
+        <button class="btn" id="movm-delete" style="display:none; color:var(--danger);">Eliminar</button>
+      </div>
+      <button class="btn primary" id="movm-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Modal: recorrido de la demo ================= -->
+<div class="overlay" id="tour-overlay">
+  <div class="modal" id="tour-modal" role="dialog" aria-modal="true" aria-labelledby="tour-title">
+    <h3 id="tour-title">Recorrido en 2 minutos</h3>
+    <div class="sub">Sistema de gestión para una distribuidora: planifica el reparto y controla compras, pagos y caja. Tocá un paso para ir directo.</div>
+    <ol>
+      <li data-go="grid"><div><b>Planificá el mes de reparto</b><span>En FlotaPesada tocá ✨ Planificar automáticamente: completa las rutas con lo que sugiere el historial. Clic en una celda para cargar un viaje.</span></div></li>
+      <li data-go="day"><div><b>Mirá el parte del día</b><span>Día muestra qué camión, chofer y carga sale por cada ruta, sucursal y cliente.</span></div></li>
+      <li data-go="compras-ocr"><div><b>Cargá una factura con IA</b><span>Compras → + Nueva compra → 📄 Leer desde archivo completa los datos solo.</span></div></li>
+      <li data-go="pagos"><div><b>Pagá y mirá la caja</b><span>En Pagos tocá Registrar pago; el egreso aparece al instante en Tesorería.</span></div></li>
+      <li data-go="simulador"><div><b>Decidí qué pagar primero</b><span>Simulación elige las facturas más urgentes según el dinero disponible.</span></div></li>
+      <li data-go="dashboard"><div><b>Seguí los números</b><span>Dashboard resume viajes y gastos de los últimos meses.</span></div></li>
+    </ol>
+    <div class="modal-actions">
+      <span></span>
+      <button class="btn primary" id="tour-close">Empezar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   DEMO_DATA — todos los datos son FICTICIOS. Editá libremente.
+   - Fechas: "d" = días respecto de HOY (0 = hoy, -10 = hace 10 días),
+     así la demo siempre muestra el mes actual.
+   - Los viajes y envíos se generan con semilla fija a partir de los
+     patrones de cada ruta/destino (freq = probabilidad Lun..Dom).
+   ===================================================================== */
+const DEMO_DATA = {
+  empresa: { nombre: "Gestión Austral", razonSocial: "Distribuidora Austral S.A.", usuario: "usuario.demo@ejemplo.com.ar" },
+
+  trucks: [
+    { id: "11",   label: "Camión 11",   color: 13,   driver: "Marcelo Gómez",    helper: "Lucas Romero" },
+    { id: "24",   label: "Camión 24",   color: 20,   driver: "Javier Fernández", helper: "Matías Herrera" },
+    { id: "36",   label: "Camión 36",   color: 32,   driver: "Diego Sosa",       helper: "Nicolás Díaz" },
+    { id: "18",   label: "Camión 18",   color: 17,   driver: "Carlos Benítez",   helper: "Tomás Ibarra" },
+    { id: "45",   label: "Camión 45",   color: 41,   driver: "Ramón Acosta",     helper: "Brian Castro" },
+    { id: "5000", label: "Camión 5000", color: 4000, driver: "Sergio Medina",    helper: "Ezequiel Vera" },
+    { id: "63",   label: "Camión 63",   color: null, driver: "Hugo Ledesma",     helper: "Gastón Paz" }
+  ],
+  drivers: ["Marcelo Gómez","Javier Fernández","Diego Sosa","Carlos Benítez","Ramón Acosta","Sergio Medina","Hugo Ledesma","Walter Ríos"],
+  helpers: ["Lucas Romero","Matías Herrera","Nicolás Díaz","Tomás Ibarra","Brian Castro","Ezequiel Vera","Gastón Paz","Leandro Ojeda"],
+
+  routes: [
+    { id: "centro",     label: "Centro",     truck: "11",   freq: [0.95,0.9,0.95,0.9,0.95,0.5,0] },
+    { id: "norte",      label: "Norte",      truck: "24",   freq: [0.9,0.2,0.9,0.2,0.9,0.1,0] },
+    { id: "sur",        label: "Sur",        truck: "36",   freq: [0.2,0.9,0.2,0.9,0.2,0.6,0] },
+    { id: "industrial", label: "Industrial", truck: "18",   freq: [0.9,0.9,0.9,0.9,0.9,0,0] },
+    { id: "costanera",  label: "Costanera",  truck: "45",   freq: [0.6,0.1,0.6,0.1,0.8,0.7,0.3] },
+    { id: "ruta3",      label: "Ruta 3",     truck: "5000", freq: [0.1,0.85,0.1,0.85,0.1,0,0] },
+    { id: "chacras",    label: "Chacras",    truck: "63",   freq: [0.1,0.1,0.85,0.1,0.1,0.6,0] }
+  ],
+
+  cargoTypes: [
+    { id: "b20", label: "Bidón 20 L" }, { id: "b12", label: "Bidón 12 L" }, { id: "b6", label: "Bidón 6 L" },
+    { id: "sif", label: "Sifón 1,5 L" }, { id: "soda6", label: "Soda pack x6" }, { id: "agua6", label: "Agua 2 L pack x6" },
+    { id: "agua12", label: "Agua 500 ml x12" }, { id: "dispenser", label: "Dispenser" }, { id: "vasos100", label: "Vasos x100" }, { id: "hielo", label: "Hielo 5 kg" }
+  ],
+
+  sucursales: [
+    { id: "s-deposito-norte", label: "Depósito Norte",  truck: "63", freq: [0.8,0,0.8,0,0.8,0,0] },
+    { id: "s-local-centro",   label: "Local Centro",    truck: "45", freq: [0,0.8,0,0.8,0,0.5,0] },
+    { id: "s-costanera",      label: "Local Costanera", truck: "36", freq: [0.7,0,0,0.7,0,0.6,0] },
+    { id: "s-punto-oeste",    label: "Punto Oeste",     truck: "63", freq: [0,0.7,0,0,0.7,0,0] },
+    { id: "s-terminal",       label: "Local Terminal",  truck: "24", freq: [0.6,0,0.6,0,0.6,0,0] },
+    { id: "s-deposito-sur",   label: "Depósito Sur",    truck: "18", freq: [0,0.6,0,0.6,0,0,0] }
+  ],
+  empresas: [
+    { id: "e-hotel",    label: "Hotel Mirador del Golfo", truck: "45", freq: [0.5,0,0.5,0,0.5,0,0] },
+    { id: "e-clinica",  label: "Clínica del Viento",      truck: "11", freq: [0,0.5,0,0.5,0,0,0] },
+    { id: "e-colegio",  label: "Colegio Cruz del Sur",    truck: "24", freq: [0.4,0,0,0.4,0,0,0] },
+    { id: "e-metal",    label: "Metalúrgica Cañadón",     truck: "18", freq: [0,0.4,0,0,0.4,0,0] },
+    { id: "e-gimnasio", label: "Gimnasio Meseta",         truck: "36", freq: [0,0,0.4,0,0,0.3,0] }
+  ],
+  eventuales: [
+    { id: "o-feria",  label: "Feria de la Costa",       truck: "5000", freq: [0,0,0,0,0.12,0.25,0.2] },
+    { id: "o-club",   label: "Club Atlético Patagonia", truck: "45",   freq: [0,0,0,0,0,0.25,0.15] },
+    { id: "o-maraton",label: "Maratón Ciudad",          truck: "63",   freq: [0,0,0,0,0,0.08,0.12] }
+  ],
+
+  centrosCosto: ["Flota pesada","Sucursales","Administración","Planta","Comercial"],
+  conceptos: ["Combustible","Repuestos","Mantenimiento","Seguros","Insumos","Servicios","Envases","Honorarios"],
+
+  cuentas: [
+    { id: "c1", nombre: "Caja principal",            tipo: "caja",  saldoInicial: 9800000,  notas: "Recaudación de reparto" },
+    { id: "c2", nombre: "Caja chica",                tipo: "caja",  saldoInicial: 450000,   notas: "Gastos menores de oficina" },
+    { id: "c3", nombre: "Banco — cuenta corriente",  tipo: "banco", saldoInicial: 31500000, notas: "Cuenta operativa" },
+    { id: "c4", nombre: "Banco — caja de ahorro",    tipo: "banco", saldoInicial: 7200000,  notas: "" }
+  ],
+
+  /* Factura que "lee" la IA simulada en Compras → Leer desde archivo */
+  facturaEjemploOCR: { prov: "p3", numero: "A-0007-00048213", d: -1, venc: 29, monto: 1554245.00, centro: 0, concepto: 1,
+    items: [["Neumático 295/80 R22.5", 2, 548000], ["Alineación y balanceo", 1, 92500], ["Válvulas y armado", 2, 48000]] },
+
+  /* --- Compras, pagos y tesorería (prov = id de proveedor; centro/concepto = índice en las listas de arriba) --- */
+  proveedores: [
+    {"id": "p1", "nombre": "Repuestos del Sur S.A.", "cuit": "30-72867825-8", "rubro": "Repuestos", "contacto": "Gustavo Paredes", "telefono": "(0297) 555-1409", "email": "ventas@repuestos.ejemplo.com.ar", "condIva": "Monotributo", "condPago": "30 días", "localidad": "Caleta Olivia", "provincia": "Santa Cruz", "centro": 0, "concepto": 1},
+    {"id": "p2", "nombre": "Lubricantes Patagónicos SRL", "cuit": "30-75108603-2", "rubro": "Lubricantes", "contacto": "Andrea Quiroga", "telefono": "(0297) 555-4657", "email": "ventas@lubricantes.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "15 días", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 0, "concepto": 2},
+    {"id": "p3", "nombre": "Neumáticos Austral", "cuit": "30-72719583-1", "rubro": "Neumáticos", "contacto": "Pablo Cáceres", "telefono": "(0297) 555-9935", "email": "ventas@neumáticos.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "Cuenta Corriente", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 0, "concepto": 1},
+    {"id": "p4", "nombre": "Combustibles Ruta 3 SRL", "cuit": "30-78078673-5", "rubro": "Combustible", "contacto": "Mónica Villalba", "telefono": "(0297) 555-1520", "email": "ventas@combustibles.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "Cuenta Corriente", "localidad": "Caleta Olivia", "provincia": "Santa Cruz", "centro": 0, "concepto": 0},
+    {"id": "p5", "nombre": "Envases Plásticos del Valle", "cuit": "30-72571945-0", "rubro": "Envases", "contacto": "Rubén Aguirre", "telefono": "(0297) 555-4582", "email": "ventas@envases.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "15 días", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 3, "concepto": 6},
+    {"id": "p6", "nombre": "Tapas y Precintos S.A.", "cuit": "30-79478454-9", "rubro": "Envases", "contacto": "Silvina Ortiz", "telefono": "(0297) 555-1434", "email": "ventas@tapas.ejemplo.com.ar", "condIva": "Monotributo", "condPago": "30 días", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 3, "concepto": 6},
+    {"id": "p7", "nombre": "Etiquetas Rápidas SRL", "cuit": "30-74335942-8", "rubro": "Gráfica", "contacto": "Daniela Funes", "telefono": "(0297) 555-9928", "email": "ventas@etiquetas.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "Contado", "localidad": "Caleta Olivia", "provincia": "Santa Cruz", "centro": 3, "concepto": 4},
+    {"id": "p8", "nombre": "Gráfica Cono Sur", "cuit": "30-74698379-3", "rubro": "Gráfica", "contacto": "Sebastián Moyano", "telefono": "(0297) 555-8359", "email": "ventas@gráfica.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "30 días", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 4, "concepto": 5},
+    {"id": "p9", "nombre": "Ferretería La Tuerca", "cuit": "30-75667265-6", "rubro": "Ferretería", "contacto": "Oscar Luna", "telefono": "(0297) 555-1106", "email": "ventas@ferretería.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "15 días", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 3, "concepto": 4},
+    {"id": "p10", "nombre": "Aseguradora Viento Sur", "cuit": "30-78090293-0", "rubro": "Seguros", "contacto": "Laura Méndez", "telefono": "(0297) 555-6574", "email": "ventas@aseguradora.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "30 días", "localidad": "Caleta Olivia", "provincia": "Santa Cruz", "centro": 2, "concepto": 3},
+    {"id": "p11", "nombre": "Limpieza Integral Golfo", "cuit": "30-73608513-4", "rubro": "Limpieza", "contacto": "Paula Giménez", "telefono": "(0297) 555-4527", "email": "ventas@limpieza.ejemplo.com.ar", "condIva": "Monotributo", "condPago": "30 días", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 1, "concepto": 5},
+    {"id": "p12", "nombre": "Electricidad Brío", "cuit": "30-72714803-4", "rubro": "Electricidad", "contacto": "Mariano Vega", "telefono": "(0297) 555-2519", "email": "ventas@electricidad.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "Contado", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 3, "concepto": 2},
+    {"id": "p13", "nombre": "Sistemas Nube Clara", "cuit": "30-72622631-7", "rubro": "Software", "contacto": "Agustina Torres", "telefono": "(0297) 555-6881", "email": "ventas@sistemas.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "30 días", "localidad": "Caleta Olivia", "provincia": "Santa Cruz", "centro": 2, "concepto": 5},
+    {"id": "p14", "nombre": "Taller Hermanos Ríos", "cuit": "30-75437923-4", "rubro": "Taller mecánico", "contacto": "Raúl Ríos", "telefono": "(0297) 555-1711", "email": "ventas@taller.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "Contado", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 0, "concepto": 2},
+    {"id": "p15", "nombre": "Vidriería El Faro", "cuit": "30-79996414-6", "rubro": "Vidriería", "contacto": "Graciela Navarro", "telefono": "(0297) 555-3045", "email": "ventas@vidriería.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "Contado", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 1, "concepto": 2},
+    {"id": "p16", "nombre": "Frío Polar Refrigeración", "cuit": "30-72322047-4", "rubro": "Refrigeración", "contacto": "Esteban Godoy", "telefono": "(0297) 555-5803", "email": "ventas@frío.ejemplo.com.ar", "condIva": "Monotributo", "condPago": "30 días", "localidad": "Caleta Olivia", "provincia": "Santa Cruz", "centro": 3, "concepto": 2},
+    {"id": "p17", "nombre": "Uniformes Patagonia", "cuit": "30-77067228-6", "rubro": "Indumentaria", "contacto": "Verónica Correa", "telefono": "(0297) 555-4150", "email": "ventas@uniformes.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "Cuenta Corriente", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 2, "concepto": 4},
+    {"id": "p18", "nombre": "Estudio Contable Ferreyra & Asoc.", "cuit": "30-71768805-7", "rubro": "Contable", "contacto": "Alejandro Ferreyra", "telefono": "(0297) 555-4733", "email": "ventas@estudio.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "30 días", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 2, "concepto": 7},
+    {"id": "p19", "nombre": "Química del Atlántico", "cuit": "30-72338687-9", "rubro": "Insumos químicos", "contacto": "Natalia Suárez", "telefono": "(0297) 555-4814", "email": "ventas@química.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "Cuenta Corriente", "localidad": "Caleta Olivia", "provincia": "Santa Cruz", "centro": 3, "concepto": 4},
+    {"id": "p20", "nombre": "Transportes Río Chico", "cuit": "30-77377459-4", "rubro": "Fletes", "contacto": "Héctor Domínguez", "telefono": "(0297) 555-5554", "email": "ventas@transportes.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "Contado", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 1, "concepto": 5},
+    {"id": "p21", "nombre": "Papelera Meseta", "cuit": "30-77120868-1", "rubro": "Librería", "contacto": "Carolina Ibáñez", "telefono": "(0297) 555-3664", "email": "ventas@papelera.ejemplo.com.ar", "condIva": "Monotributo", "condPago": "30 días", "localidad": "Comodoro Rivadavia", "provincia": "Chubut", "centro": 2, "concepto": 4},
+    {"id": "p22", "nombre": "Grúas y Auxilio Cañadón", "cuit": "30-76960453-6", "rubro": "Auxilio mecánico", "contacto": "Jorge Albornoz", "telefono": "(0297) 555-4432", "email": "ventas@grúas.ejemplo.com.ar", "condIva": "Responsable Inscripto", "condPago": "30 días", "localidad": "Caleta Olivia", "provincia": "Santa Cruz", "centro": 0, "concepto": 2}
+  ],
+  ordenesCompra: [
+    {"id": "oc1", "numero": 101, "prov": "p1", "d": -124, "desc": "Kit de frenos y filtros para camión", "monto": 1341500.0, "estado": "recibida"},
+    {"id": "oc2", "numero": 102, "prov": "p17", "d": -118, "desc": "Insumos varios de planta", "monto": 109400.0, "estado": "recibida"},
+    {"id": "oc3", "numero": 103, "prov": "p14", "d": -116, "desc": "Service preventivo", "monto": 925300.0, "estado": "recibida"},
+    {"id": "oc4", "numero": 104, "prov": "p19", "d": -114, "desc": "Insumos varios de planta", "monto": 479300.0, "estado": "recibida"},
+    {"id": "oc5", "numero": 105, "prov": "p9", "d": -100, "desc": "Insumos varios de planta", "monto": 432800.0, "estado": "recibida"},
+    {"id": "oc6", "numero": 106, "prov": "p3", "d": -98, "desc": "Kit de frenos y filtros para camión", "monto": 227700.0, "estado": "recibida"},
+    {"id": "oc7", "numero": 107, "prov": "p4", "d": -89, "desc": "Gasoil a granel — cupo quincenal", "monto": 2935000.0, "estado": "recibida"},
+    {"id": "oc8", "numero": 108, "prov": "p7", "d": -85, "desc": "Insumos varios de planta", "monto": 347000.0, "estado": "recibida"},
+    {"id": "oc9", "numero": 109, "prov": "p22", "d": -84, "desc": "Service preventivo", "monto": 218500.0, "estado": "recibida"},
+    {"id": "oc10", "numero": 110, "prov": "p14", "d": -78, "desc": "Service preventivo", "monto": 207700.0, "estado": "recibida"},
+    {"id": "oc11", "numero": 111, "prov": "p13", "d": -78, "desc": "Servicio mensual", "monto": 896900.0, "estado": "recibida"},
+    {"id": "oc12", "numero": 112, "prov": "p6", "d": -71, "desc": "Bidones PET 20 L", "monto": 2497700.0, "estado": "recibida"},
+    {"id": "oc13", "numero": 113, "prov": "p9", "d": -66, "desc": "Insumos varios de planta", "monto": 506000.0, "estado": "recibida"},
+    {"id": "oc14", "numero": 114, "prov": "p21", "d": -60, "desc": "Insumos varios de planta", "monto": 131400.0, "estado": "recibida"},
+    {"id": "oc15", "numero": 115, "prov": "p21", "d": -40, "desc": "Insumos varios de planta", "monto": 137500.0, "estado": "aprobada"},
+    {"id": "oc16", "numero": 116, "prov": "p4", "d": -39, "desc": "Gasoil a granel — cupo quincenal", "monto": 1263800.0, "estado": "aprobada"},
+    {"id": "oc17", "numero": 117, "prov": "p13", "d": -36, "desc": "Servicio mensual", "monto": 644500.0, "estado": "aprobada"},
+    {"id": "oc18", "numero": 118, "prov": "p13", "d": -36, "desc": "Servicio mensual", "monto": 260900.0, "estado": "pendiente"},
+    {"id": "oc19", "numero": 119, "prov": "p17", "d": -34, "desc": "Insumos varios de planta", "monto": 456600.0, "estado": "pendiente"},
+    {"id": "oc20", "numero": 120, "prov": "p5", "d": -33, "desc": "Bidones PET 20 L", "monto": 2043400.0, "estado": "recibida"},
+    {"id": "oc21", "numero": 121, "prov": "p2", "d": -31, "desc": "Service preventivo", "monto": 1231000.0, "estado": "pendiente"},
+    {"id": "oc22", "numero": 122, "prov": "p12", "d": -30, "desc": "Service preventivo", "monto": 823100.0, "estado": "aprobada"},
+    {"id": "oc23", "numero": 123, "prov": "p21", "d": -23, "desc": "Insumos varios de planta", "monto": 143900.0, "estado": "aprobada"},
+    {"id": "oc24", "numero": 124, "prov": "p4", "d": -21, "desc": "Gasoil a granel — cupo quincenal", "monto": 2721800.0, "estado": "aprobada"}
+  ],
+  facturas: [
+    {"id": "f16", "prov": "p9", "numero": "A-0005-00065444", "d": -118, "venc": -88, "monto": 466437.86, "centro": 3, "concepto": 4, "oc": null, "archivo": false, "estado": "pagada"},
+    {"id": "f1", "prov": "p17", "numero": "A-0011-00012552", "d": -117, "venc": -107, "monto": 112679.97, "centro": 2, "concepto": 4, "oc": null, "archivo": true, "estado": "pagada"},
+    {"id": "f28", "prov": "p9", "numero": "A-0002-00093136", "d": -115, "venc": -105, "monto": 301263.34, "centro": 3, "concepto": 4, "oc": null, "archivo": true, "estado": "pagada"},
+    {"id": "f32", "prov": "p2", "numero": "A-0003-00099399", "d": -115, "venc": -85, "monto": 464351.04, "centro": 0, "concepto": 2, "oc": null, "archivo": true, "estado": "pagada"},
+    {"id": "f33", "prov": "p18", "numero": "A-0003-00041029", "d": -113, "venc": -83, "monto": 825533.13, "centro": 2, "concepto": 7, "oc": null, "archivo": false, "estado": "pagada"},
+    {"id": "f34", "prov": "p6", "numero": "A-0002-00033509", "d": -112, "venc": -82, "monto": 2020441.84, "centro": 3, "concepto": 6, "oc": null, "archivo": true, "estado": "pagada"},
+    {"id": "f13", "prov": "p8", "numero": "A-0011-00082132", "d": -111, "venc": -101, "monto": 169306.07, "centro": 4, "concepto": 5, "oc": null, "archivo": true, "estado": "pagada"},
+    {"id": "f15", "prov": "p7", "numero": "A-0002-00031579", "d": -110, "venc": -80, "monto": 274278.74, "centro": 3, "concepto": 4, "oc": null, "archivo": false, "estado": "pagada"},
+    {"id": "f14", "prov": "p18", "numero": "A-0002-00040982", "d": -107, "venc": -97, "monto": 441471.11, "centro": 2, "concepto": 7, "oc": null, "archivo": true, "estado": "pagada"},
+    {"id": "f3", "prov": "p16", "numero": "A-0003-00026828", "d": -104, "venc": -94, "monto": 1030456.14, "centro": 3, "concepto": 2, "oc": null, "archivo": false, "estado": "pagada"},
+    {"id": "f35", "prov": "p14", "numero": "A-0002-00060140", "d": -102, "venc": -87, "monto": 1323590.16, "centro": 0, "concepto": 2, "oc": "oc3", "archivo": false, "estado": "pagada"},
+    {"id": "f18", "prov": "p19", "numero": "A-0005-00017492", "d": -94, "venc": -49, "monto": 75336.11, "centro": 3, "concepto": 4, "oc": "oc4", "archivo": true, "estado": "pagada"},
+    {"id": "f9", "prov": "p5", "numero": "A-0011-00041850", "d": -92, "venc": -47, "monto": 2126162.73, "centro": 3, "concepto": 6, "oc": null, "archivo": false, "estado": "pagada"},
+    {"id": "f5", "prov": "p7", "numero": "A-0011-00098039", "d": -91, "venc": -61, "monto": 438176.22, "centro": 3, "concepto": 4, "oc": null, "archivo": true, "estado": "pagada"},
+    {"id": "f27", "prov": "p7", "numero": "A-0003-00093130", "d": -91, "venc": -61, "monto": 561012.25, "centro": 3, "concepto": 4, "oc": null, "archivo": true, "estado": "pagada"},
+    {"id": "f25", "prov": "p18", "numero": "A-0002-00097538", "d": -90, "venc": -60, "monto": 799407.27, "centro": 2, "concepto": 7, "oc": null, "archivo": true, "estado": "pagada"},
+    {"id": "f11", "prov": "p2", "numero": "A-0002-00062772", "d": -86, "venc": -76, "monto": 1124934.75, "centro": 0, "concepto": 2, "oc": null, "archivo": false, "estado": "pagada"},
+    {"id": "f17", "prov": "p18", "numero": "A-0003-00034890", "d": -84, "venc": -54, "monto": 513189.3, "centro": 2, "concepto": 7, "oc": null, "archivo": false, "estado": "pagada"},
+    {"id": "f21", "prov": "p14", "numero": "A-0005-00044179", "d": -84, "venc": -39, "monto": 401877.7, "centro": 0, "concepto": 2, "oc": null, "archivo": false, "estado": "pagada"},
+    {"id": "f30", "prov": "p14", "numero": "A-0003-00081511", "d": -71, "venc": -61, "monto": 169718.83, "centro": 0, "concepto": 2, "oc": "oc10", "archivo": true, "estado": "pagada"},
+    {"id": "f6", "prov": "p17", "numero": "A-0002-00054313", "d": -57, "venc": -47, "monto": 57725.73, "centro": 2, "concepto": 4, "oc": "oc2", "archivo": true, "estado": "pagada"},
+    {"id": "f20", "prov": "p8", "numero": "A-0003-00085880", "d": -51, "venc": -41, "monto": 571560.51, "centro": 4, "concepto": 5, "oc": null, "archivo": true, "estado": "pendiente"},
+    {"id": "f24", "prov": "p5", "numero": "A-0003-00058434", "d": -44, "venc": -34, "monto": 1026972.26, "centro": 3, "concepto": 6, "oc": null, "archivo": true, "estado": "pendiente"},
+    {"id": "f38", "prov": "p9", "numero": "A-0005-00013617", "d": -44, "venc": 1, "monto": 114781.76, "centro": 3, "concepto": 4, "oc": "oc13", "archivo": false, "estado": "pendiente"},
+    {"id": "f29", "prov": "p1", "numero": "A-0005-00031178", "d": -42, "venc": -27, "monto": 1373031.0, "centro": 0, "concepto": 1, "oc": null, "archivo": true, "estado": "pendiente"},
+    {"id": "f4", "prov": "p6", "numero": "A-0011-00037760", "d": -33, "venc": 12, "monto": 2443609.68, "centro": 3, "concepto": 6, "oc": null, "archivo": false, "estado": "pendiente"},
+    {"id": "f22", "prov": "p8", "numero": "A-0003-00098039", "d": -33, "venc": -3, "monto": 612855.64, "centro": 4, "concepto": 5, "oc": null, "archivo": true, "estado": "pendiente"},
+    {"id": "f12", "prov": "p4", "numero": "A-0011-00028373", "d": -31, "venc": -16, "monto": 1870327.77, "centro": 0, "concepto": 0, "oc": "oc16", "archivo": true, "estado": "pendiente"},
+    {"id": "f2", "prov": "p10", "numero": "A-0003-00084364", "d": -30, "venc": -20, "monto": 2304509.0, "centro": 2, "concepto": 3, "oc": null, "archivo": true, "estado": "pendiente"},
+    {"id": "f7", "prov": "p19", "numero": "A-0002-00040007", "d": -28, "venc": -18, "monto": 85777.2, "centro": 3, "concepto": 4, "oc": "oc4", "archivo": true, "estado": "pendiente"},
+    {"id": "f36", "prov": "p8", "numero": "A-0005-00050001", "d": -25, "venc": 5, "monto": 754634.47, "centro": 4, "concepto": 5, "oc": null, "archivo": false, "estado": "pendiente"},
+    {"id": "f19", "prov": "p17", "numero": "A-0002-00034356", "d": -20, "venc": -10, "monto": 86455.41, "centro": 2, "concepto": 4, "oc": null, "archivo": true, "estado": "pendiente"},
+    {"id": "f31", "prov": "p18", "numero": "A-0003-00015482", "d": -18, "venc": 12, "monto": 519542.09, "centro": 2, "concepto": 7, "oc": null, "archivo": false, "estado": "pendiente"},
+    {"id": "f26", "prov": "p22", "numero": "A-0002-00082512", "d": -13, "venc": 2, "monto": 334518.12, "centro": 0, "concepto": 2, "oc": "oc9", "archivo": true, "estado": "pendiente"},
+    {"id": "f10", "prov": "p7", "numero": "A-0005-00065519", "d": -12, "venc": -2, "monto": 293716.88, "centro": 3, "concepto": 4, "oc": null, "archivo": false, "estado": "pendiente"},
+    {"id": "f8", "prov": "p11", "numero": "A-0003-00046500", "d": -9, "venc": 36, "monto": 631872.0, "centro": 1, "concepto": 5, "oc": null, "archivo": true, "estado": "pendiente"},
+    {"id": "f37", "prov": "p8", "numero": "A-0011-00053025", "d": -3, "venc": 12, "monto": 315668.48, "centro": 4, "concepto": 5, "oc": null, "archivo": true, "estado": "pendiente"},
+    {"id": "f23", "prov": "p3", "numero": "A-0002-00019602", "d": -1, "venc": 29, "monto": 1037096.77, "centro": 0, "concepto": 1, "oc": null, "archivo": true, "estado": "pendiente"}
+  ],
+  ordenesPago: [
+    {"prov": "p8", "facturas": ["f13"], "d": -101, "estado": "pagada", "medio": "transferencia", "cuenta": "c4", "id": "op1", "numero": 41},
+    {"prov": "p16", "facturas": ["f3"], "d": -94, "estado": "pagada", "medio": "transferencia", "cuenta": "c3", "id": "op2", "numero": 42},
+    {"prov": "p9", "facturas": ["f16", "f28"], "d": -88, "estado": "pagada", "medio": "transferencia", "cuenta": "c4", "id": "op3", "numero": 43},
+    {"prov": "p6", "facturas": ["f34"], "d": -82, "estado": "pagada", "medio": "transferencia", "cuenta": "c1", "id": "op4", "numero": 44},
+    {"prov": "p2", "facturas": ["f32", "f11"], "d": -76, "estado": "pagada", "medio": "efectivo", "cuenta": "c4", "id": "op5", "numero": 45},
+    {"prov": "p7", "facturas": ["f15", "f5", "f27"], "d": -61, "estado": "pagada", "medio": "transferencia", "cuenta": "c1", "id": "op6", "numero": 46},
+    {"prov": "p18", "facturas": ["f33", "f14", "f25", "f17"], "d": -54, "estado": "pagada", "medio": "cheque", "cuenta": "c1", "id": "op7", "numero": 47},
+    {"prov": "p19", "facturas": ["f18"], "d": -49, "estado": "pagada", "medio": "transferencia", "cuenta": "c4", "id": "op8", "numero": 48},
+    {"prov": "p17", "facturas": ["f1", "f6"], "d": -47, "estado": "pagada", "medio": "transferencia", "cuenta": "c3", "id": "op9", "numero": 49},
+    {"prov": "p5", "facturas": ["f9"], "d": -47, "estado": "pagada", "medio": "cheque", "cuenta": "c3", "id": "op10", "numero": 50},
+    {"prov": "p14", "facturas": ["f35", "f21", "f30"], "d": -39, "estado": "pagada", "medio": "cheque", "cuenta": "c1", "id": "op11", "numero": 51},
+    {"prov": "p11", "facturas": ["f8"], "d": -4, "estado": "pendiente", "medio": "transferencia", "cuenta": null, "id": "op12", "numero": 52},
+    {"prov": "p8", "facturas": ["f20", "f37"], "d": -3, "estado": "pendiente", "medio": "transferencia", "cuenta": null, "id": "op13", "numero": 53},
+    {"prov": "p18", "facturas": ["f31"], "d": -2, "estado": "pendiente", "medio": "transferencia", "cuenta": null, "id": "op14", "numero": 54},
+    {"prov": "p22", "facturas": ["f26"], "d": -2, "estado": "pendiente", "medio": "transferencia", "cuenta": null, "id": "op15", "numero": 55},
+    {"prov": "p5", "facturas": ["f24"], "d": 0, "estado": "pendiente", "medio": "transferencia", "cuenta": null, "id": "op16", "numero": 56}
+  ],
+  movimientos: [
+    {"id": "m1", "cuenta": "c3", "d": -27, "concepto": "Sueldos quincena", "monto": 8400000},
+    {"id": "m2", "cuenta": "c3", "d": -56, "concepto": "Cargas sociales", "monto": 3150000},
+    {"id": "m3", "cuenta": "c4", "d": -101, "concepto": "Impuestos — Ingresos Brutos", "monto": 1280000},
+    {"id": "m4", "cuenta": "c1", "d": -75, "concepto": "Combustible — carga de emergencia", "monto": 186000},
+    {"id": "m5", "cuenta": "c2", "d": -78, "concepto": "Viáticos choferes", "monto": 92000},
+    {"id": "m6", "cuenta": "c3", "d": -84, "concepto": "Sueldos quincena", "monto": 8400000},
+    {"id": "m7", "cuenta": "c4", "d": -42, "concepto": "Alquiler depósito", "monto": 1450000},
+    {"id": "m8", "cuenta": "c2", "d": -60, "concepto": "Gastos de limpieza", "monto": 38500},
+    {"id": "m9", "cuenta": "c1", "d": -57, "concepto": "Peajes y estacionamiento", "monto": 54300},
+    {"id": "m10", "cuenta": "c3", "d": -57, "concepto": "Servicios — energía eléctrica", "monto": 612000},
+    {"id": "m11", "cuenta": "c4", "d": -87, "concepto": "Comisiones bancarias", "monto": 47800},
+    {"id": "m12", "cuenta": "c2", "d": -28, "concepto": "Librería y fotocopias", "monto": 21600}
+  ]
+};
+
+/* ===================================================================== */
+(function(){
+'use strict';
+
+// ---------- Utilidades ----------
+const WD_LABELS = ['LUN','MAR','MIE','JUE','VIE','SAB','DOM'];
+const WD_LABELS_LONG = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const MONTH_NAMES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const pad2 = n => String(n).padStart(2,'0');
+const dateStr = (y,m,d) => y+'-'+pad2(m+1)+'-'+pad2(d);
+const toStr = dt => dateStr(dt.getFullYear(), dt.getMonth(), dt.getDate());
+const NOW = new Date(); NOW.setHours(0,0,0,0);
+const TODAY = toStr(NOW);
+const offsetDate = d => { const x = new Date(NOW); x.setDate(x.getDate()+d); return toStr(x); };
+const parseDate = s => new Date(s+'T00:00:00');
+const pyWeekday = dt => (dt.getDay()+6)%7;
+const daysInMonth = (y,m) => new Date(y, m+1, 0).getDate();
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtNum = n => Number(n||0).toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtMoney = n => '$'+fmtNum(n);
+const fmtDate = s => s ? s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4) : '—';
+const parseMoney = s => { s = String(s||'').trim(); if(!s) return 0; const n = parseFloat(s.replace(/\$/g,'').replace(/\./g,'').replace(',','.')); return isNaN(n)?0:n; };
+const $ = id => document.getElementById(id);
+
+function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rand = rng(20261001);
+const pick = arr => arr[Math.floor(rand()*arr.length)];
+
+let toastTimer = null;
+function showToast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+const DEMO_SEND = 'En la demo esto no se envía';
+
+// ---------- Estado en memoria ----------
+const D = DEMO_DATA;
+const state = {
+  view: 'grid', year: NOW.getFullYear(), month: NOW.getMonth(), day: TODAY,
+  trips: [], visits: { branch: [], company: [], occasional: [] },
+  proveedores: [], ordenesCompra: [], facturas: [], ordenesPago: [], cuentas: [], movimientos: [],
+  comprasTab: 'proveedores', pagosTab: 'pago', dashTab: 'viajes',
+  deudaModo: 'resumido', simSeleccion: {}, seq: 1
+};
+const newId = p => p + '-n' + (state.seq++);
+
+const KINDS = {
+  route:      { list: () => D.routes,     title: 'Ruta',     noun: 'viaje' },
+  branch:     { list: () => D.sucursales, title: 'Sucursal', noun: 'envío' },
+  company:    { list: () => D.empresas,   title: 'Empresa',  noun: 'envío' },
+  occasional: { list: () => D.eventuales, title: 'Eventual', noun: 'envío' }
+};
+
+// ---------- Colores ----------
+function truckById(id){ return D.trucks.find(t => t.id===id) || null; }
+function truckColorVar(id){ const t = truckById(id); return t && t.color ? 'var(--truck-'+t.color+')' : 'var(--truck-x)'; }
+function truckInkVar(id){ const t = truckById(id); return t && t.color ? 'var(--truck-'+t.color+'-ink)' : 'var(--truck-x-ink)'; }
+function hashStr(s){ let h = 0; s = String(s||''); for(let i=0;i<s.length;i++){ h = ((h<<5)-h+s.charCodeAt(i))|0; } return Math.abs(h); }
+const destColorVar = id => 'var(--dest-'+((hashStr(id)%12)+1)+')';
+const cargoLabel = id => (D.cargoTypes.find(c => c.id===id)||{label:id}).label;
+const routeLabel = id => (D.routes.find(r => r.id===id)||{label:id}).label;
+const truckLabel = id => (truckById(id)||{label:'Camión '+id}).label;
+
+// ---------- Generación de viajes y envíos (semilla fija) ----------
+function randomCargo(scale){
+  const n = 1 + Math.floor(rand()*3);
+  const used = {}; const out = [];
+  for(let i=0;i<n;i++){
+    const c = pick(D.cargoTypes.slice(0,7));
+    if(used[c.id]) continue; used[c.id] = 1;
+    out.push({ type: c.id, qty: Math.round((10 + rand()*60) * scale), unit: '' });
+  }
+  return out;
+}
+const NOTES = ['Entregar antes de las 10', 'Cobrar remito pendiente', 'Retirar envases vacíos', 'Llamar al llegar', 'Cliente nuevo: confirmar dirección', 'Cargar 5 bidones extra'];
+
+function suggestionsForDay(items, wd, usedTrucks){
+  const used = {}; (usedTrucks||[]).forEach(t => used[t] = true);
+  const cands = [];
+  items.forEach(r => {
+    const max = Math.max.apply(null, r.freq); if(max<=0) return;
+    const f = r.freq[wd]; const th = Math.max(0.17, max*0.55);
+    if(f >= th) cands.push({ id: r.id, truck: r.truck, freq: f });
+  });
+  cands.sort((a,b) => b.freq-a.freq);
+  const out = {};
+  cands.forEach(c => { if(used[c.truck]) return; used[c.truck] = true; out[c.id] = c.truck; });
+  return out;
+}
+
+function generate(){
+  const start = new Date(NOW.getFullYear(), NOW.getMonth()-6, 1);
+  const end = new Date(NOW); end.setDate(end.getDate()+3);
+  for(let dt = new Date(start); dt <= end; dt.setDate(dt.getDate()+1)){
+    const ds = toStr(dt), wd = pyWeekday(dt);
+    const isPast = ds <= TODAY;
+    const sugg = suggestionsForDay(D.routes, wd, []);
+    const usedToday = {};
+    D.routes.forEach(r => {
+      let go = sugg[r.id] ? rand() < 0.93 : rand() < r.freq[wd]*0.25;
+      if(!go) return;
+      let truck = sugg[r.id] && rand() < 0.85 ? r.truck : pick(D.trucks).id;
+      if(usedToday[truck]){ const free = D.trucks.filter(t => !usedToday[t.id]); if(!free.length) return; truck = pick(free).id; }
+      usedToday[truck] = true;
+      const t = truckById(truck);
+      const driver = rand() < 0.85 ? t.driver : pick(D.drivers);
+      const helper = rand() < 0.8 ? t.helper : pick(D.helpers);
+      const r2 = rand();
+      const source = !isPast ? 'manual' : (r2 < 0.5 ? 'manual' : (r2 < 0.85 ? 'auto' : 'import'));
+      state.trips.push({ id: 't'+state.trips.length, kind: 'route', date: ds, dest: r.id, truck, driver, helper,
+        cargo: randomCargo(1), unit: rand()<0.5 ? 'cajones' : 'unidades', note: rand()<0.08 ? pick(NOTES) : '', source });
+    });
+    [['branch', D.sucursales, 1.4], ['company', D.empresas, 0.6], ['occasional', D.eventuales, 0.9]].forEach(([kind, items, scale]) => {
+      items.forEach(it => {
+        if(rand() >= it.freq[wd]) return;
+        const t = truckById(it.truck);
+        state.visits[kind].push({ id: kind[0]+state.visits[kind].length, kind, date: ds, dest: it.id, truck: it.truck,
+          driver: t.driver, helper: t.helper, cargo: randomCargo(scale), unit: 'unidades', note: rand()<0.06 ? pick(NOTES) : '' });
+      });
+    });
+  }
+}
+
+function loadCompras(){
+  state.proveedores = D.proveedores.map(p => Object.assign({ archivos: [] }, p));
+  state.ordenesCompra = D.ordenesCompra.map(o => ({ id: o.id, numero: o.numero, proveedorId: o.prov, fecha: offsetDate(o.d), descripcion: o.desc, monto: o.monto, estado: o.estado }));
+  state.facturas = D.facturas.map(f => ({ id: f.id, proveedorId: f.prov, numero: f.numero, fecha: offsetDate(f.d), vencimiento: offsetDate(f.venc), monto: f.monto,
+    centro: f.centro, concepto: f.concepto, ocId: f.oc, estado: f.estado, archivos: f.archivo ? [{ name: 'factura_'+f.numero+'.pdf' }] : [], notas: '' }));
+  state.cuentas = D.cuentas.map(c => Object.assign({}, c));
+  state.ordenesPago = D.ordenesPago.map(o => ({ id: o.id, numero: o.numero, proveedorId: o.prov, facturaIds: o.facturas.slice(), fecha: offsetDate(o.d),
+    estado: o.estado, medioPago: o.medio, cuentaId: o.cuenta, notas: '' }));
+  state.ordenesPago.forEach(op => op.monto = opMonto(op));
+  state.movimientos = D.movimientos.map(m => ({ id: m.id, cuentaId: m.cuenta, fecha: offsetDate(m.d), concepto: m.concepto, monto: m.monto, pagoId: null }));
+  state.ordenesPago.filter(op => op.estado==='pagada').forEach(syncMovimientoOP);
+}
+
+// ---------- Helpers compras ----------
+const proveedorById = id => state.proveedores.find(p => p.id===id) || null;
+const proveedorNombre = id => (proveedorById(id)||{nombre:'—'}).nombre;
+const facturaById = id => state.facturas.find(f => f.id===id) || null;
+const cuentaById = id => state.cuentas.find(c => c.id===id) || null;
+const cuentaNombre = id => (cuentaById(id)||{nombre:'—'}).nombre;
+const ocNumeroLabel = n => 'OC-'+String(n||0).padStart(4,'0');
+const pagoNumeroLabel = n => 'OP-'+String(n||0).padStart(4,'0');
+const estadoLabel = e => ({pendiente:'Pendiente', pagada:'Pagada', aprobada:'Aprobada', recibida:'Recibida'}[e] || 'Pendiente');
+function opMonto(op){ return op.facturaIds.reduce((s,id) => { const f = facturaById(id); return s + (f ? Number(f.monto) : 0); }, 0); }
+function cuentaSaldoActual(id){ const c = cuentaById(id); if(!c) return 0; return Number(c.saldoInicial||0) - state.movimientos.filter(m => m.cuentaId===id).reduce((s,m) => s+Number(m.monto||0), 0); }
+function syncMovimientoOP(op){
+  state.movimientos = state.movimientos.filter(m => m.pagoId!==op.id);
+  if(op.estado==='pagada' && op.cuentaId){
+    state.movimientos.push({ id: 'mv-'+op.id, cuentaId: op.cuentaId, fecha: op.fecha, concepto: 'Pago '+pagoNumeroLabel(op.numero)+' — '+proveedorNombre(op.proveedorId), monto: op.monto, pagoId: op.id });
+  }
+}
+
+// ---------- Navegación entre vistas ----------
+const VIEWS = ['grid','day','dashboard','compras','pagos','tesoreria','simulador'];
+function switchView(v){
+  state.view = v;
+  VIEWS.forEach(x => { $('view-'+x).hidden = x!==v; const tb = $('tab-'+x); if(tb) tb.classList.toggle('active', x===v); });
+  ({ grid: renderFlota, day: renderDay, dashboard: renderDashboard, compras: renderCompras, pagos: renderPagos, tesoreria: renderTesoreria, simulador: renderSimulador })[v]();
+  window.scrollTo({ top: 0 });
+}
+VIEWS.forEach(v => $('tab-'+v).addEventListener('click', () => switchView(v)));
+['tab-branches','tab-company','tab-occasional'].forEach(id => $(id).addEventListener('click', () => showToast('Esta sección no está incluida en la demo (funciona igual que FlotaPesada).')));
+
+// ================== FLOTA PESADA ==================
+const tripsForCell = (kind, ds, dest) => (kind==='route' ? state.trips : state.visits[kind]).filter(t => t.date===ds && t.dest===dest);
+const trucksUsedOnDate = ds => state.trips.filter(t => t.date===ds).map(t => t.truck);
+
+function buildTripPillHTML(trip){
+  const crew = trip.driver ? esc(trip.driver+(trip.helper?' / '+trip.helper:'')) : '';
+  const cargo = (trip.cargo||[]).filter(c => c.type && c.qty);
+  let tip = truckLabel(trip.truck);
+  if(trip.driver || trip.helper) tip += ' — Hoy: Chofer '+(trip.driver||'—')+', Ayudante '+(trip.helper||'—');
+  if(cargo.length) tip += ' — Carga: '+cargo.map(c => cargoLabel(c.type)+' x'+c.qty+(trip.unit?' '+trip.unit:'')).join(', ');
+  if(trip.note) tip += ' — Nota: '+trip.note;
+  return '<span class="pill'+(cargo.length?' cargo':'')+'" data-trip-id="'+esc(trip.id)+'" title="'+esc(tip)+'" style="background:'+truckColorVar(trip.truck)+'; color:'+truckInkVar(trip.truck)+';">'+
+    '<span class="truck-no">'+esc(trip.truck)+'</span>'+(crew ? '<span class="crew">'+crew+'</span>' : '')+
+    (trip.note ? '<span class="note-badge" title="Nota: '+esc(trip.note)+'">📝</span>' : '')+'</span>';
+}
+
+function renderFlota(){
+  $('month-label').textContent = MONTH_NAMES[state.month]+' '+state.year;
+  const head = $('grid-head');
+  head.innerHTML = '<th class="corner">Día</th>' + D.routes.map(r => '<th>'+esc(r.label)+'</th>').join('');
+  const body = $('grid-body'); const rows = [];
+  const nd = daysInMonth(state.year, state.month);
+  for(let d=1; d<=nd; d++){
+    const ds = dateStr(state.year, state.month, d), wd = pyWeekday(parseDate(ds));
+    const cls = ds===TODAY ? 'today' : (wd>=5 ? 'weekend' : '');
+    const sugg = suggestionsForDay(D.routes, wd, trucksUsedOnDate(ds));
+    let html = '<tr class="'+cls+'"><td class="daycell"><span class="daynum">'+pad2(d)+'</span><span class="dayname">'+WD_LABELS[wd]+'</span></td>';
+    D.routes.forEach(r => {
+      const trips = tripsForCell('route', ds, r.id);
+      if(trips.length){
+        html += '<td class="cell multi" data-date="'+ds+'" data-route="'+r.id+'"><div class="cell-pills">'+trips.map(buildTripPillHTML).join('')+'</div><button type="button" class="cell-add-btn" title="Agregar otro camión a esta ruta este día">+ camión</button></td>';
+      } else if(sugg[r.id]){
+        const t = truckById(sugg[r.id]);
+        html += '<td class="cell" data-date="'+ds+'" data-route="'+r.id+'" data-sugg="'+sugg[r.id]+'"><span class="pill ghost" title="Sugerido — '+esc(t.label)+'"><span class="truck-no">'+esc(t.id)+'</span><span class="crew">'+esc(t.driver)+'</span></span></td>';
+      } else {
+        html += '<td class="cell empty" data-date="'+ds+'" data-route="'+r.id+'"></td>';
+      }
+    });
+    rows.push(html+'</tr>');
+  }
+  body.innerHTML = rows.join('');
+  renderStats();
+}
+function renderStats(){
+  const prefix = state.year+'-'+pad2(state.month+1);
+  const counts = {}; let total = 0;
+  state.trips.forEach(t => { if(t.date.indexOf(prefix)===0 && t.truck){ counts[t.truck] = (counts[t.truck]||0)+1; total++; } });
+  $('stats-stripe').innerHTML = '<div class="chip-stat total"><span class="n">'+total+'</span><span class="lbl">viajes cargados este mes</span></div>' +
+    D.trucks.map(t => '<div class="chip-stat"><span class="swatch" style="background:'+truckColorVar(t.id)+';"></span><span class="n">'+(counts[t.id]||0)+'</span><span class="lbl">'+esc(t.label)+'</span></div>').join('');
+}
+$('grid-body').addEventListener('click', ev => {
+  const td = ev.target.closest('td.cell'); if(!td) return;
+  const pill = ev.target.closest('.pill[data-trip-id]');
+  if(ev.target.closest('.cell-add-btn')) return openCellEditor('route', td.dataset.date, td.dataset.route, null);
+  if(pill) return openCellEditor('route', td.dataset.date, td.dataset.route, pill.dataset.tripId);
+  openCellEditor('route', td.dataset.date, td.dataset.route, null, td.dataset.sugg || null);
+});
+function goMonth(delta){ state.month += delta; if(state.month<0){ state.month=11; state.year--; } if(state.month>11){ state.month=0; state.year++; } renderFlota(); }
+$('prev-month').addEventListener('click', () => goMonth(-1));
+$('next-month').addEventListener('click', () => goMonth(1));
+$('today-btn').addEventListener('click', () => { state.year = NOW.getFullYear(); state.month = NOW.getMonth(); renderFlota(); });
+
+$('autoplan-btn').addEventListener('click', () => {
+  const todo = []; const nd = daysInMonth(state.year, state.month);
+  for(let d=1; d<=nd; d++){
+    const ds = dateStr(state.year, state.month, d), wd = pyWeekday(parseDate(ds));
+    const sugg = suggestionsForDay(D.routes, wd, trucksUsedOnDate(ds));
+    D.routes.forEach(r => { if(!tripsForCell('route', ds, r.id).length && sugg[r.id]) todo.push({ ds, route: r.id, truck: sugg[r.id] }); });
+  }
+  if(!todo.length) return showToast('No hay sugerencias nuevas para este mes.');
+  const btn = $('autoplan-btn'); btn.disabled = true; let i = 0;
+  (function step(){
+    const chunk = Math.max(1, Math.ceil(todo.length/25));
+    for(let k=0; k<chunk && i<todo.length; k++, i++){
+      const it = todo[i], t = truckById(it.truck);
+      state.trips.push({ id: newId('t'), kind:'route', date: it.ds, dest: it.route, truck: it.truck, driver: t.driver, helper: t.helper, cargo: [], unit: '', note: '', source: 'auto' });
+    }
+    btn.textContent = 'Guardando '+i+' / '+todo.length+'...';
+    renderFlota();
+    if(i < todo.length) setTimeout(step, 40);
+    else { btn.disabled = false; btn.textContent = '✨ Planificar automáticamente'; showToast('Se confirmaron '+todo.length+' viajes sugeridos.'); }
+  })();
+});
+
+// ---------- Modal viaje / envío ----------
+let cellCtx = null;
+function fillSelect(sel, items, placeholder){ sel.innerHTML = '<option value="">'+placeholder+'</option>' + items.map(it => '<option value="'+esc(it.v)+'">'+esc(it.l)+'</option>').join(''); }
+function openCellEditor(kind, ds, dest, tripId, suggested){
+  const K = KINDS[kind]; const item = K.list().find(x => x.id===dest);
+  const trip = tripId ? (kind==='route' ? state.trips : state.visits[kind]).find(t => t.id===tripId) : null;
+  cellCtx = { kind, ds, dest, trip };
+  $('cm-title').textContent = item ? item.label : K.title;
+  $('cm-sub').textContent = dayLabel(ds);
+  fillSelect($('cm-truck'), D.trucks.map(t => ({ v: t.id, l: t.label })), '— Elegí un camión —');
+  fillSelect($('cm-driver'), D.drivers.map(n => ({ v: n, l: n })), 'Sin asignar');
+  fillSelect($('cm-helper'), D.helpers.map(n => ({ v: n, l: n })), 'Sin asignar');
+  const sug = !trip && suggested ? truckById(suggested) : null;
+  $('cm-suggest').style.display = sug ? 'flex' : 'none';
+  $('cm-truck').value = trip ? trip.truck : (sug ? sug.id : '');
+  $('cm-driver').value = trip ? trip.driver : (sug ? sug.driver : '');
+  $('cm-helper').value = trip ? trip.helper : (sug ? sug.helper : '');
+  $('cm-cargo-unit').value = trip ? (trip.unit||'') : '';
+  $('cm-note').value = trip ? (trip.note||'') : '';
+  $('cm-note').placeholder = kind==='route' ? 'Instrucciones para este viaje...' : 'Instrucciones para este envío...';
+  const qty = {}; (trip ? trip.cargo : []).forEach(c => qty[c.type] = c.qty);
+  $('cm-cargo-body').innerHTML = D.cargoTypes.map(c => '<tr><td>'+esc(c.label)+'</td><td class="cargo-qty-cell"><input type="number" min="0" data-type="'+c.id+'" value="'+(qty[c.id]||'')+'" aria-label="Cantidad de '+esc(c.label)+'"></td></tr>').join('');
+  $('cm-delete').style.display = trip ? '' : 'none';
+  openOverlay('cell-overlay');
+}
+$('cm-truck').addEventListener('change', function(){ const t = truckById(this.value); if(t && !cellCtx.trip){ $('cm-driver').value = t.driver; $('cm-helper').value = t.helper; } });
+$('cm-cancel').addEventListener('click', () => closeOverlay('cell-overlay'));
+$('cm-save').addEventListener('click', () => {
+  const truck = $('cm-truck').value; if(!truck) return showToast('Elegí un camión para guardar.');
+  const cargo = Array.from($('cm-cargo-body').querySelectorAll('input')).filter(i => i.value && Number(i.value)>0).map(i => ({ type: i.dataset.type, qty: Number(i.value) }));
+  const data = { truck, driver: $('cm-driver').value, helper: $('cm-helper').value, cargo, unit: $('cm-cargo-unit').value.trim(), note: $('cm-note').value.trim() };
+  if(cellCtx.trip) Object.assign(cellCtx.trip, data);
+  else (cellCtx.kind==='route' ? state.trips : state.visits[cellCtx.kind]).push(Object.assign({ id: newId('t'), kind: cellCtx.kind, date: cellCtx.ds, dest: cellCtx.dest, source: 'manual' }, data));
+  closeOverlay('cell-overlay'); showToast(cellCtx.kind==='route' ? 'Viaje guardado.' : 'Envío guardado.'); rerender();
+});
+$('cm-delete').addEventListener('click', () => {
+  const list = cellCtx.kind==='route' ? state.trips : state.visits[cellCtx.kind];
+  list.splice(list.indexOf(cellCtx.trip), 1);
+  closeOverlay('cell-overlay'); showToast('Eliminado.'); rerender();
+});
+function rerender(){ switchView(state.view); }
+
+// ================== DÍA ==================
+function dayLabel(ds){ const d = parseDate(ds); return WD_LABELS_LONG[pyWeekday(d)]+' '+d.getDate()+' de '+MONTH_NAMES[d.getMonth()]+' de '+d.getFullYear(); }
+function dayRowHTML(kind, label, trip){
+  const cargo = (trip.cargo||[]).filter(c => c.type && c.qty);
+  return '<tr class="day-row" data-kind="'+kind+'" data-dest="'+esc(trip.dest)+'" data-id="'+esc(trip.id)+'" title="Clic para cargar o editar">'+
+    '<td class="day-route">'+esc(label)+'</td>'+
+    '<td><span class="day-truck-pill" style="background:'+truckColorVar(trip.truck)+'; color:'+truckInkVar(trip.truck)+';">'+esc(trip.truck)+'</span></td>'+
+    '<td>'+esc(trip.driver||'—')+'</td><td>'+esc(trip.helper||'—')+'</td>'+
+    '<td>'+(cargo.length ? cargo.map(c => '<span class="day-cargo-chip">'+esc(cargoLabel(c.type))+' × '+c.qty+(trip.unit?' '+esc(trip.unit):'')+'</span>').join('') : '<span class="day-muted">—</span>')+'</td>'+
+    '<td class="day-note">'+esc(trip.note||'')+'</td></tr>';
+}
+function renderDay(){
+  $('day-label').textContent = dayLabel(state.day);
+  $('day-picker').value = state.day;
+  let covered = 0, loaded = 0, html = '';
+  D.routes.forEach(r => {
+    const trips = tripsForCell('route', state.day, r.id); if(!trips.length) return;
+    covered++; trips.forEach(t => { loaded++; html += dayRowHTML('route', r.label, t); });
+  });
+  $('day-body').innerHTML = html || '<tr><td colspan="6" class="day-empty">Todavía no hay viajes cargados para este día.</td></tr>';
+  $('day-summary').textContent = covered+' de '+D.routes.length+' rutas con camión asignado'+(loaded>covered ? ' ('+loaded+' viajes)' : '');
+  [['branch','day-branch','sucursales'],['company','day-company','empresas'],['occasional','day-occasional','eventuales']].forEach(([kind, pre, noun]) => {
+    const items = KINDS[kind].list(); let n = 0, h = '';
+    items.forEach(it => { const vs = tripsForCell(kind, state.day, it.id); if(vs.length) n++; vs.forEach(v => h += dayRowHTML(kind, it.label, v)); });
+    $(pre+'-body').innerHTML = h || '<tr><td colspan="6" class="day-empty">No hay envíos cargados para este día.</td></tr>';
+    $(pre+'-summary').textContent = n+' de '+items.length+' '+noun+' con envío';
+  });
+}
+$('view-day').addEventListener('click', ev => {
+  const tr = ev.target.closest('tr.day-row'); if(!tr) return;
+  openCellEditor(tr.dataset.kind, state.day, tr.dataset.dest, tr.dataset.id);
+});
+function goDay(delta){ const d = parseDate(state.day); d.setDate(d.getDate()+delta); state.day = toStr(d); renderDay(); }
+$('prev-day').addEventListener('click', () => goDay(-1));
+$('next-day').addEventListener('click', () => goDay(1));
+$('day-today-btn').addEventListener('click', () => { state.day = TODAY; renderDay(); });
+$('day-picker').addEventListener('change', function(){ if(this.value){ state.day = this.value; renderDay(); } });
+
+// ================== DASHBOARD ==================
+function tally(list, keyFn, labelFn){
+  const c = {}; list.forEach(x => { const k = keyFn(x); if(!k) return; c[k] = (c[k]||0)+1; });
+  return Object.keys(c).map(k => ({ key: k, label: labelFn ? labelFn(k) : k, count: c[k] })).sort((a,b) => b.count-a.count);
+}
+function sumBy(list, keyFn, labelFn, valFn){
+  const s = {}; list.forEach(x => { const k = keyFn(x); s[k] = (s[k]||0)+valFn(x); });
+  return Object.keys(s).map(k => ({ key: k, label: labelFn(k), count: Math.round(s[k]*100)/100 })).sort((a,b) => b.count-a.count);
+}
+function cargoQtyTotals(list){
+  const s = {}; list.forEach(t => (t.cargo||[]).forEach(c => { if(c.type && c.qty) s[c.type] = (s[c.type]||0)+Number(c.qty); }));
+  return Object.keys(s).map(k => ({ key: k, label: cargoLabel(k), count: s[k] })).sort((a,b) => b.count-a.count);
+}
+function renderBarList(id, rows, opts, money){
+  opts = opts || {}; const el = $(id);
+  if(!rows.length){ el.innerHTML = '<div class="bar-empty">Sin datos en este período</div>'; return; }
+  const max = Math.max.apply(null, rows.map(r => r.count));
+  const top = opts.limit ? rows.slice(0, opts.limit) : rows;
+  const rest = rows.slice(top.length); const restSum = rest.reduce((s,r) => s+r.count, 0);
+  el.innerHTML = top.map(r => {
+    const pct = max>0 ? Math.max(4, Math.round(r.count/max*100)) : 0;
+    const fill = opts.fillFn ? opts.fillFn(r) : (opts.fill || 'var(--accent)');
+    return '<div class="barrow'+(money?' money':'')+'"><div class="barname" title="'+esc(r.label)+'">'+esc(r.label)+'</div><div class="bartrack"><div class="barfill" style="width:'+pct+'%; background:'+fill+';"></div></div><div class="barcount">'+(money ? fmtMoney(r.count) : r.count.toLocaleString('es-AR'))+'</div></div>';
+  }).join('') + (rest.length ? '<div class="bar-more">+ '+rest.length+' más ('+(money ? fmtMoney(restSum) : restSum+' viajes')+')</div>' : '');
+}
+function dashRange(){
+  let s = $('dash-from').value, e = $('dash-to').value;
+  if(s && e && s > e){ const t = s; s = e; e = t; }
+  return { s, e };
+}
+function renderDashboard(){
+  const { s, e } = dashRange();
+  const inR = x => x.date >= s && x.date <= e;
+  const trips = state.trips.filter(t => t.truck && inR(t));
+  $('kpi-total').textContent = trips.length;
+  const byTruck = tally(trips, t => t.truck, truckLabel), byDriver = tally(trips, t => t.driver), byRoute = tally(trips, t => t.dest, routeLabel);
+  $('kpi-truck').textContent = byTruck[0] ? byTruck[0].label+' ('+byTruck[0].count+')' : '—';
+  $('kpi-driver').textContent = byDriver[0] ? byDriver[0].label+' ('+byDriver[0].count+')' : '—';
+  $('kpi-route').textContent = byRoute[0] ? byRoute[0].label+' ('+byRoute[0].count+')' : '—';
+  renderBarList('bar-truck', byTruck, { fillFn: r => truckColorVar(r.key) });
+  renderBarList('bar-driver', byDriver, { limit: 10, fill: 'var(--chart-driver)' });
+  renderBarList('bar-helper', tally(trips, t => t.helper), { limit: 10, fill: 'var(--chart-helper)' });
+  renderBarList('bar-route', byRoute, { limit: 12, fill: 'var(--chart-route)' });
+  const wd = [0,0,0,0,0,0,0]; trips.forEach(t => wd[pyWeekday(parseDate(t.date))]++);
+  renderBarList('bar-weekday', WD_LABELS_LONG.map((l,i) => ({ key: i, label: l, count: wd[i] })), { fill: 'var(--chart-weekday)' });
+  renderBarList('bar-source', tally(trips, t => t.source||'manual', k => k==='auto' ? 'Planificación automática' : (k==='import' ? 'Importado del Excel' : 'Carga manual')), { fill: 'var(--chart-source)' });
+  renderBarList('bar-cargo', cargoQtyTotals(trips), { limit: 15, fill: 'var(--chart-cargo)' });
+  renderCrosstab(trips);
+  [['branch','kpi-branch-visits','bar-branch','bar-branch-cargo','var(--chart-branch)'],
+   ['company','kpi-company-visits','bar-company','bar-company-cargo','var(--chart-company)'],
+   ['occasional','kpi-occasional-visits','bar-occasional','bar-occasional-cargo','var(--chart-occasional)']].forEach(([kind,kpi,bar,barC,col]) => {
+    const vs = state.visits[kind].filter(inR);
+    $(kpi).textContent = vs.length;
+    const labelOf = id => (KINDS[kind].list().find(x => x.id===id)||{label:id}).label;
+    renderBarList(bar, tally(vs, v => v.dest, labelOf), { fillFn: r => destColorVar(r.key) });
+    renderBarList(barC, cargoQtyTotals(vs), { limit: 15, fill: col });
+  });
+  const fs = state.facturas.filter(f => f.fecha >= s && f.fecha <= e);
+  $('kpi-gastos-total').textContent = fmtMoney(fs.reduce((a,f) => a+Number(f.monto), 0));
+  $('kpi-gastos-facturas').textContent = fs.length;
+  const porCentro = sumBy(fs, f => f.centro, k => D.centrosCosto[k] || '(Sin centro de costo)', f => Number(f.monto));
+  const porConcepto = sumBy(fs, f => f.concepto, k => D.conceptos[k] || '(Sin concepto)', f => Number(f.monto));
+  $('kpi-gastos-centro').textContent = porCentro[0] ? porCentro[0].label+' ('+fmtMoney(porCentro[0].count)+')' : '—';
+  $('kpi-gastos-concepto').textContent = porConcepto[0] ? porConcepto[0].label+' ('+fmtMoney(porConcepto[0].count)+')' : '—';
+  renderBarList('bar-gastos-centro', porCentro, { fill: 'var(--chart-gastos)' }, true);
+  renderBarList('bar-gastos-concepto', porConcepto, { fill: 'var(--chart-gastos)' }, true);
+  renderBarList('bar-gastos-proveedor', sumBy(fs, f => f.proveedorId, proveedorNombre, f => Number(f.monto)), { limit: 12, fill: 'var(--chart-gastos)' }, true);
+}
+function renderCrosstab(trips){
+  trips = trips.filter(t => t.driver);
+  const el = $('crosstab');
+  if(!trips.length){ el.innerHTML = '<div class="bar-empty">Sin datos en este período</div>'; return; }
+  const drivers = tally(trips, t => t.driver), routes = tally(trips, t => t.dest, routeLabel);
+  const m = {}; let max = 0;
+  trips.forEach(t => { const k = t.driver+'|'+t.dest; m[k] = (m[k]||0)+1; if(m[k]>max) max = m[k]; });
+  let h = '<div class="crosstab-wrap"><table class="crosstab"><thead><tr><th class="corner">Chofer</th>'+routes.map(r => '<th>'+esc(r.label)+'</th>').join('')+'<th class="total">Total</th></tr></thead><tbody>';
+  drivers.forEach(d => {
+    h += '<tr><td class="rowhead">'+esc(d.label)+'</td>';
+    routes.forEach(r => { const c = m[d.key+'|'+r.key]||0; h += '<td class="cnt"'+(c ? ' style="background:color-mix(in srgb, var(--accent) '+Math.round(c/max*60)+'%, transparent);'+(c/max>0.6?'color:#fff;':'')+'"' : '')+'>'+(c||'')+'</td>'; });
+    h += '<td class="total cnt">'+d.count+'</td></tr>';
+  });
+  el.innerHTML = h+'</tbody></table></div>';
+}
+$('dash-from').addEventListener('change', renderDashboard);
+$('dash-to').addEventListener('change', renderDashboard);
+function dashSub(tab){ state.dashTab = tab; $('dash-sub-viajes').hidden = tab!=='viajes'; $('dash-sub-gastos').hidden = tab!=='gastos'; $('dashsubbtn-viajes').classList.toggle('active', tab==='viajes'); $('dashsubbtn-gastos').classList.toggle('active', tab==='gastos'); }
+$('dashsubbtn-viajes').addEventListener('click', () => dashSub('viajes'));
+$('dashsubbtn-gastos').addEventListener('click', () => dashSub('gastos'));
+
+// ================== COMBO buscador de proveedor ==================
+function makeCombo(rootId, onPick){
+  const root = $(rootId), input = root.querySelector('input'), menu = root.querySelector('.combo-menu');
+  let value = '';
+  function open(){
+    const q = input.value.trim().toLowerCase();
+    const list = state.proveedores.filter(p => !q || p.nombre.toLowerCase().includes(q)).sort((a,b) => a.nombre.localeCompare(b.nombre)).slice(0, 30);
+    menu.innerHTML = list.length ? list.map(p => '<div class="combo-item" data-id="'+p.id+'">'+esc(p.nombre)+'</div>').join('') : '<div class="combo-empty">No hay proveedores con ese nombre</div>';
+    menu.hidden = false;
+  }
+  input.addEventListener('focus', open);
+  input.addEventListener('input', () => { value = ''; open(); });
+  input.addEventListener('blur', () => setTimeout(() => { menu.hidden = true; if(!value) input.value = ''; }, 160));
+  menu.addEventListener('mousedown', ev => {
+    const it = ev.target.closest('.combo-item'); if(!it) return;
+    ev.preventDefault(); api.set(it.dataset.id); menu.hidden = true; input.blur(); if(onPick) onPick(value);
+  });
+  const api = { get: () => value, set: id => { value = id || ''; input.value = id ? proveedorNombre(id) : ''; } };
+  return api;
+}
+
+// ================== COMPRAS ==================
+function comprasSub(tab){
+  state.comprasTab = tab;
+  ['proveedores','compra','oc'].forEach(t => { $('csec-'+t).hidden = t!==tab; $('ctab-'+t).classList.toggle('active', t===tab); });
+}
+['proveedores','compra','oc'].forEach(t => $('ctab-'+t).addEventListener('click', () => comprasSub(t)));
+function renderCompras(){ comprasSub(state.comprasTab); renderProveedores(); renderFacturas(); renderOCs(); }
+
+function renderProveedores(){
+  const q = $('prov-search').value.trim().toLowerCase();
+  const list = state.proveedores.filter(p => !q || (p.nombre+' '+p.rubro+' '+p.contacto).toLowerCase().includes(q)).sort((a,b) => a.nombre.localeCompare(b.nombre));
+  $('proveedores-body').innerHTML = list.length ? list.map(p => '<tr class="day-row" data-id="'+p.id+'"><td class="day-route">'+esc(p.nombre)+'</td><td>'+esc(p.rubro||'—')+'</td><td>'+esc(p.contacto||'—')+'</td><td class="num">'+esc(p.telefono||'—')+'</td><td></td></tr>').join('')
+    : '<tr class="day-row empty"><td colspan="5">No hay proveedores que coincidan con la búsqueda.</td></tr>';
+}
+$('prov-search').addEventListener('input', renderProveedores);
+$('proveedores-body').addEventListener('click', ev => { const tr = ev.target.closest('tr[data-id]'); if(tr) openProveedorModal(tr.dataset.id); });
+
+function renderFacturas(){
+  const est = $('factura-filter-estado').value;
+  const list = state.facturas.filter(f => !est || f.estado===est).sort((a,b) => b.fecha.localeCompare(a.fecha));
+  $('facturas-body').innerHTML = list.length ? list.map(f => {
+    const oc = f.ocId ? state.ordenesCompra.find(o => o.id===f.ocId) : null;
+    const files = f.archivos||[];
+    const fileCell = files.length ? '<button type="button" class="file-link" data-file="1">📎 '+(files.length>1 ? files.length : 'Ver')+'</button>' : '<span class="file-none">—</span>';
+    return '<tr class="day-row" data-id="'+f.id+'"><td class="day-route">'+esc(proveedorNombre(f.proveedorId))+'</td><td class="num">'+esc(f.numero)+'</td><td class="num">'+fmtDate(f.fecha)+'</td><td>'+(oc ? ocNumeroLabel(oc.numero) : '—')+'</td><td class="num">'+fmtMoney(f.monto)+'</td><td><span class="oc-badge '+f.estado+'">'+estadoLabel(f.estado)+'</span></td><td class="file-cell">'+fileCell+'</td></tr>';
+  }).join('') : '<tr class="day-row empty"><td colspan="7">No hay facturas con ese estado.</td></tr>';
+}
+$('factura-filter-estado').addEventListener('change', renderFacturas);
+$('facturas-body').addEventListener('click', ev => {
+  if(ev.target.closest('[data-file]')){ ev.stopPropagation(); return showToast('En la demo los archivos adjuntos no se abren.'); }
+  const tr = ev.target.closest('tr[data-id]'); if(tr) openFacturaModal(tr.dataset.id);
+});
+
+function renderOCs(){
+  const est = $('oc-filter-estado').value;
+  const list = state.ordenesCompra.filter(o => !est || o.estado===est).sort((a,b) => b.numero-a.numero);
+  $('oc-body').innerHTML = list.length ? list.map(o => '<tr class="day-row" data-id="'+o.id+'"><td class="day-route num">'+ocNumeroLabel(o.numero)+'</td><td>'+esc(proveedorNombre(o.proveedorId))+'</td><td class="num">'+fmtDate(o.fecha)+'</td><td class="day-note">'+esc(o.descripcion||'—')+'</td><td class="num">'+fmtMoney(o.monto)+'</td><td><span class="oc-badge '+o.estado+'">'+estadoLabel(o.estado)+'</span></td></tr>').join('')
+    : '<tr class="day-row empty"><td colspan="6">No hay órdenes de compra con ese estado.</td></tr>';
+}
+$('oc-filter-estado').addEventListener('change', renderOCs);
+$('oc-body').addEventListener('click', ev => { const tr = ev.target.closest('tr[data-id]'); if(tr) openOCModal(tr.dataset.id); });
+
+// --- Proveedor modal ---
+let provEdit = null; let provFiles = [];
+const PM_FIELDS = { nombre:'pm-nombre', cuit:'pm-cuit', rubro:'pm-rubro', contacto:'pm-contacto', telefono:'pm-telefono', email:'pm-email', direccion:'pm-direccion', condIva:'pm-condicion-iva', condPago:'pm-condicion-pago', localidad:'pm-localidad', provincia:'pm-provincia', notas:'pm-notas' };
+function renderAttach(listId, files){
+  $(listId).innerHTML = files.length ? files.map((f,i) => '<div class="attach-item"><span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📄 '+esc(f.name)+'</span>'+(f.local ? '<span class="attach-size">no se sube (demo)</span>' : '')+'<button type="button" class="attach-del" data-i="'+i+'" title="Quitar">✕</button></div>').join('') : '<div class="attach-empty">Sin archivos adjuntos</div>';
+}
+function wireAttach(inputId, listId, getFiles){
+  $(inputId).addEventListener('change', function(){
+    Array.from(this.files).forEach(f => getFiles().push({ name: f.name, local: true }));
+    this.value = ''; renderAttach(listId, getFiles()); showToast('Adjunto agregado. '+DEMO_SEND+': los archivos no se suben.');
+  });
+  $(listId).addEventListener('click', ev => { const b = ev.target.closest('.attach-del'); if(!b) return; getFiles().splice(Number(b.dataset.i), 1); renderAttach(listId, getFiles()); });
+}
+wireAttach('pm-archivo-input', 'pm-archivos-list', () => provFiles);
+function openProveedorModal(id){
+  provEdit = id ? proveedorById(id) : null;
+  $('pm-title').textContent = provEdit ? 'Editar proveedor' : 'Nuevo proveedor';
+  Object.keys(PM_FIELDS).forEach(k => $(PM_FIELDS[k]).value = provEdit ? (provEdit[k]||'') : '');
+  provFiles = provEdit ? provEdit.archivos.slice() : [];
+  renderAttach('pm-archivos-list', provFiles);
+  $('pm-delete').style.display = provEdit ? '' : 'none';
+  openOverlay('proveedor-overlay');
+}
+$('new-proveedor-btn').addEventListener('click', () => openProveedorModal(null));
+$('pm-cancel').addEventListener('click', () => closeOverlay('proveedor-overlay'));
+$('pm-save').addEventListener('click', () => {
+  const nombre = $('pm-nombre').value.trim(); if(!nombre) return showToast('Completá el nombre del proveedor.');
+  const p = provEdit || { id: newId('p') };
+  Object.keys(PM_FIELDS).forEach(k => p[k] = $(PM_FIELDS[k]).value.trim());
+  p.archivos = provFiles.slice();
+  if(!provEdit){ p.centro = 2; p.concepto = 5; state.proveedores.push(p); }
+  closeOverlay('proveedor-overlay'); showToast('Proveedor guardado.'); renderCompras();
+});
+$('pm-delete').addEventListener('click', () => {
+  if(state.facturas.some(f => f.proveedorId===provEdit.id)) return showToast('No se puede eliminar: el proveedor tiene facturas cargadas.');
+  state.proveedores = state.proveedores.filter(p => p !== provEdit); closeOverlay('proveedor-overlay'); showToast('Proveedor eliminado.'); renderCompras();
+});
+
+// --- OC modal ---
+let ocEdit = null;
+const ocCombo = makeCombo('ocm-combo');
+function openOCModal(id){
+  ocEdit = id ? state.ordenesCompra.find(o => o.id===id) : null;
+  const num = ocEdit ? ocEdit.numero : Math.max(0, ...state.ordenesCompra.map(o => o.numero))+1;
+  $('ocm-title').textContent = ocEdit ? 'Editar orden de compra' : 'Nueva orden de compra';
+  $('ocm-sub').textContent = ocNumeroLabel(num);
+  ocCombo.set(ocEdit ? ocEdit.proveedorId : '');
+  $('ocm-fecha').value = ocEdit ? ocEdit.fecha : TODAY;
+  $('ocm-monto').value = ocEdit ? fmtNum(ocEdit.monto) : '';
+  $('ocm-descripcion').value = ocEdit ? ocEdit.descripcion : '';
+  $('ocm-estado').value = ocEdit ? ocEdit.estado : 'pendiente';
+  $('ocm-delete').style.display = ocEdit ? '' : 'none';
+  openOverlay('oc-overlay');
+}
+$('new-oc-btn').addEventListener('click', () => openOCModal(null));
+$('ocm-cancel').addEventListener('click', () => closeOverlay('oc-overlay'));
+$('ocm-save').addEventListener('click', () => {
+  if(!ocCombo.get()) return showToast('Elegí un proveedor.');
+  const o = ocEdit || { id: newId('oc'), numero: Math.max(0, ...state.ordenesCompra.map(x => x.numero))+1 };
+  Object.assign(o, { proveedorId: ocCombo.get(), fecha: $('ocm-fecha').value || TODAY, monto: parseMoney($('ocm-monto').value), descripcion: $('ocm-descripcion').value.trim(), estado: $('ocm-estado').value });
+  if(!ocEdit) state.ordenesCompra.push(o);
+  closeOverlay('oc-overlay'); showToast('Orden de compra '+ocNumeroLabel(o.numero)+' guardada.'); renderCompras();
+});
+$('ocm-delete').addEventListener('click', () => { state.facturas.forEach(f => { if(f.ocId===ocEdit.id) f.ocId = null; }); state.ordenesCompra = state.ordenesCompra.filter(o => o!==ocEdit); closeOverlay('oc-overlay'); showToast('Orden de compra eliminada.'); renderCompras(); });
+
+// --- Factura modal (con lectura por IA simulada) ---
+let facEdit = null; let facFiles = [];
+const facCombo = makeCombo('fm-combo', () => fillOCSelect(''));
+function fillOCSelect(sel){
+  const pid = facCombo.get();
+  const ocs = state.ordenesCompra.filter(o => o.proveedorId===pid);
+  $('fm-oc').innerHTML = '<option value="">— Sin orden de compra —</option>' + ocs.map(o => '<option value="'+o.id+'">'+ocNumeroLabel(o.numero)+' — '+esc(o.descripcion)+'</option>').join('');
+  $('fm-oc').value = sel || '';
+}
+wireAttach('fm-archivo-input', 'fm-archivos-list', () => facFiles);
+function setPreview(show, scanning){
+  $('fm-preview').hidden = !show; $('factura-modal').classList.toggle('has-preview', show);
+  $('fm-preview').classList.toggle('scanning', !!scanning);
+}
+function openFacturaModal(id){
+  facEdit = id ? facturaById(id) : null;
+  $('fm-title').textContent = facEdit ? 'Editar factura' : 'Nueva factura';
+  $('fm-centro-costo').innerHTML = '<option value="">—</option>'+D.centrosCosto.map((c,i) => '<option value="'+i+'">'+esc(c)+'</option>').join('');
+  $('fm-concepto').innerHTML = '<option value="">—</option>'+D.conceptos.map((c,i) => '<option value="'+i+'">'+esc(c)+'</option>').join('');
+  facCombo.set(facEdit ? facEdit.proveedorId : '');
+  fillOCSelect(facEdit ? facEdit.ocId : '');
+  $('fm-centro-costo').value = facEdit ? facEdit.centro : '';
+  $('fm-concepto').value = facEdit ? facEdit.concepto : '';
+  $('fm-numero').value = facEdit ? facEdit.numero : '';
+  $('fm-fecha').value = facEdit ? facEdit.fecha : TODAY;
+  $('fm-vencimiento').value = facEdit ? facEdit.vencimiento : '';
+  $('fm-monto').value = facEdit ? fmtNum(facEdit.monto) : '';
+  $('fm-notas').value = facEdit ? facEdit.notas : '';
+  facFiles = facEdit ? facEdit.archivos.slice() : [];
+  renderAttach('fm-archivos-list', facFiles);
+  $('fm-read-row').hidden = !!facEdit;
+  $('fm-read-status').hidden = true;
+  $('fm-delete').style.display = facEdit ? '' : 'none';
+  setPreview(false);
+  openOverlay('factura-overlay');
+}
+function fakeInvoiceHTML(x){
+  const p = proveedorById(x.prov);
+  const rows = x.items.map(i => '<tr><td>'+esc(i[0])+'</td><td class="r">'+i[1]+'</td><td class="r">'+fmtMoney(i[2])+'</td><td class="r">'+fmtMoney(i[1]*i[2])+'</td></tr>').join('');
+  const neto = x.items.reduce((s,i) => s+i[1]*i[2], 0);
+  return '<div class="fake-invoice"><div class="fi-top"><div><b style="font-size:14px;">'+esc(p.nombre)+'</b><br>CUIT '+esc(p.cuit)+'<br>'+esc(p.localidad)+', '+esc(p.provincia)+'</div><div class="fi-letter">A</div><div style="text-align:right;"><b>FACTURA</b><br>N° '+esc(x.numero)+'<br>Fecha: '+fmtDate(offsetDate(x.d))+'</div></div>'+
+    '<div>Cliente: <b>'+esc(D.empresa.razonSocial)+'</b><br>Vencimiento: '+fmtDate(offsetDate(x.venc))+'</div>'+
+    '<table><thead><tr><th>Detalle</th><th class="r">Cant.</th><th class="r">P. unit.</th><th class="r">Subtotal</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<div style="text-align:right;">Neto gravado: '+fmtMoney(neto)+'<br>IVA 21%: '+fmtMoney(x.monto-neto)+'</div><div class="fi-total">Total: '+fmtMoney(x.monto)+'</div>'+
+    '<div style="margin-top:12px; font-size:10.5px; color:#8b96ad;">Comprobante de ejemplo · datos ficticios</div></div>';
+}
+$('fm-read-btn').addEventListener('click', () => {
+  const x = D.facturaEjemploOCR;
+  const st = $('fm-read-status'); const btn = $('fm-read-btn');
+  btn.disabled = true; st.className = 'factura-read-status'; st.hidden = false; st.textContent = '⏳ Leyendo la factura con IA…';
+  $('fm-preview-name').textContent = 'factura_'+x.numero+'.pdf';
+  $('fm-preview-body').innerHTML = fakeInvoiceHTML(x);
+  setPreview(true, true);
+  setTimeout(() => {
+    facCombo.set(x.prov); fillOCSelect('');
+    $('fm-centro-costo').value = x.centro; $('fm-concepto').value = x.concepto;
+    $('fm-numero').value = x.numero; $('fm-fecha').value = offsetDate(x.d); $('fm-vencimiento').value = offsetDate(x.venc); $('fm-monto').value = fmtNum(x.monto);
+    if(!facFiles.some(f => f.name==='factura_'+x.numero+'.pdf')) facFiles.push({ name: 'factura_'+x.numero+'.pdf', local: true });
+    renderAttach('fm-archivos-list', facFiles);
+    st.className = 'factura-read-status ok';
+    st.textContent = '✓ Datos leídos: proveedor, número, fechas, monto, centro de costo y concepto. Revisalos antes de guardar. ('+DEMO_SEND+': se usó una factura de ejemplo.)';
+    setPreview(true, false); btn.disabled = false;
+  }, 1600);
+});
+$('fm-preview-close').addEventListener('click', () => setPreview(false));
+$('new-factura-btn').addEventListener('click', () => openFacturaModal(null));
+$('fm-cancel').addEventListener('click', () => closeOverlay('factura-overlay'));
+$('fm-save').addEventListener('click', () => {
+  if(!facCombo.get()) return showToast('Elegí un proveedor.');
+  const numero = $('fm-numero').value.trim(); if(!numero) return showToast('Completá el número de factura.');
+  const monto = parseMoney($('fm-monto').value); if(monto<=0) return showToast('Completá el monto.');
+  const f = facEdit || { id: newId('f'), estado: 'pendiente' };
+  const cc = $('fm-centro-costo').value, co = $('fm-concepto').value;
+  Object.assign(f, { proveedorId: facCombo.get(), ocId: $('fm-oc').value || null, centro: cc==='' ? null : Number(cc), concepto: co==='' ? null : Number(co),
+    numero, fecha: $('fm-fecha').value || TODAY, vencimiento: $('fm-vencimiento').value || '', monto, notas: $('fm-notas').value.trim(), archivos: facFiles.slice() });
+  if(!facEdit) state.facturas.push(f);
+  state.ordenesPago.forEach(op => { if(op.facturaIds.includes(f.id)){ op.monto = opMonto(op); syncMovimientoOP(op); } });
+  closeOverlay('factura-overlay'); showToast('Factura '+numero+' guardada.'); comprasSub('compra'); renderCompras();
+});
+$('fm-delete').addEventListener('click', () => {
+  if(state.ordenesPago.some(op => op.facturaIds.includes(facEdit.id))) return showToast('No se puede eliminar: la factura está en una orden de pago.');
+  state.facturas = state.facturas.filter(f => f!==facEdit); closeOverlay('factura-overlay'); showToast('Factura eliminada.'); renderCompras();
+});
+
+// ================== PAGOS ==================
+function pagosSub(tab){ state.pagosTab = tab; $('psec-pago').hidden = tab!=='pago'; $('psec-op').hidden = tab!=='op'; $('ptab-pago').classList.toggle('active', tab==='pago'); $('ptab-op').classList.toggle('active', tab==='op'); }
+$('ptab-pago').addEventListener('click', () => pagosSub('pago'));
+$('ptab-op').addEventListener('click', () => pagosSub('op'));
+function renderPagos(){
+  pagosSub(state.pagosTab);
+  const pend = state.ordenesPago.filter(p => p.estado!=='pagada').sort((a,b) => a.fecha.localeCompare(b.fecha));
+  $('pago-pend-body').innerHTML = pend.length ? pend.map(p => '<tr class="day-row" data-id="'+p.id+'"><td>'+pagoNumeroLabel(p.numero)+'</td><td>'+esc(proveedorNombre(p.proveedorId))+'</td><td>'+fmtDate(p.fecha)+'</td><td class="num">'+fmtMoney(p.monto)+'</td><td><button class="btn primary edit-action pago-reg-btn" data-id="'+p.id+'">Registrar pago</button></td></tr>').join('')
+    : '<tr class="day-row empty"><td colspan="5">No hay órdenes de pago pendientes.</td></tr>';
+  const real = state.ordenesPago.filter(p => p.estado==='pagada').sort((a,b) => b.fecha.localeCompare(a.fecha));
+  $('pago-real-body').innerHTML = real.length ? real.map(p => '<tr class="day-row" data-id="'+p.id+'"><td>'+pagoNumeroLabel(p.numero)+'</td><td>'+esc(proveedorNombre(p.proveedorId))+'</td><td>'+fmtDate(p.fecha)+'</td><td style="text-transform:capitalize">'+esc(p.medioPago||'—')+'</td><td>'+esc(cuentaNombre(p.cuentaId))+'</td><td class="num">'+fmtMoney(p.monto)+'</td></tr>').join('')
+    : '<tr class="day-row empty"><td colspan="6">Todavía no hay pagos realizados.</td></tr>';
+  const est = $('pago-filter-estado').value;
+  const list = state.ordenesPago.filter(p => !est || p.estado===est).sort((a,b) => b.numero-a.numero);
+  $('pagos-body').innerHTML = list.length ? list.map(p => '<tr class="day-row" data-id="'+p.id+'"><td class="day-route num">'+pagoNumeroLabel(p.numero)+'</td><td>'+esc(proveedorNombre(p.proveedorId))+'</td><td class="num">'+fmtDate(p.fecha)+'</td><td class="day-note">'+esc(p.facturaIds.map(id => (facturaById(id)||{numero:'(eliminada)'}).numero).join(', ')||'—')+'</td><td class="num">'+fmtMoney(p.monto)+'</td><td><span class="oc-badge '+p.estado+'">'+estadoLabel(p.estado)+'</span></td></tr>').join('')
+    : '<tr class="day-row empty"><td colspan="6">No hay órdenes de pago con ese estado.</td></tr>';
+}
+$('pago-filter-estado').addEventListener('change', renderPagos);
+$('view-pagos').addEventListener('click', ev => {
+  const b = ev.target.closest('.pago-reg-btn'); if(b){ ev.stopPropagation(); return openPagoModal(b.dataset.id, true); }
+  const tr = ev.target.closest('tr[data-id]'); if(tr) openPagoModal(tr.dataset.id);
+});
+
+// --- OP modal ---
+let opEdit = null; let opSel = {};
+const opCombo = makeCombo('pom-combo', () => { opSel = {}; renderOPFacturas(); });
+function renderOPFacturas(){
+  const pid = opCombo.get(); const box = $('pom-facturas-list');
+  if(!pid){ box.innerHTML = '<div class="cargo-empty">Elegí un proveedor para ver sus facturas pendientes.</div>'; updateOPTotal(); return; }
+  const enOtras = {}; state.ordenesPago.forEach(op => { if(op!==opEdit) op.facturaIds.forEach(id => enOtras[id] = true); });
+  const list = state.facturas.filter(f => f.proveedorId===pid && !enOtras[f.id] && (f.estado==='pendiente' || opSel[f.id])).sort((a,b) => a.fecha.localeCompare(b.fecha));
+  box.innerHTML = list.length ? list.map(f => '<label class="setting-row"><input type="checkbox" data-id="'+f.id+'"'+(opSel[f.id]?' checked':'')+'><span>'+esc(f.numero)+' — '+fmtDate(f.fecha)+' — '+fmtMoney(f.monto)+'</span></label>').join('') : '<div class="cargo-empty">Este proveedor no tiene facturas pendientes sin orden de pago.</div>';
+  updateOPTotal();
+}
+$('pom-facturas-list').addEventListener('change', ev => { const c = ev.target; if(c.dataset.id){ if(c.checked) opSel[c.dataset.id] = true; else delete opSel[c.dataset.id]; updateOPTotal(); } });
+function updateOPTotal(){ const t = Object.keys(opSel).reduce((s,id) => s+Number((facturaById(id)||{monto:0}).monto), 0); $('pom-monto-total').textContent = fmtMoney(t); }
+function toggleCuentaField(){ $('pom-cuenta-field').style.display = $('pom-estado').value==='pagada' ? '' : 'none'; }
+$('pom-estado').addEventListener('change', toggleCuentaField);
+function openPagoModal(id, registrar){
+  opEdit = id ? state.ordenesPago.find(o => o.id===id) : null;
+  const num = opEdit ? opEdit.numero : Math.max(0, ...state.ordenesPago.map(o => o.numero))+1;
+  $('pom-title').textContent = registrar ? 'Registrar pago' : (opEdit ? 'Editar orden de pago' : 'Nueva orden de pago');
+  $('pom-sub').textContent = pagoNumeroLabel(num) + (registrar ? ' — elegí el medio y la cuenta, y guardá' : '');
+  opCombo.set(opEdit ? opEdit.proveedorId : '');
+  opSel = {}; (opEdit ? opEdit.facturaIds : []).forEach(fid => opSel[fid] = true);
+  renderOPFacturas();
+  $('pom-fecha').value = registrar ? TODAY : (opEdit ? opEdit.fecha : TODAY);
+  $('pom-medio').value = opEdit ? (opEdit.medioPago||'transferencia') : 'transferencia';
+  $('pom-estado').value = registrar ? 'pagada' : (opEdit ? opEdit.estado : 'pendiente');
+  $('pom-cuenta').innerHTML = '<option value="">— Elegí la cuenta —</option>' + state.cuentas.map(c => '<option value="'+c.id+'">'+esc(c.nombre)+' (saldo '+fmtMoney(cuentaSaldoActual(c.id))+')</option>').join('');
+  $('pom-cuenta').value = opEdit && opEdit.cuentaId ? opEdit.cuentaId : (registrar ? 'c3' : '');
+  $('pom-notas').value = opEdit ? (opEdit.notas||'') : '';
+  toggleCuentaField();
+  $('pom-delete').style.display = opEdit ? '' : 'none';
+  openOverlay('pago-overlay');
+}
+$('new-pago-btn').addEventListener('click', () => openPagoModal(null));
+$('pom-cancel').addEventListener('click', () => closeOverlay('pago-overlay'));
+$('pom-save').addEventListener('click', () => {
+  if(!opCombo.get()) return showToast('Elegí un proveedor.');
+  const ids = Object.keys(opSel); if(!ids.length) return showToast('Tildá al menos una factura.');
+  const estado = $('pom-estado').value;
+  if(estado==='pagada' && !$('pom-cuenta').value) return showToast('Elegí la cuenta de pago.');
+  const op = opEdit || { id: newId('op'), numero: Math.max(0, ...state.ordenesPago.map(o => o.numero))+1 };
+  (op.facturaIds||[]).forEach(fid => { if(!opSel[fid]){ const f = facturaById(fid); if(f) f.estado = 'pendiente'; } });
+  Object.assign(op, { proveedorId: opCombo.get(), facturaIds: ids, fecha: $('pom-fecha').value || TODAY, medioPago: $('pom-medio').value, estado, cuentaId: estado==='pagada' ? $('pom-cuenta').value : null, notas: $('pom-notas').value.trim() });
+  op.monto = opMonto(op);
+  ids.forEach(fid => { const f = facturaById(fid); if(f) f.estado = estado==='pagada' ? 'pagada' : 'pendiente'; });
+  if(!opEdit) state.ordenesPago.push(op);
+  syncMovimientoOP(op);
+  closeOverlay('pago-overlay');
+  showToast(estado==='pagada' ? 'Pago registrado: '+pagoNumeroLabel(op.numero)+'. Se generó el egreso en Tesorería.' : 'Orden de pago '+pagoNumeroLabel(op.numero)+' guardada.');
+  renderPagos();
+});
+$('pom-delete').addEventListener('click', () => {
+  opEdit.facturaIds.forEach(fid => { const f = facturaById(fid); if(f) f.estado = 'pendiente'; });
+  state.movimientos = state.movimientos.filter(m => m.pagoId!==opEdit.id);
+  state.ordenesPago = state.ordenesPago.filter(o => o!==opEdit);
+  closeOverlay('pago-overlay'); showToast('Orden de pago eliminada.'); renderPagos();
+});
+
+// ================== TESORERÍA ==================
+function renderTesoreria(){
+  const fp = $('deuda-proveedor-filter'); const cur = fp.value;
+  const conDeuda = {}; state.facturas.forEach(f => { if(f.estado==='pendiente') conDeuda[f.proveedorId] = true; });
+  fp.innerHTML = '<option value="">Todos los proveedores</option>' + state.proveedores.filter(p => conDeuda[p.id]).sort((a,b) => a.nombre.localeCompare(b.nombre)).map(p => '<option value="'+p.id+'">'+esc(p.nombre)+'</option>').join('');
+  fp.value = conDeuda[cur] ? cur : '';
+  renderDeuda();
+  $('cuentas-body').innerHTML = state.cuentas.slice().sort((a,b) => a.nombre.localeCompare(b.nombre)).map(c => {
+    const act = cuentaSaldoActual(c.id);
+    return '<tr class="day-row" data-id="'+c.id+'"><td class="day-route">'+esc(c.nombre)+'</td><td>'+(c.tipo==='banco'?'Banco':'Caja')+'</td><td class="num">'+fmtMoney(c.saldoInicial)+'</td><td class="num'+(act<0?' cuenta-saldo-neg':'')+'">'+fmtMoney(act)+'</td><td class="day-note">'+esc(c.notas||'—')+'</td></tr>';
+  }).join('');
+  const mf = $('mov-filter-cuenta'); const mcur = mf.value;
+  mf.innerHTML = '<option value="">Todas las cuentas</option>' + state.cuentas.map(c => '<option value="'+c.id+'">'+esc(c.nombre)+'</option>').join('');
+  mf.value = mcur;
+  renderMovimientos();
+}
+function renderDeuda(){
+  const modo = state.deudaModo, filtro = $('deuda-proveedor-filter').value;
+  $('deuda-modo-resumido').classList.toggle('primary', modo==='resumido');
+  $('deuda-modo-detallado').classList.toggle('primary', modo==='detallado');
+  const pend = state.facturas.filter(f => f.estado==='pendiente' && (!filtro || f.proveedorId===filtro));
+  $('deuda-total').textContent = 'Deuda total pendiente: '+fmtMoney(pend.reduce((s,f) => s+Number(f.monto), 0))+'  ·  '+pend.length+' factura(s)';
+  if(modo==='detallado'){
+    $('deuda-head').innerHTML = '<tr><th>Proveedor</th><th>Factura</th><th>Fecha</th><th>Monto</th></tr>';
+    const ss = pend.slice().sort((a,b) => proveedorNombre(a.proveedorId).localeCompare(proveedorNombre(b.proveedorId)) || a.fecha.localeCompare(b.fecha));
+    $('deuda-body').innerHTML = ss.length ? ss.map(f => '<tr class="day-row"><td>'+esc(proveedorNombre(f.proveedorId))+'</td><td>'+esc(f.numero)+'</td><td>'+fmtDate(f.fecha)+'</td><td class="num">'+fmtMoney(f.monto)+'</td></tr>').join('') : '<tr class="day-row empty"><td colspan="4">No hay deuda pendiente.</td></tr>';
+  } else {
+    $('deuda-head').innerHTML = '<tr><th>Proveedor</th><th>Facturas pendientes</th><th>Deuda</th></tr>';
+    const by = {}; pend.forEach(f => { const k = f.proveedorId; by[k] = by[k] || { c: 0, t: 0 }; by[k].c++; by[k].t += Number(f.monto); });
+    const rows = Object.keys(by).map(k => ({ n: proveedorNombre(k), c: by[k].c, t: by[k].t })).sort((a,b) => b.t-a.t);
+    $('deuda-body').innerHTML = rows.length ? rows.map(r => '<tr class="day-row"><td>'+esc(r.n)+'</td><td class="num">'+r.c+'</td><td class="num">'+fmtMoney(r.t)+'</td></tr>').join('') : '<tr class="day-row empty"><td colspan="3">No hay deuda pendiente.</td></tr>';
+  }
+}
+$('deuda-modo-resumido').addEventListener('click', () => { state.deudaModo = 'resumido'; renderDeuda(); });
+$('deuda-modo-detallado').addEventListener('click', () => { state.deudaModo = 'detallado'; renderDeuda(); });
+$('deuda-proveedor-filter').addEventListener('change', renderDeuda);
+function renderMovimientos(){
+  const f = $('mov-filter-cuenta').value;
+  const list = state.movimientos.filter(m => !f || m.cuentaId===f).sort((a,b) => b.fecha.localeCompare(a.fecha));
+  $('movimientos-body').innerHTML = list.length ? list.map(m => '<tr class="day-row" data-id="'+m.id+'"'+(m.pagoId?' style="cursor:default;"':'')+'><td class="num">'+fmtDate(m.fecha)+'</td><td>'+esc(cuentaNombre(m.cuentaId))+'</td><td class="day-note">'+esc(m.concepto||'—')+'</td><td><span class="mov-origen-badge'+(m.pagoId?' auto':'')+'">'+(m.pagoId?'Orden de pago':'Manual')+'</span></td><td class="num">'+fmtMoney(m.monto)+'</td></tr>').join('')
+    : '<tr class="day-row empty"><td colspan="5">No hay movimientos en esta cuenta.</td></tr>';
+}
+$('mov-filter-cuenta').addEventListener('change', renderMovimientos);
+$('movimientos-body').addEventListener('click', ev => {
+  const tr = ev.target.closest('tr[data-id]'); if(!tr) return;
+  const m = state.movimientos.find(x => x.id===tr.dataset.id);
+  if(m.pagoId) return showToast('Este egreso viene de una orden de pago: se modifica desde Pagos.');
+  openMovModal(m.id);
+});
+$('cuentas-body').addEventListener('click', ev => { const tr = ev.target.closest('tr[data-id]'); if(tr) openCuentaModal(tr.dataset.id); });
+
+let ctaEdit = null;
+function openCuentaModal(id){
+  ctaEdit = id ? cuentaById(id) : null;
+  $('ctam-title').textContent = ctaEdit ? 'Editar cuenta' : 'Nueva cuenta';
+  $('ctam-nombre').value = ctaEdit ? ctaEdit.nombre : '';
+  $('ctam-tipo').value = ctaEdit ? ctaEdit.tipo : 'caja';
+  $('ctam-saldo-inicial').value = ctaEdit ? fmtNum(ctaEdit.saldoInicial) : '';
+  $('ctam-notas').value = ctaEdit ? ctaEdit.notas : '';
+  $('ctam-delete').style.display = ctaEdit ? '' : 'none';
+  openOverlay('cuenta-overlay');
+}
+$('new-cuenta-btn').addEventListener('click', () => openCuentaModal(null));
+$('ctam-cancel').addEventListener('click', () => closeOverlay('cuenta-overlay'));
+$('ctam-save').addEventListener('click', () => {
+  const nombre = $('ctam-nombre').value.trim(); if(!nombre) return showToast('Completá el nombre de la cuenta.');
+  const c = ctaEdit || { id: newId('c') };
+  Object.assign(c, { nombre, tipo: $('ctam-tipo').value, saldoInicial: parseMoney($('ctam-saldo-inicial').value), notas: $('ctam-notas').value.trim() });
+  if(!ctaEdit) state.cuentas.push(c);
+  closeOverlay('cuenta-overlay'); showToast('Cuenta guardada.'); renderTesoreria();
+});
+$('ctam-delete').addEventListener('click', () => {
+  if(state.movimientos.some(m => m.cuentaId===ctaEdit.id)) return showToast('No se puede eliminar: la cuenta tiene movimientos.');
+  state.cuentas = state.cuentas.filter(c => c!==ctaEdit); closeOverlay('cuenta-overlay'); showToast('Cuenta eliminada.'); renderTesoreria();
+});
+
+let movEdit = null;
+function openMovModal(id){
+  movEdit = id ? state.movimientos.find(m => m.id===id) : null;
+  $('movm-title').textContent = movEdit ? 'Editar movimiento' : 'Nuevo movimiento';
+  $('movm-cuenta').innerHTML = state.cuentas.map(c => '<option value="'+c.id+'">'+esc(c.nombre)+'</option>').join('');
+  $('movm-cuenta').value = movEdit ? movEdit.cuentaId : 'c1';
+  $('movm-fecha').value = movEdit ? movEdit.fecha : TODAY;
+  $('movm-monto').value = movEdit ? fmtNum(movEdit.monto) : '';
+  $('movm-concepto').value = movEdit ? movEdit.concepto : '';
+  $('movm-delete').style.display = movEdit ? '' : 'none';
+  openOverlay('movimiento-overlay');
+}
+$('new-movimiento-btn').addEventListener('click', () => openMovModal(null));
+$('movm-cancel').addEventListener('click', () => closeOverlay('movimiento-overlay'));
+$('movm-save').addEventListener('click', () => {
+  const monto = parseMoney($('movm-monto').value); if(monto<=0) return showToast('Completá el monto.');
+  const m = movEdit || { id: newId('m'), pagoId: null };
+  Object.assign(m, { cuentaId: $('movm-cuenta').value, fecha: $('movm-fecha').value || TODAY, monto, concepto: $('movm-concepto').value.trim() || 'Egreso' });
+  if(!movEdit) state.movimientos.push(m);
+  closeOverlay('movimiento-overlay'); showToast('Movimiento guardado.'); renderTesoreria();
+});
+$('movm-delete').addEventListener('click', () => { state.movimientos = state.movimientos.filter(m => m!==movEdit); closeOverlay('movimiento-overlay'); showToast('Movimiento eliminado.'); renderTesoreria(); });
+
+// ================== SIMULACIÓN ==================
+function simDias(s){ if(!s) return null; return Math.round((parseDate(s) - NOW)/86400000); }
+function simDisponible(){ const v = $('sim-disponible').value.trim(); if(v) return parseMoney(v); return state.cuentas.reduce((s,c) => s+cuentaSaldoActual(c.id), 0); }
+function simPendientes(){ return state.facturas.filter(f => f.estado==='pendiente').sort((a,b) => (a.vencimiento||'9999').localeCompare(b.vencimiento||'9999') || a.fecha.localeCompare(b.fecha)); }
+function renderSimResumen(){
+  const pend = simPendientes(); const sel = pend.filter(f => state.simSeleccion[f.id]);
+  const tp = pend.reduce((s,f) => s+Number(f.monto), 0), ts = sel.reduce((s,f) => s+Number(f.monto), 0);
+  const disp = simDisponible(), rest = disp - ts;
+  $('sim-resumen').innerHTML = '<div><b>Disponible:</b> '+fmtMoney(disp)+'</div><div style="color:var(--brand-red,#e30613)"><b>A pagar ('+sel.length+'):</b> '+fmtMoney(ts)+'</div><div style="color:'+(rest<0?'var(--danger)':'inherit')+'"><b>Restante:</b> '+fmtMoney(rest)+'</div><div style="color:var(--ink-2)"><b>Deuda total ('+pend.length+'):</b> '+fmtMoney(tp)+'</div>';
+}
+function renderSimulador(){
+  const pend = simPendientes();
+  $('sim-body').innerHTML = pend.length ? pend.map(f => {
+    const d = simDias(f.vencimiento); let txt, color = 'var(--ink-2)';
+    if(d===null) txt = 'Sin vencimiento'; else if(d<0){ txt = 'Vencida hace '+(-d)+'d'; color = 'var(--danger)'; } else if(d===0){ txt = 'Vence hoy'; color = 'var(--danger)'; } else { txt = 'Vence en '+d+'d'; if(d<=7) color = '#b8860b'; }
+    return '<tr class="day-row"><td><input type="checkbox" class="sim-chk" data-id="'+f.id+'"'+(state.simSeleccion[f.id]?' checked':'')+' aria-label="Seleccionar factura '+esc(f.numero)+'"></td><td>'+fmtDate(f.vencimiento)+'</td><td style="color:'+color+'">'+txt+'</td><td>'+esc(proveedorNombre(f.proveedorId))+'</td><td>'+esc(f.numero)+'</td><td class="num">'+fmtMoney(f.monto)+'</td></tr>';
+  }).join('') : '<tr class="day-row empty"><td colspan="6">No hay facturas pendientes.</td></tr>';
+  renderSimResumen();
+}
+$('sim-body').addEventListener('change', ev => { const c = ev.target; if(!c.dataset.id) return; if(c.checked) state.simSeleccion[c.dataset.id] = true; else delete state.simSeleccion[c.dataset.id]; renderSimResumen(); });
+$('sim-body').addEventListener('click', ev => { const tr = ev.target.closest('tr.day-row'); if(!tr || ev.target.matches('input')) return; const c = tr.querySelector('.sim-chk'); if(c){ c.checked = !c.checked; c.dispatchEvent(new Event('change', { bubbles: true })); } });
+$('sim-auto-btn').addEventListener('click', () => { let rest = simDisponible(); state.simSeleccion = {}; simPendientes().forEach(f => { const m = Number(f.monto); if(m<=rest){ state.simSeleccion[f.id] = true; rest -= m; } }); renderSimulador(); });
+$('sim-limpiar-btn').addEventListener('click', () => { state.simSeleccion = {}; renderSimulador(); });
+$('sim-disponible').addEventListener('input', renderSimResumen);
+
+// ================== Overlays, encabezado y recorrido ==================
+let lastFocus = null;
+function openOverlay(id){ lastFocus = document.activeElement; $(id).classList.add('show'); const m = $(id).querySelector('.modal'); m.setAttribute('tabindex','-1'); m.scrollTop = 0; setTimeout(() => m.focus({ preventScroll: true }), 30); }
+function closeOverlay(id){ $(id).classList.remove('show'); if(lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); }
+document.querySelectorAll('.overlay').forEach(ov => ov.addEventListener('mousedown', ev => { if(ev.target===ov) closeOverlay(ov.id); }));
+document.addEventListener('keydown', ev => { if(ev.key==='Escape'){ const o = document.querySelector('.overlay.show'); if(o) closeOverlay(o.id); } });
+
+$('user-email').textContent = D.empresa.usuario;
+$('brand-name').textContent = D.empresa.nombre;
+$('pwd-btn').addEventListener('click', () => showToast('En la demo no hay contraseñas: entraste como usuario demo.'));
+$('settings-btn').addEventListener('click', () => showToast('Configuración (rutas, camiones, choferes, permisos) deshabilitada en la demo.'));
+$('logout-btn').addEventListener('click', () => showToast('En la demo no hay sesión que cerrar.'));
+$('help-btn').addEventListener('click', () => openOverlay('tour-overlay'));
+$('tour-close').addEventListener('click', () => closeOverlay('tour-overlay'));
+document.querySelectorAll('#tour-modal li').forEach(li => li.addEventListener('click', () => {
+  closeOverlay('tour-overlay');
+  const g = li.dataset.go;
+  if(g==='compras-ocr'){ state.comprasTab = 'compra'; switchView('compras'); setTimeout(() => openFacturaModal(null), 150); }
+  else { if(g==='pagos') state.pagosTab = 'pago'; switchView(g); }
+}));
+
+// ---------- Arranque ----------
+generate();
+loadCompras();
+$('dash-from').value = dateStr(NOW.getFullYear(), NOW.getMonth()-2 < 0 ? 0 : NOW.getMonth()-2, 1);
+(function(){ const d = new Date(NOW.getFullYear(), NOW.getMonth()-2, 1); $('dash-from').value = toStr(d); })();
+$('dash-to').value = TODAY;
+switchView('grid');
+setTimeout(() => openOverlay('tour-overlay'), 350);
+})();
+</script>
+</body>
+</html>
