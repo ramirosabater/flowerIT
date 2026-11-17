@@ -201,6 +201,17 @@
   .back-link:hover{color:var(--ink);}
   .nav-links a[aria-current="page"]{color:var(--ink);}
 </style>
+<!-- Microsoft Clarity: estadísticas de visitas -->
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "zf5kqgf5ny");
+    // Marca los clics que importan: WhatsApp y demos
+    document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"";
+      if(h.indexOf("wa.me/5492975212008")>-1)clarity("event","clic_whatsapp");else if(h.indexOf("demos/")===0)clarity("event","abrir_demo_"+h.split("/")[1]);},true);
+</script>
 </head>
 <body>
 
@@ -682,7 +693,7 @@
     <a class="btn btn-wsp" href="https://wa.me/5492975212008" target="_blank" rel="noopener">Escribime por WhatsApp</a>
     <div class="foot-bottom">
       <a href="index.html"><img src="assets/logo-flower.png" alt="FloWer"></a>
-      <span>Rada Tilly, Chubut</span>
+      <span>Rada Tilly, Chubut · Medimos las visitas de forma anónima con Microsoft Clarity.</span>
     </div>
   </div>
 </footer>
