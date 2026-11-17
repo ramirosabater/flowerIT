@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estadísticas · FloWer</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#060822">
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060822;--surface:#0E1238;--surface-2:#151A4A;--ink:#F2F1FA;--soft:#A7AACD;--faint:#71759C;--line:rgba(242,241,250,.10);--line2:rgba(242,241,250,.18);--violet:#A26BFF;--indigo:#4B45FF;--cyan:#5CEFF2;--ok:#4ADE80;--bad:#FF7A85;--grad:linear-gradient(115deg,#A26BFF 0%,#4B45FF 52%,#4FDDF0 100%);color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Sora,system-ui,sans-serif}
+a{color:var(--cyan)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(6,8,34,.9);backdrop-filter:blur(10px);z-index:10}
+.hrow{display:flex;align-items:center;gap:14px;padding:14px 0;flex-wrap:wrap}
+.hrow img{height:26px}
+.hrow h1{font-size:17px;margin:0;font-weight:600;color:var(--soft)}
+.sp{flex:1}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;color:var(--soft);cursor:pointer}
+.seg button.on{background:var(--grad);color:#fff}
+.btn{border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:7px 14px;font-weight:600;font-size:13.5px;cursor:pointer;text-decoration:none;color:var(--ink);display:inline-block}
+.btn:hover{border-color:var(--soft)}.btn.pri{background:var(--grad);border:0;color:#fff}
+main{padding:24px 0 80px}
+h2{font-size:20px;margin:30px 0 12px;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h2 small{font-size:12.5px;font-weight:500;color:var(--faint)}
+h3{font-size:15px;margin:0 0 12px;font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;min-width:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .l{font-size:12.5px;color:var(--soft)}.stat .v{font-size:28px;font-weight:700;line-height:1.15;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat .d{font-size:12px;margin-top:2px;color:var(--faint)}.up{color:var(--ok)}.down{color:var(--bad)}
+.stat.live .v{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.g3{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+@media (max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+.hb .r{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(60px,1fr) auto;gap:10px;align-items:center;padding:6px 0;font-size:13.5px}
+.hb .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .t{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden}.hb .b{height:100%;border-radius:4px;background:var(--grad)}
+.hb .v{font-variant-numeric:tabular-nums;color:var(--soft);text-align:right;white-space:nowrap}
+.muted{color:var(--faint)}.small{font-size:12.5px}
+.chart svg{width:100%;height:auto;display:block}
+.heat{display:grid;grid-template-columns:34px repeat(24,minmax(0,1fr));gap:2px;font-size:10px}
+.heat div{aspect-ratio:1;border-radius:3px;background:var(--surface-2)}
+.heat .h{background:none;color:var(--faint);display:flex;align-items:center;justify-content:center;aspect-ratio:auto}
+.aviso{border:1px solid var(--line2);border-radius:14px;padding:12px 16px;background:var(--surface-2);font-size:14px}
+.aviso.err{border-color:rgba(255,122,133,.5);color:#ffc2c7}
+.login{max-width:380px;margin:12vh auto 0;text-align:center}
+.login input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--surface);margin:16px 0 10px}
+.login .btn{width:100%;padding:11px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;background:var(--surface-2);color:var(--soft)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--faint);font-weight:500;font-size:12px}td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+.foot{margin-top:40px;font-size:12.5px;color:var(--faint);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const n0=n=>Math.round(+n||0).toLocaleString('es-AR');
+const pct=n=>((+n||0)*100).toFixed(0)+' %';
+const dur=s=>{s=Math.round(+s||0);if(s<60)return s+' s';const m=Math.floor(s/60);return m+' min '+(s%60? (s%60)+' s':'')};
+const st={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}},del:k=>{try{localStorage.removeItem(k)}catch{}}};
+const ss={get:k=>{try{return sessionStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{sessionStorage.setItem(k,v)}catch{}}};
+const CLARITY_ID='zf5kqgf5ny';
+const DEMOS={residuos:'Residuos peligrosos',gestionflota:'Flota y administración',pakua:'Academia',municipio:'Servicios al vecino',bar:'Bar y parrilla',automotora:'Catálogo de vehículos',turnero:'Turnero clínico',fichadas:'Fichadas'};
+const PAG=p=>p==='/'||p==='/index.html'?'Inicio':p.startsWith('/proyectos')?'Casos':p==='/estadisticas.html'||p==='/estadisticas'?'Estadísticas':p.startsWith('/demos/')?'Demo: '+(DEMOS[p.split('/')[2]]||p.split('/')[2]):p;
+const CANAL={'Direct':'Directo','Organic Search':'Búsqueda en Google','Organic Social':'Redes sociales','Referral':'Otros sitios','Paid Search':'Búsqueda paga','Paid Social':'Redes (pago)','Email':'Correo','Unassigned':'Sin identificar','Organic Video':'Video'};
+const DISP={desktop:'Compu',pc:'Compu',mobile:'Celular',tablet:'Tablet'};
+let clave=ss.get('flower_stats_clave'),dias=+(st.get('flower_stats_dias')||28),D=null,C=null;
+
+function login(err){$('#app').innerHTML=`<div class="wrap"><form class="login" id="lf"><img src="assets/logo-flower.png" alt="FloWer" style="height:34px"><h1 style="font-size:22px;margin:18px 0 0">Estadísticas del sitio</h1><p class="muted small">Solo para vos. Juntamos Google Analytics y Microsoft Clarity.</p><input type="password" id="lc" placeholder="Clave" autocomplete="current-password" aria-label="Clave"><button class="btn pri">Entrar</button>${err?`<p class="aviso err" style="margin-top:14px">${esc(err)}</p>`:''}</form></div>`;
+ $('#lc').focus();$('#lf').onsubmit=e=>{e.preventDefault();clave=$('#lc').value;cargar()}}
+
+async function api(body){const r=await fetch('/api/estadisticas',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({clave,...body})});let d={};try{d=await r.json()}catch{d={error:'El servidor no respondió bien ('+r.status+'). ¿Está publicada la función?'}}if(r.status===401){ss.set('flower_stats_clave','');throw Object.assign(new Error(d.error||'Clave incorrecta.'),{login:true})}if(!r.ok)throw new Error(d.error||'Error '+r.status);return d}
+
+async function cargar(){if(!clave)return login();if(!D)$('#app').innerHTML='<div class="wrap"><p class="muted" style="margin-top:20vh;text-align:center">Trayendo los números…</p></div>';
+ try{D=await api({dias,que:'ga'});ss.set('flower_stats_clave',clave);render();cargarClarity(false)}catch(e){if(e.login)return login(e.message);D={gaError:e.message};render()}}
+async function cargarClarity(forzar){const cache=st.get('flower_stats_clarity');if(cache&&!forzar){try{const c=JSON.parse(cache);if(Date.now()-c.t<3*3600*1000){C=c.d;renderClarity();return}}catch{}}
+ const box=$('#clarity');if(box)box.innerHTML='<p class="muted">Trayendo los datos de Clarity…</p>';
+ try{const d=await api({que:'clarity',diasClarity:3});if(d.clarityError)throw new Error(d.clarityError);C=d.clarity;st.set('flower_stats_clarity',JSON.stringify({t:Date.now(),d:C}));renderClarity()}catch(e){if(e.login)return login(e.message);if(box)box.innerHTML=`<p class="aviso err">${esc(e.message)}</p>`}}
+
+function delta(a,b,inv){if(b==null||!b)return '';const x=(a-b)/b;if(!isFinite(x))return '';const up=x>=0;return `<span class="${(up!==!!inv)?'up':'down'}">${up?'▲':'▼'} ${Math.abs(x*100).toFixed(0)} %</span> vs. ${dias} días anteriores`}
+function bars(L,lab,val,fmt=n0){const mx=Math.max(1,...L.map(val));return `<div class="hb">${L.map(x=>`<div class="r"><span class="n" title="${esc(lab(x))}">${esc(lab(x))}</span><div class="t"><div class="b" style="width:${(val(x)/mx*100).toFixed(1)}%"></div></div><span class="v">${fmt(val(x),x)}</span></div>`).join('')||'<p class="muted small">Todavía sin datos.</p>'}</div>`}
+function linea(rows){if(!rows.length)return '<p class="muted small">Todavía sin datos. Analytics tarda unas horas en mostrar los primeros días.</p>';
+ const W=760,H=200,P=28;const mx=Math.max(1,...rows.map(r=>r.sessions));const x=i=>P+(rows.length===1?0:(W-P*2)*i/(rows.length-1));const y=v=>H-P-(H-P*2)*v/mx;
+ const path=k=>rows.map((r,i)=>(i?'L':'M')+x(i).toFixed(1)+','+y(r[k]).toFixed(1)).join(' ');
+ const lab=d=>d.slice(6,8)+'/'+d.slice(4,6);const step=Math.ceil(rows.length/8);
+ return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Sesiones y usuarios por día"><defs><linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#A26BFF"/><stop offset=".5" stop-color="#4B45FF"/><stop offset="1" stop-color="#4FDDF0"/></linearGradient></defs>
+ ${[0,.5,1].map(f=>`<line x1="${P}" x2="${W-P}" y1="${y(mx*f)}" y2="${y(mx*f)}" stroke="rgba(242,241,250,.08)"/><text x="${P-6}" y="${y(mx*f)+4}" fill="#71759C" font-size="10" text-anchor="end">${Math.round(mx*f)}</text>`).join('')}
+ <path d="${path('sessions')}" fill="none" stroke="url(#gl)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+ <path d="${path('activeUsers')}" fill="none" stroke="#A7AACD" stroke-width="1.5" stroke-dasharray="4 4"/>
+ ${rows.map((r,i)=>`<circle cx="${x(i)}" cy="${y(r.sessions)}" r="3.5" fill="#5CEFF2"><title>${lab(r.date)}: ${r.sessions} sesiones, ${r.activeUsers} usuarios, ${r.screenPageViews} páginas</title></circle>${i%step===0?`<text x="${x(i)}" y="${H-8}" fill="#71759C" font-size="10" text-anchor="middle">${lab(r.date)}</text>`:''}`).join('')}
+ </svg><div class="small muted"><span style="color:var(--cyan)">━</span> sesiones &nbsp; <span>┅</span> usuarios</div></div>`}
+function heat(rows){const m={};let mx=1;rows.forEach(r=>{const k=r.dayOfWeek+'|'+(+r.hour);m[k]=(m[k]||0)+r.sessions;mx=Math.max(mx,m[k])});const DW=[1,2,3,4,5,6,0],DN=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+ return `<div class="heat"><div class="h"></div>${Array.from({length:24},(_,h)=>`<div class="h">${h%3===0?h:''}</div>`).join('')}${DW.map(d=>`<div class="h">${DN[d]}</div>${Array.from({length:24},(_,h)=>{const v=m[d+'|'+h]||0;return `<div title="${DN[d]} ${h} h: ${v} sesiones" style="${v?`background:rgba(92,239,242,${(.15+.85*v/mx).toFixed(2)})`:''}"></div>`}).join('')}`).join('')}</div>`}
+
+function render(){const g=D&&D.ga;const noMedir=st.get('flower_no_medir')==='1';
+ let h=`<header><div class="wrap hrow"><a href="index.html"><img src="assets/logo-flower.png" alt="FloWer"></a><h1>Estadísticas</h1><span class="sp"></span><div class="seg" role="group" aria-label="Período">${[7,28,90].map(n=>`<button data-d="${n}" class="${n===dias?'on':''}">${n} días</button>`).join('')}</div><button class="btn" id="re">Actualizar</button></div></header><main class="wrap">`;
+ if(D&&D.gaError)h+=`<div class="aviso err"><b>Analytics:</b> ${esc(D.gaError)}</div>`;
+ if(g){const t=g.totales||{},a=g.anterior;const wa=(g.eventos||[]).find(e=>e.eventName==='clic_whatsapp');const demos=(g.eventos||[]).filter(e=>e.eventName.startsWith('abrir_demo_'));
+  h+=`<div class="stats"><div class="stat live"><div class="l">En el sitio ahora</div><div class="v">${n0(g.ahora)}</div><div class="d">últimos 30 minutos</div></div>
+  <div class="stat"><div class="l">Visitantes</div><div class="v">${n0(t.activeUsers)}</div><div class="d">${delta(t.activeUsers,a&&a.activeUsers)||n0(t.newUsers)+' nuevos'}</div></div>
+  <div class="stat"><div class="l">Visitas (sesiones)</div><div class="v">${n0(t.sessions)}</div><div class="d">${delta(t.sessions,a&&a.sessions)}</div></div>
+  <div class="stat"><div class="l">Tiempo promedio por visita</div><div class="v">${dur(t.averageSessionDuration)}</div><div class="d">${delta(t.averageSessionDuration,a&&a.averageSessionDuration)}</div></div>
+  <div class="stat"><div class="l">Páginas vistas</div><div class="v">${n0(t.screenPageViews)}</div><div class="d">${t.sessions?(t.screenPageViews/t.sessions).toFixed(1).replace('.',',')+' por visita':''}</div></div>
+  <div class="stat"><div class="l">Clics en WhatsApp</div><div class="v">${n0(wa&&wa.eventCount)}</div><div class="d">${wa?n0(wa.totalUsers)+' personas distintas':'nadie todavía'}</div></div>
+  <div class="stat"><div class="l">Demos abiertas</div><div class="v">${n0(demos.reduce((s,e)=>s+e.eventCount,0))}</div><div class="d">desde el sitio</div></div></div>
+  <h2>Visitas por día <small>Google Analytics · últimos ${dias} días</small></h2><div class="card">${linea(g.porDia||[])}</div>
+  <div class="g2" style="margin-top:14px"><div class="card"><h3>Qué páginas miran</h3>${bars(g.paginas||[],x=>PAG(x.pagePath),x=>x.screenPageViews,(v,x)=>n0(v)+' · '+dur(x.activeUsers?x.userEngagementDuration/x.activeUsers:0))}<p class="small muted" style="margin:8px 0 0">Vistas · tiempo promedio por persona</p></div>
+  <div class="card"><h3>De dónde llegan</h3>${bars(g.fuentes||[],x=>(CANAL[x.sessionDefaultChannelGroup]||x.sessionDefaultChannelGroup)+(x.sessionSource&&x.sessionSource!=='(direct)'?' · '+x.sessionSource:''),x=>x.sessions)}</div></div>
+  <div class="g2" style="margin-top:14px"><div class="card"><h3>Qué demos abren</h3>${bars(demos,x=>DEMOS[x.eventName.replace('abrir_demo_','')]||x.eventName.replace('abrir_demo_',''),x=>x.eventCount)}<p class="small muted" style="margin:8px 0 0">Las que abren desde el sitio. Las visitas directas a una demo aparecen en "Qué páginas miran".</p></div>
+  <div class="card"><h3>Desde qué dispositivo</h3>${bars(g.dispositivos||[],x=>DISP[x.deviceCategory]||x.deviceCategory,x=>x.sessions,(v)=>{const tot=(g.dispositivos||[]).reduce((s,y)=>s+y.sessions,0);return n0(v)+' · '+(tot?Math.round(v/tot*100):0)+' %'})}<h3 style="margin-top:18px">Desde dónde</h3>${bars((g.ciudades||[]).filter(c=>c.city!=='(not set)'),x=>x.city+(x.region?', '+x.region:''),x=>x.activeUsers)}</div></div>
+  <h2>Cuándo entran <small>visitas por día de la semana y hora</small></h2><div class="card">${heat(g.calor||[])}</div>`}
+ h+=`<h2>Cómo navegan <small>Microsoft Clarity · últimos 3 días (es lo máximo que permite)</small><span class="sp"></span><button class="btn" id="reC">Actualizar Clarity</button><a class="btn" href="https://clarity.microsoft.com/projects/view/${CLARITY_ID}/impressions" target="_blank" rel="noopener">Ver grabaciones ↗</a></h2><div id="clarity"><p class="muted">Cargando…</p></div>
+ <div class="foot"><span>Actualizado ${D&&D.generado?new Date(D.generado).toLocaleString('es-AR'):'—'}</span><a href="https://analytics.google.com/" target="_blank" rel="noopener">Abrir Google Analytics ↗</a><a href="https://clarity.microsoft.com/projects/view/${CLARITY_ID}/dashboard" target="_blank" rel="noopener">Abrir Clarity ↗</a>
+ <span class="sp"></span><button class="btn" id="nm">${noMedir?'✅ Tus visitas no se cuentan en este navegador':'No contar mis visitas en este navegador'}</button><button class="btn" id="out">Salir</button></div></main>`;
+ $('#app').innerHTML=h;
+ $$('[data-d]').forEach(b=>b.onclick=()=>{dias=+b.dataset.d;st.set('flower_stats_dias',dias);cargar()});
+ $('#re').onclick=()=>cargar();$('#reC').onclick=()=>cargarClarity(true);
+ $('#nm').onclick=()=>{if(st.get('flower_no_medir')==='1')st.del('flower_no_medir');else st.set('flower_no_medir','1');render();renderClarity()};
+ $('#out').onclick=()=>{ss.set('flower_stats_clave','');clave=null;D=null;login()};
+ if(C)renderClarity()}
+
+function metric(arr,name){return (arr||[]).find(m=>(m.metricName||'').toLowerCase()===name.toLowerCase())}
+function info(arr,name){const m=metric(arr,name);return m&&m.information||[]}
+function renderClarity(){const box=$('#clarity');if(!box||!C)return;const G=C.general||[];
+ const tr=info(G,'Traffic')[0]||{},en=info(G,'EngagementTime')[0]||{},sc=info(G,'ScrollDepth')[0]||{};
+ const pr=(name)=>{const i=info(G,name)[0]||{};return i.sessionsWithMetricPercentage!=null?(+i.sessionsWithMetricPercentage).toFixed(1).replace('.',',')+' %':'—'};
+ const pages=info(G,'PopularPages');const dev=info(C.porDispositivo||[],'Traffic');
+ box.innerHTML=`<div class="stats"><div class="stat"><div class="l">Visitas grabadas</div><div class="v">${n0(tr.totalSessionCount)}</div><div class="d">${n0(tr.distinctUserCount)} personas · ${n0(tr.totalBotSessionCount)} robots descartados</div></div>
+ <div class="stat"><div class="l">Tiempo activo promedio</div><div class="v">${en.activeTime!=null?dur(en.activeTime):'—'}</div><div class="d">${en.totalTime!=null?'de '+dur(en.totalTime)+' con la página abierta':''}</div></div>
+ <div class="stat"><div class="l">Cuánto bajan en la página</div><div class="v">${sc.averageScrollDepth!=null?Math.round(sc.averageScrollDepth)+' %':'—'}</div><div class="d">promedio de scroll</div></div>
+ <div class="stat"><div class="l">Páginas por visita</div><div class="v">${tr.pagesPerSessionPercentage!=null?(+tr.pagesPerSessionPercentage).toFixed(1).replace('.',','):'—'}</div></div>
+ <div class="stat"><div class="l">Clics de bronca</div><div class="v">${pr('RageClickCount')}</div><div class="d">visitas que tocaron varias veces algo seguido</div></div>
+ <div class="stat"><div class="l">Clics sin respuesta</div><div class="v">${pr('DeadClickCount')}</div><div class="d">tocaron algo que no hace nada</div></div>
+ <div class="stat"><div class="l">Volvieron enseguida</div><div class="v">${pr('QuickbackClick')}</div><div class="d">entraron a algo y se volvieron rápido</div></div></div>
+ <div class="g2" style="margin-top:14px"><div class="card"><h3>Páginas más visitadas</h3>${bars(pages.slice(0,10),x=>{try{const u=new URL(x.url);return PAG(u.pathname)+(u.hash?' '+u.hash:'')}catch{return x.url}},x=>+x.visitsCount)}</div>
+ <div class="card"><h3>Por dispositivo</h3>${dev.length?`<table><thead><tr><th>Dispositivo</th><th class="r">Visitas</th><th class="r">Personas</th></tr></thead><tbody>${dev.map(d=>`<tr><td>${esc(DISP[(d.Device||'').toLowerCase()]||d.Device||'—')}</td><td class="r">${n0(d.totalSessionCount)}</td><td class="r">${n0(d.distinctUserCount)}</td></tr>`).join('')}</tbody></table>`:'<p class="muted small">Sin datos.</p>'}
+ <p class="small muted" style="margin:14px 0 0">Para ver el recorrido de cada visitante en video, tocá <b>Ver grabaciones</b>. Podés filtrar por la demo (etiqueta <i>demo</i>) o por quienes tocaron WhatsApp (evento <i>clic_whatsapp</i>).</p></div></div>
+ <p class="small muted" style="margin-top:8px">Clarity deja consultar sus datos 10 veces por día, así que guardamos la última respuesta 3 horas. ${C.cache?'Datos de las '+new Date(C.cache).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})+'.':''}</p>`}
+
+cargar();
+})();
+</script>
+</body>
+</html>

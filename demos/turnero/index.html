@@ -248,6 +248,9 @@ textarea.inp{width:100%;padding:8px 12px;border-radius:8px;resize:vertical}
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-EN79W6GGYW"></script>
 <script>
+  // Desde /estadisticas se puede pedir que no se cuenten las visitas de un navegador
+  window.FLOWER_NO_MEDIR=(function(){try{return localStorage.getItem('flower_no_medir')==='1'}catch(e){return false}})();
+  if(window.FLOWER_NO_MEDIR)window['ga-disable-G-EN79W6GGYW']=true;
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
@@ -257,6 +260,7 @@ textarea.inp{width:100%;padding:8px 12px;border-radius:8px;resize:vertical}
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        if(window.FLOWER_NO_MEDIR)return;
         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "zf5kqgf5ny");
