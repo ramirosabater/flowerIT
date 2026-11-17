@@ -113,6 +113,9 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 @media (max-width:430px){.demo-strip{font-size:11.5px;gap:7px;padding:0 8px;white-space:nowrap}.demo-strip .tour,.demo-strip .cta{padding:4px 9px;font-size:11.5px}}
 @media (max-width:380px){.demo-strip .tour{display:none}}
 </style>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T9XTVC6L');</script>
+<!-- End Google Tag Manager -->
 <!-- Microsoft Clarity: estadísticas de visitas -->
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -122,11 +125,13 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
     })(window, document, "clarity", "script", "zf5kqgf5ny");
     // Marca los clics que importan: WhatsApp y demos
     document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"";
-      if(h.indexOf("wa.me/5492975212008")>-1)clarity("event","clic_whatsapp");else if(h.indexOf("demos/")===0)clarity("event","abrir_demo_"+h.split("/")[1]);},true);
+      var ev=h.indexOf("wa.me/5492975212008")>-1?"clic_whatsapp":h.indexOf("demos/")===0?"abrir_demo_"+h.split("/")[1]:null;if(!ev)return;clarity("event",ev);(window.dataLayer=window.dataLayer||[]).push({event:ev});},true);
     clarity("set","demo","pakua");
 </script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T9XTVC6L" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="demo-strip" role="region" aria-label="Aviso de demo">
   <a class="back" href="../../proyectos.html#pakua">← FloWer</a>
   <span>Demo con datos ficticios<span class="long"> · nada se guarda</span></span>

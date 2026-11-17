@@ -201,6 +201,9 @@
   .back-link:hover{color:var(--ink);}
   .nav-links a[aria-current="page"]{color:var(--ink);}
 </style>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T9XTVC6L');</script>
+<!-- End Google Tag Manager -->
 <!-- Microsoft Clarity: estadísticas de visitas -->
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -210,10 +213,12 @@
     })(window, document, "clarity", "script", "zf5kqgf5ny");
     // Marca los clics que importan: WhatsApp y demos
     document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"";
-      if(h.indexOf("wa.me/5492975212008")>-1)clarity("event","clic_whatsapp");else if(h.indexOf("demos/")===0)clarity("event","abrir_demo_"+h.split("/")[1]);},true);
+      var ev=h.indexOf("wa.me/5492975212008")>-1?"clic_whatsapp":h.indexOf("demos/")===0?"abrir_demo_"+h.split("/")[1]:null;if(!ev)return;clarity("event",ev);(window.dataLayer=window.dataLayer||[]).push({event:ev});},true);
 </script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T9XTVC6L" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <nav>
   <div class="wrap">
@@ -693,7 +698,7 @@
     <a class="btn btn-wsp" href="https://wa.me/5492975212008" target="_blank" rel="noopener">Escribime por WhatsApp</a>
     <div class="foot-bottom">
       <a href="index.html"><img src="assets/logo-flower.png" alt="FloWer"></a>
-      <span>Rada Tilly, Chubut · Medimos las visitas de forma anónima con Microsoft Clarity.</span>
+      <span>Rada Tilly, Chubut · Medimos las visitas de forma anónima con Microsoft Clarity y Google Analytics.</span>
     </div>
   </div>
 </footer>
