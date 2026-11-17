@@ -773,6 +773,15 @@ tr.art-low td{background:color-mix(in srgb, var(--danger) 6%, var(--surface));}
 .tb-grid{grid-template-columns:1fr 1fr;}
 @media (max-width:760px){ .tb-grid{grid-template-columns:1fr;} .sif-lectura{flex-direction:column; align-items:center;} .sif-lectura .sl-b{width:100%;} }
 .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));}
+.oc-badge.parcial{background:color-mix(in srgb, var(--chart-company) 16%, var(--surface)); color:var(--chart-company);}
+.fm-imp{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+.fm-movil{display:grid; grid-template-columns:repeat(5,1fr); gap:10px; background:var(--surface-2); border-radius:10px; padding:10px 10px 0; margin-bottom:12px;}
+@media (max-width:640px){ .fm-imp{grid-template-columns:1fr 1fr;} .fm-movil{grid-template-columns:1fr 1fr;} }
+.seg-line{font-size:13px; margin:6px 0;}
+#view-compras .settings-subtabs,#view-pagos .settings-subtabs{flex-wrap:wrap; row-gap:2px;}
+.compras-section-head > div{flex-wrap:wrap;}
+.pe-ex{border-color:var(--chart-route)!important; color:var(--chart-route);}
+
 </style>
 </head>
 <body>
@@ -1790,7 +1799,7 @@ const cuentaById = id => state.cuentas.find(c => c.id===id) || null;
 const cuentaNombre = id => (cuentaById(id)||{nombre:'—'}).nombre;
 const ocNumeroLabel = n => 'OC-'+String(n||0).padStart(4,'0');
 const pagoNumeroLabel = n => 'OP-'+String(n||0).padStart(4,'0');
-const estadoLabel = e => ({pendiente:'Pendiente', pagada:'Pagada', aprobada:'Aprobada', recibida:'Recibida', anulada:'Anulada'}[e] || 'Pendiente');
+const estadoLabel = e => ({pendiente:'Pendiente', pagada:'Pagada', aprobada:'Aprobada', recibida:'Recibida', anulada:'Anulada', parcial:'Pago parcial'}[e] || 'Pendiente');
 function opMonto(op){ return op.facturaIds.reduce((s,id) => { const f = facturaById(id); return s + (f ? Number(f.monto) : 0); }, 0); }
 function cuentaSaldoActual(id){ const c = cuentaById(id); if(!c) return 0; return Number(c.saldoInicial||0) - state.movimientos.filter(m => m.cuentaId===id).reduce((s,m) => s+Number(m.monto||0), 0); }
 function syncMovimientoOP(op){
@@ -2090,10 +2099,10 @@ function makeCombo(rootId, onPick){
 // ================== COMPRAS ==================
 function comprasSub(tab){
   state.comprasTab = tab;
-  ['proveedores','compra','oc','art'].forEach(t => { if(!$('csec-'+t)) return; $('csec-'+t).hidden = t!==tab; $('ctab-'+t).classList.toggle('active', t===tab); });
+  ['proveedores','compra','oc','art','sol','rec','seg'].forEach(t => { if(!$('csec-'+t)) return; $('csec-'+t).hidden = t!==tab; $('ctab-'+t).classList.toggle('active', t===tab); });
 }
 ['proveedores','compra','oc'].forEach(t => $('ctab-'+t).addEventListener('click', () => comprasSub(t)));
-function renderCompras(){ comprasSub(state.comprasTab); renderProveedores(); renderFacturas(); renderOCs(); renderArticulos(); }
+function renderCompras(){ comprasSub(state.comprasTab); renderProveedores(); renderFacturas(); renderOCs(); renderArticulos(); if($('sol-body')){ renderSolicitudes(); renderRecepciones(); renderSeguimiento(); } }
 
 function renderProveedores(){
   const q = $('prov-search').value.trim().toLowerCase();
@@ -2292,7 +2301,7 @@ function renderPagos(){
     : '<tr class="day-row empty"><td colspan="6">Todavía no hay pagos realizados.</td></tr>';
   const est = $('pago-filter-estado').value;
   const list = state.ordenesPago.filter(p => !est || p.estado===est).sort((a,b) => b.numero-a.numero);
-  $('pagos-body').innerHTML = list.length ? list.map(p => '<tr class="day-row" data-id="'+p.id+'"><td class="day-route num">'+pagoNumeroLabel(p.numero)+'</td><td>'+esc(proveedorNombre(p.proveedorId))+'</td><td class="num">'+fmtDate(p.fecha)+'</td><td class="day-note">'+esc(p.facturaIds.map(id => (facturaById(id)||{numero:'(eliminada)'}).numero).join(', ')||'—')+'</td><td class="num">'+fmtMoney(p.monto)+'</td><td><span class="oc-badge '+p.estado+'">'+estadoLabel(p.estado)+'</span></td></tr>').join('')
+  $('pagos-body').innerHTML = list.length ? list.map(p => '<tr class="day-row" data-id="'+p.id+'"><td class="day-route num">'+pagoNumeroLabel(p.numero)+'</td><td>'+esc(proveedorNombre(p.proveedorId))+'</td><td class="num">'+fmtDate(p.fecha)+'</td><td class="day-note">'+(p.tipo==='anticipo' ? '<b>Anticipo</b>'+(p.ocId && ocById(p.ocId) ? ' a cuenta de '+ocNumeroLabel(ocById(p.ocId).numero) : '')+(p.estado==='pagada' ? ' · a favor '+fmtMoney(Number(p.importe)-(p.usado||0)) : '') : esc(p.facturaIds.map(id => (facturaById(id)||{numero:'(eliminada)'}).numero).join(', ')||'—')+(p.aplicaciones && p.aplicaciones.some(a => { const f = facturaById(a.factura_id); return f && a.importe < f.monto-0.01; }) ? ' · pago parcial' : '')+(p.anticipoUsado ? ' · usa '+fmtMoney(p.anticipoUsado)+' anticipado' : ''))+'</td><td class="num">'+fmtMoney(p.monto)+'</td><td><span class="oc-badge '+p.estado+'">'+estadoLabel(p.estado)+'</span></td></tr>').join('')
     : '<tr class="day-row empty"><td colspan="6">No hay órdenes de pago con ese estado.</td></tr>';
 }
 $('pago-filter-estado').addEventListener('change', renderPagos);
@@ -2338,14 +2347,14 @@ $('new-pago-btn').addEventListener('click', () => openPagoModal(null));
 $('pom-cancel').addEventListener('click', () => closeOverlay('pago-overlay'));
 $('pom-save').addEventListener('click', () => {
   if(!opCombo.get()) return showToast('Elegí un proveedor.');
-  const ids = Object.keys(opSel); if(!ids.length) return showToast('Tildá al menos una factura.');
+  const ids = Object.keys(opSel); if(!ids.length && !(opEdit && opEdit.tipo==='anticipo')) return showToast('Tildá al menos una factura.');
   const estado = $('pom-estado').value;
   if(estado==='pagada' && !$('pom-cuenta').value) return showToast('Elegí la cuenta de pago.');
   const op = opEdit || { id: newId('op'), numero: Math.max(0, ...state.ordenesPago.map(o => o.numero))+1 };
   (op.facturaIds||[]).forEach(fid => { if(!opSel[fid]){ const f = facturaById(fid); if(f) f.estado = 'pendiente'; } });
   Object.assign(op, { proveedorId: opCombo.get(), facturaIds: ids, fecha: $('pom-fecha').value || TODAY, medioPago: $('pom-medio').value, estado, cuentaId: estado==='pagada' ? $('pom-cuenta').value : null, notas: $('pom-notas').value.trim() });
   op.monto = opMonto(op);
-  ids.forEach(fid => { const f = facturaById(fid); if(f) f.estado = estado==='pagada' ? 'pagada' : 'pendiente'; });
+  ids.forEach(fid => { const f = facturaById(fid); if(!f) return; const ap = op.aplicaciones && op.aplicaciones.find(a => a.factura_id===fid); if(estado==='pagada'){ if(ap && ap.importe < Number(f.monto)-(f.pagado||0)-0.01){ f.pagado = (f.pagado||0)+Number(ap.importe); f.estado = 'parcial'; } else { f.pagado = Number(f.monto); f.estado = 'pagada'; } } else if(f.estado!=='parcial') f.estado = 'pendiente'; });
   if(!opEdit) state.ordenesPago.push(op);
   syncMovimientoOP(op);
   closeOverlay('pago-overlay');
@@ -2379,15 +2388,15 @@ function renderDeuda(){
   const modo = state.deudaModo, filtro = $('deuda-proveedor-filter').value;
   $('deuda-modo-resumido').classList.toggle('primary', modo==='resumido');
   $('deuda-modo-detallado').classList.toggle('primary', modo==='detallado');
-  const pend = state.facturas.filter(f => f.estado==='pendiente' && (!filtro || f.proveedorId===filtro));
-  $('deuda-total').textContent = 'Deuda total pendiente: '+fmtMoney(pend.reduce((s,f) => s+Number(f.monto), 0))+'  ·  '+pend.length+' factura(s)';
+  const pend = state.facturas.filter(f => (f.estado==='pendiente'||f.estado==='parcial') && (!filtro || f.proveedorId===filtro));
+  $('deuda-total').textContent = 'Deuda total pendiente: '+fmtMoney(pend.reduce((s,f) => s+(Number(f.monto)-(f.pagado||0)), 0))+'  ·  '+pend.length+' factura(s)';
   if(modo==='detallado'){
     $('deuda-head').innerHTML = '<tr><th>Proveedor</th><th>Factura</th><th>Fecha</th><th>Monto</th></tr>';
     const ss = pend.slice().sort((a,b) => proveedorNombre(a.proveedorId).localeCompare(proveedorNombre(b.proveedorId)) || a.fecha.localeCompare(b.fecha));
-    $('deuda-body').innerHTML = ss.length ? ss.map(f => '<tr class="day-row"><td>'+esc(proveedorNombre(f.proveedorId))+'</td><td>'+esc(f.numero)+'</td><td>'+fmtDate(f.fecha)+'</td><td class="num">'+fmtMoney(f.monto)+'</td></tr>').join('') : '<tr class="day-row empty"><td colspan="4">No hay deuda pendiente.</td></tr>';
+    $('deuda-body').innerHTML = ss.length ? ss.map(f => '<tr class="day-row"><td>'+esc(proveedorNombre(f.proveedorId))+'</td><td>'+esc(f.numero)+'</td><td>'+fmtDate(f.fecha)+'</td><td class="num">'+fmtMoney(Number(f.monto)-(f.pagado||0))+'</td></tr>').join('') : '<tr class="day-row empty"><td colspan="4">No hay deuda pendiente.</td></tr>';
   } else {
     $('deuda-head').innerHTML = '<tr><th>Proveedor</th><th>Facturas pendientes</th><th>Deuda</th></tr>';
-    const by = {}; pend.forEach(f => { const k = f.proveedorId; by[k] = by[k] || { c: 0, t: 0 }; by[k].c++; by[k].t += Number(f.monto); });
+    const by = {}; pend.forEach(f => { const k = f.proveedorId; by[k] = by[k] || { c: 0, t: 0 }; by[k].c++; by[k].t += (Number(f.monto)-(f.pagado||0)); });
     const rows = Object.keys(by).map(k => ({ n: proveedorNombre(k), c: by[k].c, t: by[k].t })).sort((a,b) => b.t-a.t);
     $('deuda-body').innerHTML = rows.length ? rows.map(r => '<tr class="day-row"><td>'+esc(r.n)+'</td><td class="num">'+r.c+'</td><td class="num">'+fmtMoney(r.t)+'</td></tr>').join('') : '<tr class="day-row empty"><td colspan="3">No hay deuda pendiente.</td></tr>';
   }
@@ -2686,7 +2695,7 @@ $('art-body').addEventListener('click', ev => { const b = ev.target.closest('.ar
   showToast('Orden '+ocNumeroLabel(num)+' armada para '+proveedorNombre(a.prov)+': '+fmtInt(cant)+' '+a.um+' por '+fmtMoney(cant*a.precio)+'. Queda pendiente de aprobación.'); b.disabled = true; b.textContent = 'Pedido'; });
 
 // ---------------- Anulación de facturas (nada se borra: queda el motivo, quién y cuándo) ----------------
-$('factura-filter-estado').insertAdjacentHTML('beforeend', '<option value="anulada">Anulada</option>');
+$('factura-filter-estado').insertAdjacentHTML('beforeend', '<option value="parcial">Pago parcial</option><option value="anulada">Anulada</option>');
 mkOverlay('anular-overlay', '<h3>Anular factura</h3><div class="sub" id="an-sub"></div><div class="field"><label for="an-motivo">Motivo</label><textarea id="an-motivo" placeholder="Ej: factura duplicada, el proveedor la reemplazó por otra..."></textarea></div><div class="sub" style="margin:0">La factura no se borra: queda anulada con el motivo, tu usuario y la fecha.</div><div class="modal-actions"><button class="btn" id="an-cancel">Cancelar</button><button class="btn primary" id="an-ok" style="background:var(--danger);border-color:var(--danger)">Anular</button></div>');
 const fmActs = document.querySelector('#factura-modal .modal-actions .left') || document.querySelector('#factura-modal .modal-actions');
 fmActs.insertAdjacentHTML('beforeend', '<button class="btn" id="fm-anular" style="color:var(--danger);">Anular…</button>');
@@ -2744,7 +2753,7 @@ state.cheques = [];
 (function(){ let n = 41020;
   const add = (tipo, est, dEm, dPago, monto, quien) => state.cheques.push({ id:'ch'+(n), numero:String(n++).padStart(8,'0'), tipo, estado:est, prev:null, banco:pick2(BANCOS), quien, emision:offsetDate(dEm), pago:offsetDate(dPago), monto, cuenta:'c3' });
   [['en_cartera',-12,9,1850000],['en_cartera',-8,14,920500],['en_cartera',-5,22,640000],['en_cartera',-3,30,1275000],['depositado',-25,-5,780000],['depositado',-30,-12,1430000],['entregado',-20,6,560000],['rechazado',-40,-18,315000]].forEach(c => add('tercero', c[0], c[1], c[2], c[3], pick2(CLIS_CH)));
-  [['emitido',-6,10,1120000,'p4'],['emitido',-2,25,834000,'p1'],['debitado',-35,-10,690000,'p3'],['anulado',-15,15,210000,'p21']].forEach(c => add('propio', c[0], c[1], c[2], c[3], proveedorNombre(c[4])));
+  [['emitido',-6,10,1120000,'p4'],['emitido',-2,25,834000,'p1'],['debitado',-35,-10,690000,'p3'],['anulado',-15,15,210000,'p21']].forEach(c => add('propio', c[0], c[1], c[2], c[3], c[4]));
 })();
 const CH_EST = { en_cartera:'En cartera', depositado:'Depositado', entregado:'Entregado a proveedor', rechazado:'Rechazado', emitido:'Emitido', debitado:'Debitado', anulado:'Anulado' };
 function saldoProyectado(id){ const c = cuentaById(id); if(!c) return 0; let s = cuentaSaldoActual(id);
@@ -2760,7 +2769,7 @@ function renderCheques(){
   $('ch-total').textContent = 'En cartera: '+fmtMoney(cart.reduce((s,c) => s+c.monto, 0))+' en '+cart.length+' cheques';
   $('ch-body').innerHTML = l.length ? l.map(c => { const dif = c.pago>TODAY; const acc = c.estado==='en_cartera' ? '<button class="btn edit-action" data-ch="dep" data-id="'+c.id+'">Depositar</button> <button class="btn edit-action" data-ch="rec" data-id="'+c.id+'" style="color:var(--danger)">Rechazar</button>'
       : c.estado==='depositado' ? '<button class="btn edit-action" data-ch="rec" data-id="'+c.id+'" style="color:var(--danger)">Rechazado</button>' : '';
-    return '<tr class="day-row"><td class="num">'+c.numero+'</td><td>'+(c.tipo==='tercero'?'De terceros':'Propio')+'</td><td>'+esc(c.banco)+'</td><td>'+esc(c.quien)+'</td><td class="num">'+fmtDate(c.pago)+(dif&&c.estado==='en_cartera'?'<div style="font-size:11.5px;color:var(--muted)">diferido</div>':'')+'</td><td class="num">'+fmtMoney(c.monto)+'</td><td><span class="oc-badge ch-'+c.estado+'">'+CH_EST[c.estado]+'</span></td><td style="white-space:nowrap">'+acc+(c.prev?' <button class="btn ghost" data-ch="undo" data-id="'+c.id+'">Deshacer</button>':'')+'</td></tr>'; }).join('')
+    return '<tr class="day-row"><td class="num">'+c.numero+'</td><td>'+(c.tipo==='tercero'?'De terceros':'Propio')+'</td><td>'+esc(c.banco)+'</td><td>'+esc(c.tipo==='propio'?proveedorNombre(c.quien):c.quien)+'</td><td class="num">'+fmtDate(c.pago)+(dif&&c.estado==='en_cartera'?'<div style="font-size:11.5px;color:var(--muted)">diferido</div>':'')+'</td><td class="num">'+fmtMoney(c.monto)+'</td><td><span class="oc-badge ch-'+c.estado+'">'+CH_EST[c.estado]+'</span></td><td style="white-space:nowrap">'+acc+(c.prev?' <button class="btn ghost" data-ch="undo" data-id="'+c.id+'">Deshacer</button>':'')+'</td></tr>'; }).join('')
     : '<tr class="day-row empty"><td colspan="8">No hay cheques con ese estado.</td></tr>';
 }
 $('ch-filter').addEventListener('change', renderCheques);
@@ -2970,9 +2979,261 @@ sifBtn.addEventListener('click', abrirAyuda);
 const helpClone = $('help-btn').cloneNode(true); $('help-btn').replaceWith(helpClone); helpClone.addEventListener('click', abrirAyuda);
 $('tour-close').addEventListener('click', sifCallar);
 
+// =====================================================================
+// Agregado nov-2026: lo nuevo del sistema real, con datos ficticios.
+// Solicitudes, recepciones y seguimiento de compras; pagos parciales y
+// anticipos; débito interno; factura de combustible con móvil, patente,
+// chofer y km; IVA y No gravado; importar extracto con conciliación;
+// nomenclatura de productos; permisos por usuario.
+// =====================================================================
+const MOVILES = D.trucks.map(t => t.label).concat(['Utilitario 2','Utilitario 3','Autoelevador 1','Camioneta reparto 7']);
+const ocById = id => state.ordenesCompra.find(o => o.id===id) || null;
+// Móvil en las facturas de flota (centro de costo por móvil)
+function seedFacturasNov(){ state.facturas.forEach(f => { if(f.centro===0) f.movil = MOVILES[hashStr(f.id)%7]; if(f.concepto===0){ f.combustible = { patente:'AF'+(100+hashStr(f.id)%800)+'KR', chofer:D.drivers[hashStr(f.id)%6], km:180000+hashStr(f.id)%90000, litros:400+hashStr(f.id)%900 }; } f.neto = Math.round(f.monto/1.21*100)/100; f.iva = Math.round((f.monto-f.neto)*100)/100; f.nogravado = 0; }); }
+
+// ---------------- Seguimiento de compras: solicitud → orden de compra → recepción → factura ----------------
+const SECTORES = ['Producción','Logística','Mantenimiento','Depósito','Calidad','Administración','Comercial'];
+const SOLICITANTES = { 'Producción':'J. Herrera', 'Logística':'R. Gómez', 'Mantenimiento':'C. Vera', 'Depósito':'S. Ibáñez', 'Calidad':'M. Paredes', 'Administración':'L. Benítez', 'Comercial':'P. Ríos' };
+const SOL_EST = { pendiente:'Pendiente', cotizando:'Cotizando', en_compra:'En compra', comprada:'Comprada (en camino)', parcial:'Recibida parcial', entregada:'Entregada', rechazada:'Rechazada', anulada:'Anulada' };
+state.recepciones = []; state.solicitudes = [];
+function seedCompras(){
+  let nr = 1;
+  state.ordenesCompra.filter(o => o.estado==='recibida').forEach(o => { const d = daysBetween(TODAY, o.fecha) + 4 + hashStr(o.id)%6; state.recepciones.push({ id:'rcp'+nr, num:nr++, fecha: offsetDate(Math.min(-1, d)), ocId:o.id, remito:'R-0001-'+String(4100+nr*7).padStart(8,'0'), total:true, resultado: hashStr(o.id)%5===0 ? 'Con diferencias' : 'Conforme', nota: hashStr(o.id)%5===0 ? 'Llegaron 2 unidades con el embalaje dañado' : '' }); });
+  const add = (dOff, sector, desc, cant, um, paraOff, ocId, extra) => state.solicitudes.push(Object.assign({ id:'sol'+(state.solicitudes.length+1), num:state.solicitudes.length+1, fecha:offsetDate(dOff), sector, quien:SOLICITANTES[sector], items:[{ desc, cant, um }], para:offsetDate(paraOff), ocId:ocId||null, tomada:!!ocId }, extra||{}));
+  add(-128,'Mantenimiento','Kit de frenos y filtros para camión',1,'Juego',-118,'oc1'); add(-118,'Producción','Insumos varios de planta',1,'Servicio',-110,'oc2'); add(-117,'Logística','Service preventivo camión 36',1,'Servicio',-108,'oc3');
+  add(-74,'Producción','Bidones PET 20 L',600,'Unidad',-60,'oc12'); add(-37,'Logística','Gasoil a granel — cupo quincenal',8000,'Litro',-30,'oc16'); add(-38,'Administración','Servicio mensual de sistemas',1,'Servicio',-30,'oc17');
+  add(-35,'Depósito','Insumos varios de planta',40,'Caja',-20,'oc19'); add(-34,'Producción','Bidones PET 20 L',500,'Unidad',-22,'oc20'); add(-32,'Mantenimiento','Service preventivo autoelevador',1,'Servicio',-14,'oc21');
+  add(-24,'Producción','Insumos varios de planta',30,'Caja',-12,'oc23'); add(-22,'Logística','Gasoil a granel — cupo quincenal',9000,'Litro',-8,'oc24');
+  add(-9,'Calidad','Kit de análisis de cloro residual',2,'Caja',-2,null,{ tomada:true }); add(-6,'Mantenimiento','Correas para tapadora',4,'Unidad',6); add(-3,'Depósito','Film stretch',12,'Rollo',10); add(-2,'Producción','Etiquetas bidón 20 L',5000,'Unidad',14);
+  add(-15,'Comercial','Sillas para el local',6,'Unidad',-1,null,{ rechazada:{ motivo:'Se reemplaza por reparación de las actuales', fecha:offsetDate(-12) } });
+  // una recepción parcial en camino
+  const oc24 = ocById('oc24'); if(oc24) state.recepciones.push({ id:'rcp'+nr, num:nr++, fecha:offsetDate(-4), ocId:'oc24', remito:'R-0002-00031877', total:false, resultado:'Parcial', nota:'Llegaron 5.000 de 9.000 litros' });
+}
+const recsDe = ocId => state.recepciones.filter(r => r.ocId===ocId);
+function solEstado(s){ if(s.anulada) return 'anulada'; if(s.rechazada) return 'rechazada'; if(!s.ocId) return s.tomada ? 'cotizando' : 'pendiente';
+  const rs = recsDe(s.ocId); if(rs.some(r => r.total)) return 'entregada'; if(rs.length) return 'parcial'; const o = ocById(s.ocId); return o && (o.estado==='aprobada'||o.estado==='recibida') ? 'comprada' : 'en_compra'; }
+const solAbierta = s => ['pendiente','cotizando','en_compra','comprada','parcial'].includes(solEstado(s));
+const solDemorada = s => solAbierta(s) && s.para < TODAY;
+const solLabel = n => 'SC-'+String(n).padStart(4,'0');
+const solBadge = e => '<span class="oc-badge '+({pendiente:'pendiente',cotizando:'pendiente',en_compra:'aprobada',comprada:'aprobada',parcial:'parcial',entregada:'recibida',rechazada:'anulada',anulada:'anulada'}[e])+'">'+SOL_EST[e]+'</span>';
+$('ctab-art').insertAdjacentHTML('afterend', '<button class="stabbtn" id="ctab-sol">Solicitudes</button><button class="stabbtn" id="ctab-rec">Recepciones</button><button class="stabbtn" id="ctab-seg">Seguimiento</button>');
+$('csec-art').insertAdjacentHTML('afterend',
+  '<div id="csec-sol" hidden><div class="compras-section-head"><h3>Solicitudes de compra</h3><div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;"><select id="sol-f" class="scope-select" style="max-width:190px;" aria-label="Filtrar solicitudes"><option value="abiertas">Abiertas</option><option value="demoradas">⏰ Demoradas</option>'+Object.keys(SOL_EST).map(k => '<option value="'+k+'">'+SOL_EST[k]+'</option>').join('')+'<option value="todas">Todas</option></select><button class="btn" id="sol-csv">⬇ RG-0708</button><button class="btn primary edit-action" id="sol-new">+ Nueva solicitud</button></div></div>'+
+  '<div class="day-wrap"><table class="day-table"><thead><tr><th>N°</th><th>Fecha</th><th>Sector</th><th>Pedido</th><th>Para</th><th>Proveedor / OC</th><th>Estado</th></tr></thead><tbody id="sol-body"></tbody></table></div>'+
+  '<div class="legend"><div class="item">El jefe de cada sector carga lo que necesita con su usuario. Compras la toma, elige el proveedor y genera la orden de compra desde la solicitud. El estado se calcula solo con la orden y la recepción.</div></div></div>'+
+  '<div id="csec-rec" hidden><div class="compras-section-head"><h3>Recepciones</h3><button class="btn primary edit-action" id="rec-new">📦 Registrar recepción</button></div><div class="day-wrap"><table class="day-table"><thead><tr><th>N°</th><th>Fecha</th><th>Proveedor</th><th>OC</th><th>Remito</th><th>Qué llegó</th><th>Resultado</th><th>Factura</th></tr></thead><tbody id="rec-body"></tbody></table></div>'+
+  '<div class="legend"><div class="item">Cuando llega la mercadería se registra el remito y si vino todo y conforme. Con la factura asociada a la orden, el seguimiento cruza pedido, recibido y facturado.</div></div></div>'+
+  '<div id="csec-seg" hidden><div class="compras-section-head"><h3>Seguimiento de compras</h3></div><div class="kpi-grid" id="seg-kpis"></div><div class="dash-grid"><div class="panel panel-wide"><h4>Solicitudes demoradas</h4><div id="seg-dem"></div></div><div class="panel"><h4>Por sector</h4><div id="seg-sec"></div></div><div class="panel"><h4>Recibido sin factura</h4><div id="seg-sinf"></div></div></div></div>');
+['sol','rec','seg'].forEach(t => $('ctab-'+t).addEventListener('click', () => comprasSub(t)));
+const ocLbl = o => o ? ocNumeroLabel(o.numero)+' · '+esc(proveedorNombre(o.proveedorId)) : '—';
+function solFiltradas(){ const f = $('sol-f').value; return state.solicitudes.filter(s => f==='todas' || (f==='abiertas' ? solAbierta(s) : f==='demoradas' ? solDemorada(s) : solEstado(s)===f)).sort((a,b) => b.num-a.num); }
+function renderSolicitudes(){ const L = solFiltradas();
+  $('sol-body').innerHTML = L.length ? L.map(s => { const e = solEstado(s), dem = solDemorada(s); return '<tr class="day-row" data-id="'+s.id+'"><td class="num day-route">'+solLabel(s.num)+'</td><td class="num">'+fmtDate(s.fecha)+'</td><td>'+esc(s.sector)+'<div style="font-size:11.5px;color:var(--muted)">'+esc(s.quien)+'</div></td><td>'+s.items.map(i => fmtInt(i.cant)+' '+esc(i.um.toLowerCase())+' · '+esc(i.desc)).join('<br>')+'</td><td class="num"'+(dem?' style="color:var(--danger);font-weight:700" title="Demorada"':'')+'>'+fmtDate(s.para)+(dem?' ⏰':'')+'</td><td>'+ocLbl(ocById(s.ocId))+'</td><td>'+solBadge(e)+'</td></tr>'; }).join('')
+    : '<tr class="day-row empty"><td colspan="7">No hay solicitudes con ese filtro.</td></tr>'; }
+function renderRecepciones(){ const L = state.recepciones.slice().sort((a,b) => b.num-a.num);
+  $('rec-body').innerHTML = L.length ? L.map(r => { const o = ocById(r.ocId); const fac = state.facturas.find(f => f.ocId===r.ocId && f.estado!=='anulada');
+    return '<tr class="day-row"><td class="num">'+String(r.num).padStart(4,'0')+'</td><td class="num">'+fmtDate(r.fecha)+'</td><td class="day-route">'+esc(o?proveedorNombre(o.proveedorId):'—')+'</td><td class="num">'+(o?ocNumeroLabel(o.numero):'—')+'</td><td class="num">'+esc(r.remito)+'</td><td>'+(r.total?'Todo':'Parcial')+(r.nota?'<div style="font-size:11.5px;color:var(--muted)">'+esc(r.nota)+'</div>':'')+'</td><td><span class="oc-badge '+(r.resultado==='Conforme'?'recibida':r.resultado==='Parcial'?'parcial':'pendiente')+'">'+esc(r.resultado)+'</span></td><td>'+(fac?esc(fac.numero):'<span style="color:var(--danger)">Sin factura</span>')+'</td></tr>'; }).join('')
+    : '<tr class="day-row empty"><td colspan="8">Todavía no hay recepciones.</td></tr>'; }
+function segData(){ const dem = state.solicitudes.filter(solDemorada).map(s => ({ s, dias: daysBetween(s.para, TODAY) })).sort((a,b) => b.dias-a.dias);
+  const ocsRec = [...new Set(state.recepciones.map(r => r.ocId))]; const sinF = ocsRec.map(ocById).filter(o => o && !state.facturas.some(f => f.ocId===o.id && f.estado!=='anulada'));
+  const factSinRec = state.facturas.filter(f => f.ocId && f.estado!=='anulada' && !recsDe(f.ocId).length); return { dem, sinF, factSinRec }; }
+function renderSeguimiento(){ const c = segData(); const ab = state.solicitudes.filter(solAbierta).length;
+  const ent = state.solicitudes.filter(s => solEstado(s)==='entregada'); const dprom = ent.length ? Math.round(ent.reduce((a,s) => { const r = recsDe(s.ocId).find(x => x.total); return a + (r ? Math.max(0, daysBetween(s.fecha, r.fecha)) : 0); }, 0)/ent.length) : 0;
+  $('seg-kpis').innerHTML = [['tile-total','Solicitudes abiertas',ab],['tile-truck','Demoradas',c.dem.length+(c.dem[0]?' · la peor: '+c.dem[0].dias+' días':'')],['tile-driver','Recibido sin factura',c.sinF.length+' órdenes'],['tile-route','Días promedio pedido → entrega',dprom]].map(k => '<div class="kpi-tile '+k[0]+'"><div class="kpi-label">'+k[1]+'</div><div class="kpi-value">'+k[2]+'</div></div>').join('');
+  $('seg-dem').innerHTML = c.dem.length ? '<table class="day-table"><thead><tr><th>N°</th><th>Sector</th><th>Pedido</th><th>Para</th><th>Atraso</th><th>Estado</th></tr></thead><tbody>'+c.dem.map(x => '<tr class="day-row"><td class="num">'+solLabel(x.s.num)+'</td><td>'+esc(x.s.sector)+'</td><td>'+esc(x.s.items[0].desc)+'</td><td class="num">'+fmtDate(x.s.para)+'</td><td class="num" style="color:var(--danger);font-weight:700">'+x.dias+' días</td><td>'+solBadge(solEstado(x.s))+'</td></tr>').join('')+'</tbody></table>' : '<div class="bar-empty">Nada demorado</div>';
+  $('seg-sec').innerHTML = bars(SECTORES.map(sec => ({ label:sec, count:state.solicitudes.filter(s => s.sector===sec).length })).filter(r => r.count), { fill:'var(--chart-company)' });
+  $('seg-sinf').innerHTML = c.sinF.length ? c.sinF.map(o => '<div class="barrow money"><div class="barname" style="grid-column:1/3">'+ocNumeroLabel(o.numero)+' · '+esc(proveedorNombre(o.proveedorId))+'</div><div class="barcount">'+fmtM(o.monto)+'</div></div>').join('') : '<div class="bar-empty">Todo lo recibido tiene factura</div>'; }
+$('sol-f').addEventListener('change', renderSolicitudes);
+$('sol-csv').addEventListener('click', () => csvDownload('RG-0708 Seguimiento de compras '+TODAY, [['N°','Fecha','Sector','Solicitó','Pedido','Cantidad','Unidad','Para','Orden de compra','Proveedor','Estado']].concat(state.solicitudes.slice().sort((a,b) => a.num-b.num).map(s => { const o = ocById(s.ocId); return [solLabel(s.num), fmtDate(s.fecha), s.sector, s.quien, s.items[0].desc, s.items[0].cant, s.items[0].um, fmtDate(s.para), o?ocNumeroLabel(o.numero):'', o?proveedorNombre(o.proveedorId):'', SOL_EST[solEstado(s)]]; }))));
+mkOverlay('sol-overlay', '<h3 id="sol-title">Nueva solicitud de compra</h3><div class="sub" id="sol-sub">Lo carga el jefe del sector: qué necesita, cuánto y para cuándo.</div><div id="sol-form"></div><div class="modal-actions"><div class="left" id="sol-left"><button class="btn" id="sol-cancel">Cancelar</button></div><button class="btn primary" id="sol-save">Guardar</button></div>', 540);
+let solEdit = null;
+function openSolicitud(id){ solEdit = id ? state.solicitudes.find(s => s.id===id) : null; const s = solEdit; const e = s ? solEstado(s) : null;
+  $('sol-title').textContent = s ? solLabel(s.num)+' · '+s.sector : 'Nueva solicitud de compra';
+  $('sol-sub').textContent = s ? 'Pedida por '+s.quien+' el '+fmtDate(s.fecha)+', para el '+fmtDate(s.para)+'.' : 'Lo carga el jefe del sector: qué necesita, cuánto y para cuándo.';
+  if(!s) $('sol-form').innerHTML = '<div class="crew-fields"><div class="field"><label for="so-sec">Sector</label><select id="so-sec">'+SECTORES.map(x => '<option>'+x+'</option>').join('')+'</select></div><div class="field"><label for="so-para">Para cuándo</label><input type="date" id="so-para" value="'+offsetDate(10)+'"></div></div><div class="field"><label for="so-desc">Qué necesita</label><input id="so-desc" maxlength="80" placeholder="Ej: guantes de nitrilo talle M"></div><div class="crew-fields"><div class="field"><label for="so-cant">Cantidad</label><input id="so-cant" inputmode="decimal" value="1"></div><div class="field"><label for="so-um">Unidad</label><select id="so-um"><option>Unidad</option><option>Caja</option><option>Paquete</option><option>Kg</option><option>Litro</option><option>Metro</option><option>Rollo</option><option>Servicio</option></select></div></div>';
+  else if(e==='pendiente') $('sol-form').innerHTML = '<p style="font-size:13.5px">'+esc(s.items[0].desc)+' · '+fmtInt(s.items[0].cant)+' '+esc(s.items[0].um.toLowerCase())+'</p><div class="sub">Compras la toma para cotizar, o la rechaza con un motivo.</div><div class="field"><label for="so-mot">Motivo (si la rechazás)</label><input id="so-mot" maxlength="80"></div>';
+  else if(e==='cotizando') $('sol-form').innerHTML = '<p style="font-size:13.5px">'+esc(s.items[0].desc)+' · '+fmtInt(s.items[0].cant)+' '+esc(s.items[0].um.toLowerCase())+'</p><div class="crew-fields"><div class="field"><label for="so-prov">Proveedor</label><select id="so-prov">'+state.proveedores.slice().sort((a,b) => a.nombre.localeCompare(b.nombre)).map(p => '<option value="'+p.id+'">'+esc(p.nombre)+'</option>').join('')+'</select></div><div class="field"><label for="so-precio">Precio total</label><input id="so-precio" inputmode="decimal" placeholder="0,00"></div></div><div class="sub">Se genera la orden de compra al proveedor, ligada a esta solicitud.</div>';
+  else { const o = ocById(s.ocId); const rs = s.ocId ? recsDe(s.ocId) : []; $('sol-form').innerHTML = '<p style="font-size:13.5px">'+esc(s.items[0].desc)+' · '+fmtInt(s.items[0].cant)+' '+esc(s.items[0].um.toLowerCase())+'</p><div class="seg-line"><b>Estado:</b> '+solBadge(e)+'</div>'+(o?'<div class="seg-line"><b>Orden de compra:</b> '+ocLbl(o)+' · '+fmtMoney(o.monto)+'</div>':'')+(rs.length?'<div class="seg-line"><b>Recepción:</b> '+rs.map(r => fmtDate(r.fecha)+' · '+esc(r.remito)+' · '+esc(r.resultado)).join('<br>')+'</div>':'')+(s.rechazada?'<div class="seg-line"><b>Rechazada:</b> '+esc(s.rechazada.motivo)+'</div>':''); }
+  $('sol-save').textContent = !s ? 'Guardar' : e==='pendiente' ? 'Tomar (cotizando)' : e==='cotizando' ? 'Generar orden de compra' : 'Cerrar';
+  $('sol-left').innerHTML = '<button class="btn" id="sol-cancel">Cancelar</button>'+(s && e==='pendiente' ? '<button class="btn" id="sol-rech" style="color:var(--danger)">Rechazar</button>' : '');
+  $('sol-cancel').onclick = () => closeOverlay('sol-overlay'); const rb = $('sol-rech'); if(rb) rb.onclick = () => { const m = $('so-mot').value.trim(); if(m.length<4) return showToast('Escribí el motivo del rechazo.'); s.rechazada = { motivo:m, fecha:TODAY }; closeOverlay('sol-overlay'); showToast(solLabel(s.num)+' rechazada. El jefe del sector ve el motivo.'); rerender(); };
+  openOverlay('sol-overlay'); }
+$('sol-new').addEventListener('click', () => openSolicitud(null));
+$('sol-body').addEventListener('click', ev => { const tr = ev.target.closest('tr[data-id]'); if(tr) openSolicitud(tr.dataset.id); });
+$('sol-save').addEventListener('click', () => { const s = solEdit;
+  if(!s){ const desc = $('so-desc').value.trim(), cant = parseMoney($('so-cant').value); if(!desc || cant<=0) return showToast('Completá qué necesitás y la cantidad.'); const sec = $('so-sec').value;
+    state.solicitudes.push({ id:'sol-n'+(state.seq++), num:state.solicitudes.length+1, fecha:TODAY, sector:sec, quien:SOLICITANTES[sec], items:[{ desc, cant, um:$('so-um').value }], para:$('so-para').value||offsetDate(10), ocId:null, tomada:false });
+    closeOverlay('sol-overlay'); showToast('Solicitud '+solLabel(state.solicitudes.length)+' cargada. Compras la ve para cotizar.'); return rerender(); }
+  const e = solEstado(s);
+  if(e==='pendiente'){ s.tomada = true; closeOverlay('sol-overlay'); showToast(solLabel(s.num)+' en cotización.'); return rerender(); }
+  if(e==='cotizando'){ const pr = parseMoney($('so-precio').value); if(pr<=0) return showToast('Completá el precio.'); const num = Math.max.apply(null, state.ordenesCompra.map(o => o.numero))+1;
+    const o = { id:'oc-s'+(state.seq++), numero:num, proveedorId:$('so-prov').value, fecha:TODAY, descripcion:s.items[0].desc+' ('+solLabel(s.num)+')', monto:pr, estado:'pendiente' }; state.ordenesCompra.push(o); s.ocId = o.id;
+    closeOverlay('sol-overlay'); showToast('Orden '+ocNumeroLabel(num)+' generada para '+proveedorNombre(o.proveedorId)+'. Queda pendiente de aprobación.'); return rerender(); }
+  closeOverlay('sol-overlay'); });
+mkOverlay('rec-overlay', '<h3>Registrar recepción</h3><div class="sub">Lo que llegó de una orden de compra, con el remito.</div><div class="field"><label for="re-oc">Orden de compra</label><select id="re-oc"></select></div><div class="crew-fields"><div class="field"><label for="re-rem">Remito</label><input id="re-rem" maxlength="24" placeholder="R-0001-00000000"></div><div class="field"><label for="re-tot">¿Llegó todo?</label><select id="re-tot"><option value="1">Sí, todo</option><option value="0">Parcial</option></select></div></div><div class="crew-fields"><div class="field"><label for="re-res">Resultado</label><select id="re-res"><option>Conforme</option><option>Con diferencias</option></select></div><div class="field"><label for="re-nota">Nota</label><input id="re-nota" maxlength="80" placeholder="Opcional"></div></div><div class="modal-actions"><button class="btn" id="re-cancel">Cancelar</button><button class="btn primary" id="re-save">Registrar</button></div>', 520);
+$('rec-new').addEventListener('click', () => { const ocs = state.ordenesCompra.filter(o => (o.estado==='aprobada'||o.estado==='pendiente') && !recsDe(o.id).some(r => r.total)).sort((a,b) => b.numero-a.numero);
+  if(!ocs.length) return showToast('No hay órdenes de compra esperando mercadería.');
+  $('re-oc').innerHTML = ocs.map(o => '<option value="'+o.id+'">'+ocNumeroLabel(o.numero)+' · '+esc(proveedorNombre(o.proveedorId))+' · '+esc(o.descripcion)+'</option>').join(''); $('re-rem').value = ''; $('re-nota').value = ''; openOverlay('rec-overlay'); });
+$('re-cancel').addEventListener('click', () => closeOverlay('rec-overlay'));
+$('re-save').addEventListener('click', () => { const rem = $('re-rem').value.trim(); if(!rem) return showToast('Completá el número de remito.'); const total = $('re-tot').value==='1'; const o = ocById($('re-oc').value);
+  const n = state.recepciones.length+1; state.recepciones.push({ id:'rcp-n'+n, num:n, fecha:TODAY, ocId:o.id, remito:rem, total, resultado: total ? $('re-res').value : 'Parcial', nota:$('re-nota').value.trim() }); if(total) o.estado = 'recibida';
+  closeOverlay('rec-overlay'); showToast('Recepción registrada para '+ocNumeroLabel(o.numero)+'. '+(total?'La solicitud pasa a Entregada.':'Queda como recibida parcial.')); rerender(); });
+
+// Artículos: quién vende cada uno
+function renderArticulos(){
+  const q = $('art-search').value.trim().toLowerCase(), bajo = $('art-bajo').checked;
+  const list = ARTS.filter(a => (!q || (a.cod+' '+a.nombre+' '+a.rubro).toLowerCase().includes(q)) && (!bajo || a.stock < a.min));
+  const nb = ARTS.filter(a => a.stock < a.min).length;
+  $('art-alerta').innerHTML = nb ? '⚠ <b>'+nb+' artículos</b> por debajo del stock mínimo.' : 'Todos los artículos están por encima del mínimo.';
+  $('art-body').innerHTML = list.length ? list.map(a => { const low = a.stock < a.min; const provs = [a.prov].concat(a.prov2 ? [a.prov2] : []);
+    return '<tr class="day-row'+(low?' art-low':'')+'"><td class="num">'+a.cod+'</td><td class="day-route">'+esc(a.nombre)+'</td><td>'+esc(a.rubro)+'</td><td class="num">'+fmtInt(a.stock)+' '+a.um+(low?' <span class="oc-badge pendiente">Bajo mínimo</span>':'')+'</td><td class="num">'+fmtInt(a.min)+'</td><td class="num">'+fmtMoney(a.precio)+'</td><td>'+provs.map(p => esc(proveedorNombre(p))).join('<br>')+'</td><td>'+(low?'<button class="btn primary edit-action art-pedir" data-cod="'+a.cod+'">Pedir</button>':'')+'</td></tr>'; }).join('')
+    : '<tr class="day-row empty"><td colspan="8">No hay artículos que coincidan.</td></tr>';
+}
+ARTS.forEach(a => { if(a.rubro==='Envases' && a.prov==='p5') a.prov2 = 'p6'; if(a.rubro==='Repuestos') a.prov2 = 'p14'; });
+document.querySelector('#csec-art thead tr').innerHTML = '<th>Código</th><th>Artículo</th><th>Rubro</th><th>Stock</th><th>Mínimo</th><th>Último precio</th><th>Quién lo vende</th><th></th>';
+
+// ---------------- Pagos parciales y anticipos ----------------
+state.simParcial = {};
+const saldoF = f => Math.max(0, Number(f.monto) - (f.pagado||0));
+function opMonto(op){ if(op.tipo==='anticipo') return Number(op.importe)||0; let t = op.aplicaciones ? op.aplicaciones.reduce((s,a) => s+Number(a.importe), 0) : op.facturaIds.reduce((s,id) => { const f = facturaById(id); return s + (f ? Number(f.monto) : 0); }, 0); return Math.max(0, t - (op.anticipoUsado||0)); }
+function simPendientes(){ return state.facturas.filter(f => (f.estado==='pendiente'||f.estado==='parcial') && saldoF(f)>0 && !state.ordenesPago.some(op => op.estado!=='pagada' && op.estado!=='anulada' && op.facturaIds.includes(f.id))).sort((a,b) => (PRIORITARIOS.includes(b.proveedorId)-PRIORITARIOS.includes(a.proveedorId)) || (a.vencimiento||'9999').localeCompare(b.vencimiento||'9999') || a.fecha.localeCompare(b.fecha)); }
+const aPagar = f => state.simParcial[f.id] != null ? state.simParcial[f.id] : saldoF(f);
+function renderSimResumen(){
+  const pend = simPendientes(); const sel = pend.filter(f => state.simSeleccion[f.id]);
+  const tp = pend.reduce((s,f) => s+saldoF(f), 0), ts = sel.reduce((s,f) => s+aPagar(f), 0); const disp = simDisponible(), rest = disp - ts;
+  $('sim-resumen').innerHTML = '<div><b>Disponible:</b> '+fmtMoney(disp)+'</div><div style="color:var(--brand-red,#e30613)"><b>A pagar ('+sel.length+'):</b> '+fmtMoney(ts)+'</div><div style="color:'+(rest<0?'var(--danger)':'inherit')+'"><b>Restante:</b> '+fmtMoney(rest)+'</div><div style="color:var(--ink-2)"><b>Deuda total:</b> '+fmtMoney(tp)+'</div>';
+}
+function renderSimulador(){
+  const pend = simPendientes();
+  $('sim-body').innerHTML = pend.length ? pend.map(f => { const d = simDias(f.vencimiento); let txt, color = 'var(--ink-2)';
+    if(d===null) txt = 'Sin vencimiento'; else if(d<0){ txt = 'Vencida hace '+(-d)+'d'; color = 'var(--danger)'; } else if(d===0){ txt = 'Vence hoy'; color = 'var(--danger)'; } else { txt = 'Vence en '+d+'d'; if(d<=7) color = 'var(--chart-driver)'; }
+    const par = state.simSeleccion[f.id] && state.simParcial[f.id] != null; const ant = saldoAFavor(f.proveedorId);
+    return '<tr class="day-row"><td><input type="checkbox" class="sim-chk" data-id="'+f.id+'"'+(state.simSeleccion[f.id]?' checked':'')+' aria-label="Seleccionar factura '+esc(f.numero)+'"></td><td>'+fmtDate(f.vencimiento)+'</td><td style="color:'+color+';font-weight:600">'+txt+'</td><td>'+(PRIORITARIOS.includes(f.proveedorId)?'⭐ ':'')+esc(proveedorNombre(f.proveedorId))+(ant>0?'<div style="font-size:11.5px;color:var(--chart-route)">Tiene '+fmtMoney(ant)+' anticipado</div>':'')+'</td><td class="num">'+esc(f.numero)+(f.estado==='parcial'?'<div style="font-size:11.5px;color:var(--muted)">pagada en parte</div>':'')+'</td><td class="num">'+(par?'<b>'+fmtMoney(state.simParcial[f.id])+'</b><div style="font-size:11.5px;color:var(--muted)">parcial de '+fmtMoney(saldoF(f))+'</div>':fmtMoney(saldoF(f)))+'</td></tr>'; }).join('')
+    : '<tr class="day-row empty"><td colspan="6">No hay facturas pendientes.</td></tr>';
+  renderSimResumen();
+}
+(function(){ const b = $('sim-auto-btn'); const nb = b.cloneNode(true); b.replaceWith(nb); nb.addEventListener('click', () => {
+  let rest = simDisponible(); state.simSeleccion = {}; state.simParcial = {};
+  for(const f of simPendientes()){ if(rest<=0) break; const s = saldoF(f); if(s<=rest){ state.simSeleccion[f.id] = true; rest -= s; } else if(rest >= 50000){ state.simSeleccion[f.id] = true; state.simParcial[f.id] = Math.round(rest*100)/100; rest = 0; } }
+  renderSimulador(); showToast(Object.keys(state.simParcial).length ? 'Sugerido: lo prioritario y lo más viejo; la última va como pago parcial con lo que queda.' : 'Sugerido según prioridad y antigüedad.'); }); })();
+$('sim-body').addEventListener('change', ev => { const c = ev.target; if(c.dataset.id && !c.checked) delete state.simParcial[c.dataset.id]; }, true);
+function saldoAFavor(pid){ return state.ordenesPago.filter(op => op.tipo==='anticipo' && op.proveedorId===pid && op.estado==='pagada').reduce((s,op) => s + Number(op.importe) - (op.usado||0), 0); }
+function usarAnticipos(pid, importe){ let r = importe; state.ordenesPago.filter(op => op.tipo==='anticipo' && op.proveedorId===pid && op.estado==='pagada').forEach(op => { const libre = Number(op.importe)-(op.usado||0); const u = Math.min(libre, r); if(u>0){ op.usado = (op.usado||0)+u; r -= u; } }); return importe - r; }
+(function(){ const b = $('sim-op-btn'); const nb = b.cloneNode(true); b.replaceWith(nb); nb.addEventListener('click', () => {
+  const ids = Object.keys(state.simSeleccion).filter(id => facturaById(id)); if(!ids.length) return showToast('Tildá al menos una factura.');
+  const byP = {}; ids.forEach(id => { const f = facturaById(id); (byP[f.proveedorId] = byP[f.proveedorId] || []).push(id); });
+  let num = Math.max.apply(null, state.ordenesPago.map(o => o.numero)); const nums = []; let usados = 0, parc = 0;
+  Object.keys(byP).forEach(p => { num++; const ap = byP[p].map(id => { const f = facturaById(id); if(state.simParcial[id] != null) parc++; return { factura_id:id, importe: aPagar(f) }; });
+    const op = { id:'op-s'+(state.seq++), numero:num, proveedorId:p, facturaIds:byP[p], aplicaciones:ap, fecha:TODAY, estado:'pendiente', medioPago:'', cuentaId:'', notas:'Generada desde la sugerencia de pagos' };
+    const tot = ap.reduce((s,a) => s+a.importe, 0); const ua = saldoAFavor(p) > 0 ? usarAnticipos(p, tot) : 0; if(ua){ op.anticipoUsado = ua; usados++; }
+    op.monto = opMonto(op); state.ordenesPago.push(op); nums.push(pagoNumeroLabel(num)); });
+  state.simSeleccion = {}; state.simParcial = {}; renderSimulador();
+  showToast('Se generaron '+nums.length+' órdenes de pago'+(parc?' (una con pago parcial)':'')+(usados?', usando anticipos a favor':'')+'. Están en Pagos para registrar el pago.'); }); })();
+// Anticipo: orden de pago sin factura, con o sin orden de compra
+$('new-pago-btn').insertAdjacentHTML('beforebegin', '<button class="btn edit-action" id="new-anticipo-btn">+ Anticipo</button>');
+mkOverlay('ant-overlay', '<h3>Pago anticipado</h3><div class="sub">Una orden de pago sin factura. Se paga como cualquier otra, se le retiene Ganancias y queda como saldo a favor del proveedor hasta que llegue la factura.</div><div class="field"><label for="an-prov">Proveedor</label><select id="an-prov"></select></div><div class="crew-fields"><div class="field"><label for="an-oc">A cuenta de la orden de compra (opcional)</label><select id="an-oc"></select></div><div class="field"><label for="an-imp">Importe</label><input id="an-imp" inputmode="decimal" placeholder="0,00"></div></div><div class="modal-actions"><button class="btn" id="an2-cancel">Cancelar</button><button class="btn primary" id="an2-save">Crear orden de pago</button></div>', 520);
+function fillAnOC(){ const p = $('an-prov').value; $('an-oc').innerHTML = '<option value="">— Ninguna —</option>'+state.ordenesCompra.filter(o => o.proveedorId===p && o.estado!=='recibida').map(o => '<option value="'+o.id+'">'+ocNumeroLabel(o.numero)+' · '+fmtMoney(o.monto)+'</option>').join(''); }
+$('new-anticipo-btn').addEventListener('click', () => { $('an-prov').innerHTML = state.proveedores.slice().sort((a,b) => a.nombre.localeCompare(b.nombre)).map(p => '<option value="'+p.id+'">'+esc(p.nombre)+'</option>').join(''); $('an-prov').value = 'p4'; fillAnOC(); $('an-imp').value = ''; openOverlay('ant-overlay'); });
+$('an-prov').addEventListener('change', fillAnOC); $('an2-cancel').addEventListener('click', () => closeOverlay('ant-overlay'));
+$('an2-save').addEventListener('click', () => { const imp = parseMoney($('an-imp').value); if(imp<=0) return showToast('Completá el importe.'); const num = Math.max.apply(null, state.ordenesPago.map(o => o.numero))+1;
+  const op = { id:'op-a'+(state.seq++), numero:num, tipo:'anticipo', importe:imp, ocId:$('an-oc').value||null, proveedorId:$('an-prov').value, facturaIds:[], fecha:TODAY, estado:'pendiente', medioPago:'', cuentaId:'', notas:'Pago anticipado' }; op.monto = opMonto(op); state.ordenesPago.push(op);
+  closeOverlay('ant-overlay'); showToast('Anticipo '+pagoNumeroLabel(num)+' creado. Registralo como cualquier pago.'); rerender(); });
+// un anticipo de ejemplo, ya pagado
+function seedAnticipo(){ const num = Math.max.apply(null, state.ordenesPago.map(o => o.numero))+1; const op = { id:'op-a0', numero:num, tipo:'anticipo', importe:600000, ocId:'oc24', proveedorId:'p4', facturaIds:[], fecha:offsetDate(-6), estado:'pagada', medioPago:'transferencia', cuentaId:'c3', notas:'Pago anticipado' }; op.monto = opMonto(op); state.ordenesPago.push(op); }
+
+// ---------------- Débito interno: comprobante propio, sin factura ni impuestos ----------------
+$('new-factura-btn').insertAdjacentHTML('beforebegin', '<button class="btn edit-action" id="new-di-btn">+ Débito interno</button>');
+mkOverlay('di-overlay', '<h3>Débito interno</h3><div class="sub">Para lo que se paga sin factura y sin impuestos. Lleva número propio y no tiene IVA ni retención.</div><div class="field"><label for="di-prov">Proveedor o beneficiario</label><select id="di-prov"></select></div><div class="crew-fields"><div class="field"><label for="di-cc">Centro de costo</label><select id="di-cc"></select></div><div class="field"><label for="di-co">Concepto</label><select id="di-co"></select></div></div><div class="crew-fields"><div class="field"><label for="di-monto">Monto</label><input id="di-monto" inputmode="decimal" placeholder="0,00"></div><div class="field"><label for="di-fecha">Fecha</label><input type="date" id="di-fecha"></div></div><div class="field"><label for="di-nota">Detalle</label><input id="di-nota" maxlength="80" placeholder="Ej: peaje, estacionamiento, tasa municipal"></div><div class="modal-actions"><button class="btn" id="di-cancel">Cancelar</button><button class="btn primary" id="di-save">Guardar</button></div>', 520);
+$('new-di-btn').addEventListener('click', () => { $('di-prov').innerHTML = state.proveedores.slice().sort((a,b) => a.nombre.localeCompare(b.nombre)).map(p => '<option value="'+p.id+'">'+esc(p.nombre)+'</option>').join(''); $('di-cc').innerHTML = D.centrosCosto.map((c,i) => '<option value="'+i+'">'+esc(c)+'</option>').join(''); $('di-co').innerHTML = D.conceptos.map((c,i) => '<option value="'+i+'">'+esc(c)+'</option>').join(''); $('di-monto').value = ''; $('di-fecha').value = TODAY; $('di-nota').value = ''; openOverlay('di-overlay'); });
+$('di-cancel').addEventListener('click', () => closeOverlay('di-overlay'));
+$('di-save').addEventListener('click', () => { const m = parseMoney($('di-monto').value); if(m<=0) return showToast('Completá el monto.'); const n = state.facturas.filter(f => f.tipo==='debito_interno').length+1; const numero = 'DI-'+String(n).padStart(4,'0');
+  state.facturas.push({ id:'di'+(state.seq++), tipo:'debito_interno', proveedorId:$('di-prov').value, numero, fecha:$('di-fecha').value||TODAY, vencimiento:$('di-fecha').value||TODAY, monto:m, neto:m, iva:0, nogravado:0, centro:+$('di-cc').value, concepto:+$('di-co').value, ocId:null, estado:'pendiente', archivos:[], notas:$('di-nota').value.trim() });
+  closeOverlay('di-overlay'); showToast('Débito interno '+numero+' cargado. Se paga como una factura, sin retención.'); rerender(); });
+
+// ---------------- Factura: Neto, IVA, No gravado, móvil; lectura de factura de combustible ----------------
+document.querySelector('#fm-monto').closest('.field').insertAdjacentHTML('afterend', '<div class="fm-imp"><div class="field"><label for="fm-neto">Neto gravado</label><input id="fm-neto" inputmode="decimal" placeholder="0,00"></div><div class="field"><label for="fm-iva">IVA</label><input id="fm-iva" inputmode="decimal" placeholder="0,00"></div><div class="field"><label for="fm-nog" title="Impuestos que no llevan IVA: en combustible, ICL + IDC">No gravado</label><input id="fm-nog" inputmode="decimal" placeholder="0,00"></div></div>'+
+  '<div class="fm-movil" id="fm-movil-row" hidden><div class="field"><label for="fm-movil">Móvil</label><select id="fm-movil"><option value="">—</option>'+MOVILES.map(m => '<option>'+esc(m)+'</option>').join('')+'</select></div><div class="field"><label for="fm-pat">Patente</label><input id="fm-pat" maxlength="12" placeholder="AF123CZ"></div><div class="field"><label for="fm-chof">Chofer</label><input id="fm-chof" maxlength="40"></div><div class="field"><label for="fm-km">Kilómetros</label><input id="fm-km" inputmode="numeric"></div><div class="field"><label for="fm-lt">Litros</label><input id="fm-lt" inputmode="decimal"></div></div>');
+$('fm-read-btn').insertAdjacentHTML('afterend', ' <button type="button" class="btn" id="fm-read-comb">⛽ Leer factura de combustible</button>');
+const movilRow = () => { $('fm-movil-row').hidden = $('fm-centro-costo').value!=='0'; };
+$('fm-centro-costo').addEventListener('change', movilRow);
+$('fm-monto').addEventListener('change', () => { if(!$('fm-neto').value){ const t = parseMoney($('fm-monto').value); $('fm-neto').value = fmtNum(t/1.21); $('fm-iva').value = fmtNum(t-t/1.21); $('fm-nog').value = fmtNum(0); } });
+// al abrir la factura: completar los campos nuevos
+const _openFac = openFacturaModal;
+openFacturaModal = function(id){ _openFac(id); const f = facEdit; ['fm-neto','fm-iva','fm-nog','fm-pat','fm-chof','fm-km','fm-lt'].forEach(x => $(x).value = ''); $('fm-movil').value = '';
+  if(f){ $('fm-neto').value = fmtNum(f.neto||0); $('fm-iva').value = fmtNum(f.iva||0); $('fm-nog').value = fmtNum(f.nogravado||0); $('fm-movil').value = f.movil||''; if(f.combustible){ $('fm-pat').value = f.combustible.patente; $('fm-chof').value = f.combustible.chofer; $('fm-km').value = f.combustible.km; $('fm-lt').value = f.combustible.litros; } }
+  movilRow(); };
+$('fm-read-comb').addEventListener('click', () => {
+  const st = $('fm-read-status'); st.hidden = false; st.className = 'factura-read-status'; st.textContent = '⏳ Leyendo la factura de combustible con IA…';
+  const lt = 612.4, ppu = 1489.9; const neto = Math.round(lt*ppu/1.21*0.83*100)/100, nog = Math.round(lt*ppu*0.17*100)/100, iva = Math.round(neto*0.21*100)/100, total = Math.round((neto+iva+nog)*100)/100;
+  $('fm-preview-name').textContent = 'factura_combustible_A-0012-00387114.pdf';
+  $('fm-preview-body').innerHTML = '<div style="font-family:IBM Plex Mono,monospace;font-size:12px;line-height:1.6"><b>COMBUSTIBLES RUTA 3 SRL</b><br>Factura A 0012-00387114 · '+fmtDate(offsetDate(-1))+'<br>Régimen de Transparencia Fiscal al Consumidor<br>────────────────<br>Gasoil grado 3 · '+lt.toLocaleString('es-AR')+' l x $'+ppu.toLocaleString('es-AR')+'<br>Vehículo: interno 24 · Patente AE903LP<br>Chofer: Javier Fernández · Km 214.380<br>────────────────<br>Precio sin impuestos: $'+fmtNum(neto)+'<br>IVA contenido: $'+fmtNum(iva)+'<br>ICL + IDC: $'+fmtNum(nog)+'<br><b>TOTAL: $'+fmtNum(total)+'</b></div>';
+  setPreview(true, true);
+  setTimeout(() => { facCombo.set('p4'); fillOCSelect(''); $('fm-centro-costo').value = 0; $('fm-concepto').value = 0; $('fm-numero').value = 'A-0012-00387114'; $('fm-fecha').value = offsetDate(-1); $('fm-vencimiento').value = offsetDate(14); $('fm-monto').value = fmtNum(total);
+    $('fm-neto').value = fmtNum(neto); $('fm-iva').value = fmtNum(iva); $('fm-nog').value = fmtNum(nog); $('fm-movil').value = 'Camión 24'; $('fm-pat').value = 'AE903LP'; $('fm-chof').value = 'Javier Fernández'; $('fm-km').value = '214380'; $('fm-lt').value = String(lt).replace('.',','); movilRow();
+    if(!facFiles.some(f => f.name==='factura_combustible_A-0012-00387114.pdf')) facFiles.push({ name:'factura_combustible_A-0012-00387114.pdf', local:true }); renderAttach('fm-archivos-list', facFiles);
+    st.className = 'factura-read-status ok'; st.textContent = '✓ Listo: se completaron el móvil, la patente, el chofer, los km y el reparto Neto / IVA / No gravado. Revisalos antes de guardar.'; }, 1100);
+});
+$('fm-save').addEventListener('click', () => { const num = $('fm-numero').value.trim(); const f = state.facturas.find(x => x.numero===num && x.proveedorId===facCombo.get()); if(!f) return;
+  f.neto = parseMoney($('fm-neto').value) || Math.round(f.monto/1.21*100)/100; f.iva = parseMoney($('fm-iva').value); f.nogravado = parseMoney($('fm-nog').value); f.movil = f.centro===0 ? ($('fm-movil').value||null) : null;
+  if($('fm-pat').value.trim() || $('fm-km').value.trim()) f.combustible = { patente:$('fm-pat').value.trim(), chofer:$('fm-chof').value.trim(), km:parseMoney($('fm-km').value), litros:parseMoney($('fm-lt').value) }; });
+// Gasto de flota por móvil (Dashboard → Gastos)
+(function(){ const g = document.querySelector('#dash-sub-gastos .dash-grid'); if(g) g.insertAdjacentHTML('beforeend', '<div class="panel panel-wide"><h4>Gasto de flota por móvil</h4><div id="bar-movil"></div></div>'); })();
+const _renderDash = renderDashboard;
+renderDashboard = function(){ _renderDash(); const el = $('bar-movil'); if(!el) return; const { s, e } = dashRange(); const m = {}; state.facturas.filter(f => f.movil && f.estado!=='anulada' && f.fecha>=s && f.fecha<=e).forEach(f => m[f.movil] = (m[f.movil]||0)+Number(f.neto||f.monto)); el.innerHTML = bars(Object.keys(m).map(k => ({ label:k, count:m[k] })).sort((a,b) => b.count-a.count), { money:true, fill:'var(--chart-truck, var(--truck-13))' }); };
+
+// ---------------- Tesorería: importar extracto del banco con conciliación ----------------
+$('new-movimiento-btn').insertAdjacentHTML('beforebegin', '<button class="btn edit-action" id="import-extracto-btn">🏦 Importar extracto</button>');
+state.bancoRefs = new Set(['SAN-'+offsetDate(-3)+'-COMMANT']);
+function seedExtracto(){ state.movimientos.push({ id:'mv-ext0', cuentaId:'c3', fecha:offsetDate(-3), concepto:'🏦✓ Comisión mantenimiento de cuenta', monto:18500, pagoId:null, bancoRef:'SAN-'+offsetDate(-3)+'-COMMANT' }); }
+mkOverlay('ext-overlay', '<h3>Importar extracto del banco</h3><div class="sub">Subí el archivo de movimientos del home banking, de un día o de varios. Lo que coincide con un movimiento ya cargado queda conciliado; lo nuevo se registra; lo que ya se importó no se carga dos veces.</div><div class="crew-fields"><div class="field"><label for="ex-banco">Banco</label><select id="ex-banco"><option value="SAN">Santander</option><option value="CRE">Credicoop (lector genérico)</option></select></div><div class="field"><label>Archivo</label><button type="button" class="btn" id="ex-file">📄 Usar un extracto de ejemplo</button></div></div><div id="ex-res"></div><div class="modal-actions"><button class="btn" id="ex-cancel">Cancelar</button><button class="btn primary" id="ex-save" disabled>Registrar</button></div>', 820);
+let extLineas = [];
+function extEjemplo(){ const pre = $('ex-banco').value; const L = [];
+  state.ordenesPago.filter(op => op.estado==='pagada' && op.cuentaId==='c3' && op.fecha>=offsetDate(-12)).slice(0,2).forEach(op => L.push({ f:op.fecha, c:'Transferencia enviada '+proveedorNombre(op.proveedorId).toUpperCase(), imp:-op.monto, ref:pre+'-'+op.fecha+'-'+op.id }));
+  L.push({ f:offsetDate(-3), c:'Comisión mantenimiento de cuenta', imp:-18500, ref:pre+'-'+offsetDate(-3)+'-COMMANT' });
+  L.push({ f:offsetDate(-2), c:'Transferencia recibida HOTEL MIRADOR DEL GOLFO', imp:1245000, ref:pre+'-'+offsetDate(-2)+'-TRREC1' });
+  L.push({ f:offsetDate(-2), c:'Impuesto Ley 25.413 débitos y créditos', imp:-14820.6, ref:pre+'-'+offsetDate(-2)+'-IDC1' });
+  L.push({ f:offsetDate(-1), c:'Débito automático seguro de flota', imp:-386400, ref:pre+'-'+offsetDate(-1)+'-DASEG' });
+  L.push({ f:offsetDate(-1), c:'Comisión por transferencia', imp:-2100, ref:pre+'-'+offsetDate(-1)+'-COMTR' });
+  return L.map(x => { let est = 'nuevo', mv = null; if(state.bancoRefs.has(x.ref)) est = 'dup'; else { mv = state.movimientos.find(m => m.cuentaId==='c3' && !m.bancoRef && Math.abs(Number(m.monto)+x.imp)<0.01 && Math.abs(daysBetween(m.fecha, x.f))<=3); if(mv) est = 'conc'; } return Object.assign(x, { est, mv, sel: est==='nuevo' }); }); }
+function renderExt(){ const E = { nuevo:'<span class="oc-badge aprobada">Nuevo: se registra</span>', conc:'<span class="oc-badge recibida">🏦✓ Ya estaba: se concilia</span>', dup:'<span class="oc-badge ch-anulado">Ya importado</span>' };
+  $('ex-res').innerHTML = '<div class="day-wrap" style="max-height:46vh;overflow:auto"><table class="day-table"><thead><tr><th>☑</th><th>Fecha</th><th>Concepto del banco</th><th>Importe</th><th>Estado</th></tr></thead><tbody>'+extLineas.map((x,i) => '<tr class="day-row"><td>'+(x.est==='nuevo'?'<input type="checkbox" class="ex-chk" data-i="'+i+'"'+(x.sel?' checked':'')+' aria-label="Registrar línea">':'')+'</td><td class="num">'+fmtDate(x.f)+'</td><td>'+esc(x.c)+'</td><td class="num" style="color:'+(x.imp<0?'var(--danger)':'var(--chart-route)')+'">'+fmtMoney(x.imp)+'</td><td>'+E[x.est]+'</td></tr>').join('')+'</tbody></table></div><div class="sub" style="margin-top:8px">'+extLineas.filter(x => x.est==='conc').length+' para conciliar · '+extLineas.filter(x => x.est==='nuevo').length+' nuevos · '+extLineas.filter(x => x.est==='dup').length+' ya importados</div>';
+  $('ex-save').disabled = false; }
+$('import-extracto-btn').addEventListener('click', () => { $('ex-res').innerHTML = ''; $('ex-save').disabled = true; openOverlay('ext-overlay'); });
+$('ex-file').addEventListener('click', () => { extLineas = extEjemplo(); renderExt(); });
+$('ex-res').addEventListener('change', ev => { const c = ev.target.closest('.ex-chk'); if(c) extLineas[+c.dataset.i].sel = c.checked; });
+$('ex-cancel').addEventListener('click', () => closeOverlay('ext-overlay'));
+$('ex-save').addEventListener('click', () => { let n = 0, k = 0;
+  extLineas.forEach(x => { if(x.est==='conc'){ x.mv.bancoRef = x.ref; if(!/^🏦✓/.test(x.mv.concepto)) x.mv.concepto = '🏦✓ '+x.mv.concepto; state.bancoRefs.add(x.ref); k++; }
+    else if(x.est==='nuevo' && x.sel){ state.movimientos.push({ id:'mv-x'+(state.seq++), cuentaId:'c3', fecha:x.f, concepto:'🏦✓ '+x.c, monto:-x.imp, pagoId:null, bancoRef:x.ref }); state.bancoRefs.add(x.ref); n++; } });
+  closeOverlay('ext-overlay'); showToast('Extracto importado: '+n+' movimientos nuevos y '+k+' conciliados. Lo que ya estaba no se duplicó.'); rerender(); });
+
+// ---------------- Nomenclatura nueva de productos (código con la descripción) ----------------
+const NOMEN = { b20:'B20A', b12:'B12V', b6:'B6', sif:'SB1500', soda6:'S1500x6', agua6:'A2000x6', agua12:'A500x12', dispenser:'DAN', vasos100:'V100', hielo:'H5' };
+D.cargoTypes.forEach(c => { if(NOMEN[c.id] && c.label.indexOf(' · ')<0){ c.desc = c.label; c.label = NOMEN[c.id]+' · '+c.label; } });
+
+// ---------------- Permisos por usuario: perfil + excepciones ----------------
+const PESTANAS = [['grid','FlotaPesada'],['compras','Compras'],['solicitudes','Solicitudes de compra'],['pagos','Pagos'],['tesoreria','Tesorería'],['reclamos','Calidad'],['comercial','Comercial'],['rrhh','RR.HH.']];
+const PERFILES = { 'Administración':{ grid:'ver', compras:'editar', solicitudes:'editar', pagos:'editar', tesoreria:'editar', reclamos:'oculta', comercial:'ver', rrhh:'oculta' }, 'Jefe de sector':{ grid:'oculta', compras:'oculta', solicitudes:'editar', pagos:'oculta', tesoreria:'oculta', reclamos:'oculta', comercial:'oculta', rrhh:'oculta' }, 'Logística':{ grid:'editar', compras:'oculta', solicitudes:'editar', pagos:'oculta', tesoreria:'oculta', reclamos:'oculta', comercial:'oculta', rrhh:'oculta' }, 'Calidad':{ grid:'ver', compras:'oculta', solicitudes:'editar', pagos:'oculta', tesoreria:'oculta', reclamos:'editar', comercial:'oculta', rrhh:'oculta' }, 'Gerencia':{ grid:'ver', compras:'ver', solicitudes:'ver', pagos:'ver', tesoreria:'ver', reclamos:'ver', comercial:'ver', rrhh:'ver' } };
+const USUARIOS = [{ n:'Laura Benítez', m:'lbenitez', p:'Administración', ex:{ tesoreria:'ver' } }, { n:'Rodrigo Gómez', m:'rgomez', p:'Logística', ex:{} }, { n:'Carlos Vera', m:'cvera', p:'Jefe de sector', ex:{ grid:'ver' } }, { n:'Marta Paredes', m:'mparedes', p:'Calidad', ex:{} }, { n:'Sofía Ibáñez', m:'sibanez', p:'Jefe de sector', ex:{} }, { n:'Gerencia', m:'gerencia', p:'Gerencia', ex:{} }];
+mkOverlay('perm-overlay', '<h3>Perfiles y permisos</h3><div class="sub">Cada persona tiene un perfil y, si le hace falta algo distinto, excepciones solo para ella. Las excepciones se marcan en azul.</div><div class="crew-fields"><div class="field"><label for="pe-u">Usuario</label><select id="pe-u">'+USUARIOS.map((u,i) => '<option value="'+i+'">'+esc(u.n)+'</option>').join('')+'</select></div><div class="field"><label for="pe-p">Perfil</label><select id="pe-p">'+Object.keys(PERFILES).map(p => '<option>'+p+'</option>').join('')+'</select></div></div><div id="pe-tab"></div><div class="modal-actions"><span></span><button class="btn primary" id="pe-ok">Listo</button></div>', 560);
+function renderPerm(){ const u = USUARIOS[+$('pe-u').value]; $('pe-p').value = u.p; const base = PERFILES[u.p];
+  $('pe-tab').innerHTML = '<table class="day-table"><thead><tr><th>Pestaña</th><th>Permiso</th></tr></thead><tbody>'+PESTANAS.map(([k,l]) => { const v = u.ex[k] || base[k]; return '<tr class="day-row"><td>'+l+'</td><td><select class="pe-s'+(u.ex[k]?' pe-ex':'')+'" data-k="'+k+'" aria-label="Permiso en '+l+'"><option value="editar"'+(v==='editar'?' selected':'')+'>Editar</option><option value="ver"'+(v==='ver'?' selected':'')+'>Ver</option><option value="oculta"'+(v==='oculta'?' selected':'')+'>Oculta</option></select>'+(u.ex[k]?' <span style="font-size:11.5px;color:var(--chart-route)">excepción · el perfil dice '+base[k]+'</span>':'')+'</td></tr>'; }).join('')+'</tbody></table><div class="sub" style="margin-top:8px">'+esc(u.m)+'@'+'ejemplo.com.ar</div>'; }
+$('pe-u').addEventListener('change', renderPerm);
+$('pe-p').addEventListener('change', () => { const u = USUARIOS[+$('pe-u').value]; u.p = $('pe-p').value; u.ex = {}; renderPerm(); showToast('Perfil cambiado. Las excepciones se limpiaron.'); });
+$('pe-tab').addEventListener('change', ev => { const s = ev.target.closest('.pe-s'); if(!s) return; const u = USUARIOS[+$('pe-u').value]; const k = s.dataset.k; if(PERFILES[u.p][k]===s.value) delete u.ex[k]; else u.ex[k] = s.value; renderPerm(); });
+$('pe-ok').addEventListener('click', () => closeOverlay('perm-overlay'));
+(function(){ const b = $('settings-btn'); const nb = b.cloneNode(true); b.replaceWith(nb); nb.addEventListener('click', () => { renderPerm(); openOverlay('perm-overlay'); }); })();
+
+// Guías nuevas de Sifoncito
+GUIAS.administracion.splice(1, 0, ['Solicitudes y seguimiento de compras','El jefe de sector pide, Compras genera la orden y registra la recepción. El seguimiento muestra lo demorado.',()=>{ state.comprasTab='seg'; switchView('compras'); }]);
+GUIAS.administracion.push(['Importar el extracto del banco','Lo que ya estaba queda conciliado y lo nuevo se registra, sin duplicar.',()=>{ switchView('tesoreria'); setTimeout(() => $('import-extracto-btn').click(), 150); }]);
+GUIAS.administracion.push(['Factura de combustible','Compras → + Nueva compra → ⛽ Leer factura de combustible: móvil, patente, chofer, km e impuestos.',()=>{ state.comprasTab='compra'; switchView('compras'); setTimeout(() => { openFacturaModal(null); }, 150); }]);
+
+function seedNov(){ seedFacturasNov(); seedCompras(); seedAnticipo(); seedExtracto(); }
+
 // ---------- Arranque ----------
 generate();
-loadCompras();
+loadCompras(); seedNov();
 $('dash-from').value = dateStr(NOW.getFullYear(), NOW.getMonth()-2 < 0 ? 0 : NOW.getMonth()-2, 1);
 (function(){ const d = new Date(NOW.getFullYear(), NOW.getMonth()-2, 1); $('dash-from').value = toStr(d); })();
 $('dash-to').value = TODAY;
