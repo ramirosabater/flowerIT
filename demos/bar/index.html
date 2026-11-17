@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bar y parrilla · Demo · FloWer</title>
+<meta name="description" content="Demo navegable con datos ficticios de un sistema para bar y parrilla: mesas y comandas, carta por QR, reservas, caja, stock con recetas, control de pérdidas y tableros.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0F1A2B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230F1A2B'/%3E%3Cpath d='M28 74 L44 26 L56 26 L40 74Z M52 74 L68 26 L80 26 L64 74Z' fill='%23C9A35A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EFEBE2;--surface:#FFFDF8;--sunk:#E3E0D6;--line:#D3D0C4;--fg:#141B26;--muted:#5D6675;--acc:#1F3A5F;--acc-soft:#DDE5EF;--gold:#C9A35A;--ember:#F2B600;--ok:#17803F;--ok-soft:#D9EFE0;--warn:#9A6A00;--warn-soft:#FAEFC8;--crit:#C8231E;--crit-soft:#F8DCDA;--hdr:#0F1A2B;--hdr-fg:#F1EAD9;--strip:40px;--disp:"Saira Condensed",Impact,sans-serif;--cuadros:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 0 0/12px 12px;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 Inter,system-ui,sans-serif;padding-top:var(--strip)}
+h1,h2,h3{font-family:var(--disp);font-style:italic;letter-spacing:.01em;margin:0}
+h1{font-size:34px;text-transform:uppercase;line-height:1}h2{font-size:22px}h3{font-size:19px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid rgba(31,58,95,.4);outline-offset:2px}
+.demo-strip{position:fixed;top:0;left:0;right:0;height:var(--strip);z-index:300;display:flex;align-items:center;justify-content:center;gap:14px;padding:0 12px;background:#000;color:#fff;font-size:13px;font-weight:600}
+.demo-strip a{color:#fff}.demo-strip .back{opacity:.85;text-underline-offset:3px}
+.demo-strip .tour{background:none;border:1px solid #555;color:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font-weight:700;font-size:12.5px}
+.demo-strip .cta{background:var(--gold);color:#1a1205;text-decoration:none;padding:6px 14px;border-radius:999px;font-weight:800;font-size:12.5px}
+@media (max-width:560px){.demo-strip .long{display:none}.demo-strip{gap:8px}}
+header{background:repeating-linear-gradient(115deg,transparent 0 46px,rgba(255,255,255,.03) 46px 48px),linear-gradient(100deg,var(--hdr) 55%,#1c2f4b);color:var(--hdr-fg)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+.hrow{display:flex;align-items:center;gap:14px;padding:12px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;font-family:var(--disp);font-style:italic}
+.brand b{font-size:24px;text-transform:uppercase;line-height:1}.brand small{display:block;font-family:Inter,sans-serif;font-style:normal;font-size:12px;opacity:.75}
+.jornada{font-size:13px;opacity:.8;margin-left:auto}
+.role{display:flex;gap:2px;background:rgba(255,255,255,.08);border-radius:999px;padding:3px;flex-wrap:wrap}
+.role button{border:0;background:none;color:#cfd6e0;border-radius:999px;padding:5px 11px;font-size:13px;font-weight:700;cursor:pointer}
+.role button.on{background:var(--gold);color:#1a1205}
+nav.main{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+nav.main::-webkit-scrollbar{display:none}
+nav.main a{padding:9px 12px;color:#cfd6e0;text-decoration:none;font-weight:600;font-size:14.5px;border-radius:8px 8px 0 0;white-space:nowrap}
+nav.main a:hover{color:#fff}nav.main a.on{background:var(--bg);color:var(--fg)}
+nav.main .dot{display:inline-block;min-width:19px;padding:0 5px;margin-left:5px;border-radius:999px;background:var(--crit);color:#fff;font-size:11.5px;text-align:center}
+.vitral{height:12px;background:var(--cuadros)}
+.subnav{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px}
+.subnav a{padding:6px 12px;border-radius:999px;background:var(--sunk);text-decoration:none;color:var(--fg);font-weight:600;font-size:13.5px}
+.subnav a.on{background:var(--acc);color:#fff}
+main{padding:22px 20px 90px;max-width:1240px;margin:0 auto}
+.cab{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.cab .et{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;min-width:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat .l{font-size:12.5px;color:var(--muted);font-weight:600}.stat .v{font-family:var(--disp);font-size:30px;font-weight:800;line-height:1.1}.stat .x{font-size:12.5px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (max-width:900px){.grid3,.grid4{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer}
+.btn:hover{border-color:var(--muted)}.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#1a1205}
+.btn.sm{padding:5px 10px;font-size:13px}.btn.ghost{background:none}.btn:disabled{opacity:.45;cursor:not-allowed}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:700;background:var(--sunk);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.warn{background:var(--warn-soft);color:var(--warn)}.pill.crit{background:var(--crit-soft);color:var(--crit)}.pill.acc{background:var(--acc-soft);color:var(--acc)}
+.muted{color:var(--muted)}.small{font-size:13px}.mono{font-variant-numeric:tabular-nums}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid var(--sunk);vertical-align:top}tr:last-child td{border-bottom:0}
+.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--sunk)}.row:last-child{border:0}.grow{flex:1;min-width:0}
+input,select,textarea{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-width:100%}
+label.campo{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.alert{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--ember);border-radius:12px;padding:10px 14px;margin-bottom:12px}
+.alert.crit{border-left-color:var(--crit)}.alert.ok{border-left-color:var(--ok)}.alert.acc{border-left-color:var(--acc)}
+/* salón */
+.salon{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.mesa{position:relative;background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--sunk);border-radius:14px;padding:10px 12px;cursor:pointer;text-align:left;min-height:104px;display:flex;flex-direction:column;gap:2px}
+.mesa:hover{border-color:var(--muted)}
+.mesa .n{font-family:var(--disp);font-style:italic;font-weight:800;font-size:34px;line-height:1}
+.mesa .s{font-size:12.5px;color:var(--muted)}
+.mesa.ocupada{border-top-color:var(--ember)}
+.mesa.cuenta{border-top-color:transparent}.mesa.cuenta::before{content:"";position:absolute;left:-1px;right:-1px;top:-6px;height:6px;border-radius:14px 14px 0 0;background:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 0 0/6px 6px}
+.mesa .tot{margin-top:auto;font-weight:700}
+.mesa .flag{position:absolute;top:8px;right:10px;font-size:12px}
+.mesa.temp .n{font-size:22px}
+/* comandas */
+.kds{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:900px){.kds{grid-template-columns:1fr}}
+.kcol{background:var(--sunk);border-radius:16px;padding:12px;min-height:200px}
+.kcol h3{margin-bottom:10px}
+.ticket{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--ok);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.ticket.t-warn{border-left-color:var(--ember)}.ticket.t-crit{border-left-color:var(--crit);background:#FFF6F5}
+.ticket .th{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.ticket .th b{font-family:var(--disp);font-style:italic;font-size:22px}
+.ticket ul{margin:0 0 8px;padding:0;list-style:none}.ticket li{padding:2px 0;font-size:15px}.ticket li b{font-size:16px}.ticket li i{display:block;color:var(--crit);font-size:13px}
+.ticket .btn{width:100%}
+.kempty{color:var(--muted);text-align:center;padding:28px 10px;font-size:14px}
+/* panel mesa */
+.carta-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.prod{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;text-align:left;cursor:pointer}
+.prod:hover{border-color:var(--acc)}.prod b{display:block;font-size:14px}.prod span{font-size:12.5px;color:var(--muted)}
+.prod:disabled{opacity:.45;cursor:not-allowed}
+/* heat */
+.heat{display:grid;grid-template-columns:44px repeat(8,1fr);gap:3px;font-size:11.5px}
+.heat div{border-radius:4px;text-align:center;padding:6px 0}
+.heat .h{background:none;color:var(--muted);font-weight:700}
+.hb .r2{display:grid;grid-template-columns:170px 1fr 92px;gap:10px;align-items:center;margin:6px 0;font-size:13.5px}
+.hb .t{height:10px;border-radius:5px;background:var(--sunk);overflow:hidden}.hb .b{height:100%;border-radius:5px;background:var(--c,var(--acc))}
+@media (max-width:560px){.hb .r2{grid-template-columns:110px 1fr 80px}}
+.bars{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:10px}
+.bars div{flex:1;background:var(--acc);border-radius:4px 4px 0 0;position:relative;min-width:4px}
+.bars div.we{background:var(--gold)}
+/* QR */
+.qr-wrap{max-width:440px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:24px;overflow:hidden}
+.qr-top{background:var(--hdr);color:var(--hdr-fg);padding:18px;display:flex;align-items:center;gap:12px}
+.qr-top h2{font-size:26px;text-transform:uppercase}
+.qr-body{padding:14px 16px 90px}
+.qr-item{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--sunk)}
+.qr-cart{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:12px 16px;display:flex;gap:8px}
+.ov{position:fixed;inset:0;background:rgba(10,16,26,.55);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.ov.show{display:flex}
+.modal{background:var(--surface);border-radius:18px;padding:18px;width:100%;max-width:640px;max-height:calc(100vh - 70px);overflow:auto}
+.modal.wide{max-width:900px}
+.modal h3{margin-bottom:6px}
+.acts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--hdr);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;font-size:14px;transition:all .25s;z-index:400;max-width:calc(100% - 32px);text-align:center;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.tour-list{padding:0;margin:8px 0 0}.tour-list li{padding:9px 10px;border-radius:12px;cursor:pointer;list-style:none;display:flex;gap:12px}.tour-list li:hover{background:var(--bg)}.tour-list li b{display:block}
+.tour-list .k{flex:none;width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+.proto{font-size:12.5px;color:var(--muted);margin-top:30px}
+.mfrm>*{min-width:0}.mfrm select,.mfrm input{width:100%}
+@media (max-width:640px){.mfrm{grid-template-columns:1fr 1fr!important}}
+.fac{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:14px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.6}
+@media (max-width:760px){.wrap{padding:0 12px}main{padding:18px 12px 90px}h1{font-size:28px}.jornada{display:none}.role{width:100%;justify-content:space-between}.role button{flex:1;padding:6px 4px}}
+
+@media (max-width:430px){.demo-strip{font-size:11.5px;gap:7px;padding:0 8px;white-space:nowrap}.demo-strip .tour,.demo-strip .cta{padding:4px 9px;font-size:11.5px}}
+@media (max-width:380px){.demo-strip .tour{display:none}}
+</style>
+</head>
+<body>
+<div class="demo-strip" role="region" aria-label="Aviso de demo">
+  <a class="back" href="../../proyectos.html#bar">← FloWer</a>
+  <span>Demo con datos ficticios<span class="long"> · bar, platos y precios inventados</span></span>
+  <button class="tour" id="tourBtn">Recorrido</button>
+  <a class="cta" href="https://wa.me/5492975212008" target="_blank" rel="noopener">Quiero uno así</a>
+</div>
+<header><div class="wrap">
+  <div class="hrow">
+    <a class="brand" href="#mesas"><svg width="42" height="42" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#1F3A5F" stroke="#C9A35A" stroke-width="5"/><path d="M28 74 L44 26 L56 26 L40 74Z M52 74 L68 26 L80 26 L64 74Z" fill="#C9A35A"/></svg><span><b>La Recta</b><small>Bar y parrilla</small></span></a>
+    <span class="jornada" id="jor"></span>
+    <div class="role" role="group" aria-label="Ver la demo como"><button data-r="admin">Dueño</button><button data-r="mozo">Mozo</button><button data-r="cocina">Parrilla</button><button data-r="barra">Barra</button><button data-r="qr">Cliente (QR)</button></div>
+  </div>
+  <nav class="main" id="nav" aria-label="Secciones"></nav>
+</div><div class="vitral" aria-hidden="true"></div></header>
+<main id="main"></main>
+<div class="ov" id="ov"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+/* ===== DEMO: todo es FICTICIO. Horarios relativos a ahora. ===== */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const NOW=new Date();const HOY=iso(NOW);const VOFF=new Date(HOY+'T22:15:00').getTime()-Date.now();const vnow=()=>Date.now()+VOFF;const addD=(s,n)=>{const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return iso(d)};
+const fd=s=>s.slice(8,10)+'/'+s.slice(5,7);
+const DC=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],DL=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const plata=n=>'$'+Math.round(+n||0).toLocaleString('es-AR');const num=n=>(+n).toLocaleString('es-AR',{maximumFractionDigits:2});
+const pct=(x,d=0)=>(x*100).toFixed(d).replace('.',',')+' %';
+const hhmm=t=>{const d=new Date(t);return pad(d.getHours())+':'+pad(d.getMinutes())};
+const minDesde=t=>Math.max(0,Math.round((vnow()-t)/60000));
+let seed=4242;const R=()=>{seed=(seed+0x6D2B79F5)|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};const pick=a=>a[Math.floor(R()*a.length)];
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),3000)}
+$('#jor').textContent='Jornada '+DL[NOW.getDay()]+' '+fd(HOY);
+
+/* ---------- artículos (insumos) ---------- */
+let INS=[ // id, nombre, unidad, costo, hay, minimo, merma limpieza, rinde coccion, vence(dias), proveedor
+ ['vac','Vacío','kg',9800,14.2,8,.08,.65,4,'Carnicería El Corral'],['ent','Entraña','kg',14500,3.1,4,.12,.70,3,'Carnicería El Corral'],['bif','Bife de chorizo','kg',13200,9.4,6,.10,.72,5,'Carnicería El Corral'],
+ ['mol','Mollejas','kg',11800,2.2,3,.25,.60,2,'Carnicería El Corral'],['cho','Chorizo','u',1200,46,30,0,1,6,'Carnicería El Corral'],['prv','Provolone','kg',12500,3.4,2,0,1,20,'Lácteos del Valle'],
+ ['nal','Nalga para milanesa','kg',10500,7.5,5,.05,1,4,'Carnicería El Corral'],['pic','Carne picada','kg',7800,5.2,4,0,.75,2,'Carnicería El Corral'],['pan','Pan de hamburguesa','u',450,38,24,0,1,3,'Panadería Don Pedro'],
+ ['pap','Papas','kg',1400,42,25,.18,.55,15,'Verdulería Central'],['lec','Lechuga','kg',2200,2.1,3,.25,1,2,'Verdulería Central'],['tom','Tomate','kg',2600,6.3,4,.08,1,5,'Verdulería Central'],
+ ['hue','Huevos','u',250,90,60,0,1,15,'Granja Los Aromos'],['ddl','Dulce de leche','kg',5200,4.1,2,0,1,30,'Lácteos del Valle'],['lch','Leche','l',1300,8,6,0,1,5,'Lácteos del Valle'],
+ ['gin','Gin','l',18000,4.6,3,0,1,0,'Distribuidora Sur'],['ton','Tónica','l',2400,11,12,0,1,0,'Distribuidora Sur'],['fer','Fernet','l',14000,5.2,4,0,1,0,'Distribuidora Sur'],
+ ['col','Gaseosa cola','l',1800,26,20,0,1,0,'Distribuidora Sur'],['cer','Cerveza tirada','l',3200,58,40,0,1,0,'Cervecería del Puerto'],['por','Porrón 330 ml','u',1900,64,48,0,1,0,'Cervecería del Puerto'],
+ ['mal','Malbec botella','u',9500,22,12,0,1,0,'Distribuidora Sur'],['lim','Limón','kg',2000,1.8,2,.3,1,8,'Verdulería Central'],['hie','Hielo','kg',600,30,40,0,1,0,'Fábrica de hielo Polar']
+].map(a=>({id:a[0],n:a[1],u:a[2],costo:a[3],hay:a[4],min:a[5],mer:a[6],rin:a[7],vence:a[8]?addD(HOY,a[8]):null,prov:a[9]}));
+const ins=id=>INS.find(i=>i.id===id);
+const bruto=(i,c,cocido)=>c/(cocido?i.rin:1)/(1-i.mer);
+
+/* ---------- carta y recetas ---------- */
+const CATS=['Parrilla','Minutas','Guarniciones','Postres','Cervezas','Tragos','Vinos y sin alcohol'];
+let CARTA=[ // id,nombre,cat,precio,estacion,desc,receta[[ins,cant,cocido]]
+ ['p1','Vacío','Parrilla',18500,'cocina','400 g al plato, con chimichurri',[['vac',.40,1]]],
+ ['p2','Entraña','Parrilla',19800,'cocina','Jugosa, 350 g',[['ent',.35,1]]],
+ ['p3','Bife de chorizo','Parrilla',21000,'cocina','450 g, punto a elección',[['bif',.45,1]]],
+ ['p4','Mollejas','Parrilla',14500,'cocina','Crocantes, con limón',[['mol',.25,1],['lim',.05,0]]],
+ ['p5','Choripán','Parrilla',5200,'cocina','Con chimichurri casero',[['cho',1,0],['pan',1,0]]],
+ ['p6','Provoleta','Parrilla',8900,'cocina','Con orégano y ají',[['prv',.18,0]]],
+ ['p7','Milanesa napolitana','Minutas',16500,'cocina','Con papas fritas',[['nal',.25,0],['prv',.06,0],['tom',.05,0],['hue',1,0],['pap',.20,1]]],
+ ['p8','Hamburguesa La Recta','Minutas',13900,'cocina','Doble carne, cheddar y papas',[['pic',.24,1],['pan',1,0],['pap',.18,1]]],
+ ['p9','Papas fritas','Guarniciones',6500,'cocina','Porción grande',[['pap',.30,1]]],
+ ['p10','Ensalada mixta','Guarniciones',5500,'cocina','Lechuga, tomate y cebolla',[['lec',.12,0],['tom',.15,0]]],
+ ['p11','Flan casero','Postres',5800,'cocina','Con dulce de leche',[['hue',2,0],['lch',.15,0],['ddl',.05,0]]],
+ ['p12','Panqueque con dulce de leche','Postres',6200,'cocina','',[['hue',1,0],['lch',.08,0],['ddl',.08,0]]],
+ ['b1','Pinta tirada','Cervezas',4800,'barra','IPA o rubia',[['cer',.5,0]]],
+ ['b2','Porrón','Cervezas',5500,'barra','330 ml',[['por',1,0]]],
+ ['b3','Fernet con cola','Tragos',7200,'barra','',[['fer',.07,0],['col',.25,0],['hie',.15,0]]],
+ ['b4','Gin tonic','Tragos',8500,'barra','Con pepino o limón',[['gin',.06,0],['ton',.2,0],['hie',.15,0],['lim',.02,0]]],
+ ['b5','Copa de Malbec','Vinos y sin alcohol',5000,'barra','',[['mal',.2,0]]],
+ ['b6','Botella de Malbec','Vinos y sin alcohol',22000,'barra','',[['mal',1,0]]],
+ ['b7','Gaseosa','Vinos y sin alcohol',3500,'barra','500 ml',[['col',.5,0]]],
+ ['b8','Agua sin gas','Vinos y sin alcohol',2800,'barra','500 ml',[]]
+].map(a=>({id:a[0],n:a[1],cat:a[2],precio:a[3],est:a[4],desc:a[5],rec:a[6],activo:true}));
+const prod=id=>CARTA.find(p=>p.id===id);
+const costoPlato=p=>p.rec.reduce((s,[i,c,k])=>s+bruto(ins(i),c,k)*ins(i).costo,0);
+const OBJ=.35;
+const pillCosto=x=>x==null?'<span class="pill">sin receta</span>':x<=OBJ?`<span class="pill ok">${pct(x)}</span>`:x<=OBJ+.07?`<span class="pill warn">${pct(x)}</span>`:`<span class="pill crit">${pct(x)}</span>`;
+
+/* ---------- salón en vivo ---------- */
+const MOZOS=['Nico','Flor','Juan'];
+let MESAS=Array.from({length:14},(_,i)=>({id:'m'+(i+1),num:i+1,estado:'libre',pax:0,abierta:null,mozo:null,temp:false,nombre:null}));
+let PED=[];let npd=1;const mesa=id=>MESAS.find(m=>m.id===id);
+const etq=m=>m.temp?m.nombre:'Mesa '+m.num;
+function abrir(m,pax,mozo,minAgo){m.estado='ocupada';m.pax=pax;m.mozo=mozo;m.abierta=vnow()-minAgo*60000}
+function pedido(m,items,minAgo,ec,eb,conf=true){const it=items.map(([p,c,nota])=>({p,c,nota:nota||'',est:prod(p).est}));const hasC=it.some(i=>i.est==='cocina'),hasB=it.some(i=>i.est==='barra');
+ PED.push({id:'pd'+npd++,mesa:m.id,items:it,t:vnow()-minAgo*60000,ec:hasC?ec:null,eb:hasB?eb:null,conf})}
+abrir(MESAS[0],4,'Nico',62);pedido(MESAS[0],[['b1',2],['b3',2]],58,null,'entregado');pedido(MESAS[0],[['p1',2],['p6',1],['p9',2]],50,'entregado',null);
+abrir(MESAS[2],2,'Flor',38);pedido(MESAS[2],[['b6',1]],35,null,'entregado');pedido(MESAS[2],[['p3',1,'jugoso'],['p2',1],['p10',1]],27,'preparando',null);
+abrir(MESAS[3],3,'Flor',20);pedido(MESAS[3],[['b4',2],['b7',1]],16,null,'listo');pedido(MESAS[3],[['p8',2],['p5',1]],12,'pendiente',null);
+abrir(MESAS[5],5,'Juan',85);pedido(MESAS[5],[['b1',4],['b2',2]],80,null,'entregado');pedido(MESAS[5],[['p1',2],['p4',1],['p7',2]],72,'entregado',null);pedido(MESAS[5],[['p11',3]],10,'pendiente',null);MESAS[5].estado='cuenta';
+abrir(MESAS[7],2,'Nico',9);pedido(MESAS[7],[['b5',2]],6,null,'preparando');
+abrir(MESAS[9],6,'Juan',44);pedido(MESAS[9],[['b1',6]],40,null,'entregado');pedido(MESAS[9],[['p1',3],['p3',2],['p6',2],['p9',3]],31,'preparando',null,true);
+abrir(MESAS[11],2,'Flor',4);pedido(MESAS[11],[['b3',1],['b2',1],['p5',2]],2,'pendiente','pendiente',false);
+let LLAMADOS=['m11'];
+MESAS[10].estado='ocupada';MESAS[10].pax=3;MESAS[10].mozo='Juan';MESAS[10].abierta=vnow()-25*60000;pedido(MESAS[10],[['b7',3],['p8',3]],22,'listo','entregado');
+const itemsMesa=m=>PED.filter(p=>p.mesa===m.id&&p.conf).flatMap(p=>p.items);
+const totMesa=m=>itemsMesa(m).reduce((s,i)=>s+(i.inv?0:i.c*prod(i.p).precio),0);
+let CAMBIOS=[];
+
+/* ---------- historial (tickets de 35 días) ---------- */
+const POP={p1:9,p2:5,p3:6,p4:3,p5:6,p6:6,p7:5,p8:7,p9:9,p10:3,p11:3,p12:2,b1:14,b2:6,b3:9,b4:6,b5:4,b6:2,b7:6,b8:2};
+const popList=Object.entries(POP).flatMap(([k,v])=>Array(v).fill(k));
+const MEDIOS=['Efectivo','Débito','Crédito','Mercado Pago','Transferencia'];
+let TICKETS=[];let ntk=1;
+for(let d=35;d>=0;d--){const f=addD(HOY,-d);const wd=new Date(f+'T12:00:00').getDay();if(wd===1)continue;const base={0:16,2:9,3:10,4:14,5:24,6:30}[wd]||10;const n=Math.round(base*(.8+R()*.4));
+ for(let k=0;k<(d===0?Math.round(n*.35):n);k++){const h=d===0?20+Math.floor(R()*2):20+Math.floor(Math.pow(R(),1.3)*7);const pax=1+Math.floor(R()*5);const items=[];const ni=pax+1+Math.floor(R()*pax*1.5);for(let x=0;x<ni;x++){const p=pick(popList);const e=items.find(i=>i.p===p);e?e.c++:items.push({p,c:1})}
+  const total=items.reduce((s,i)=>s+i.c*prod(i.p).precio,0);const costo=items.reduce((s,i)=>s+i.c*costoPlato(prod(i.p)),0);
+  const hora=new Date(f+'T00:00:00');hora.setHours(h%24,Math.floor(R()*60));if(h>=24)hora.setDate(hora.getDate()+1);
+  TICKETS.push({id:ntk++,jor:f,hora:hora.getTime(),h:h%24,wd,mesa:'Mesa '+(1+Math.floor(R()*14)),pax,items,total,costo,medio:pick(MEDIOS),mozo:pick(MOZOS),propina:R()<.3?Math.round(total*.1/100)*100:0,fac:R()<.7})}}
+const tkHoy=()=>TICKETS.filter(t=>t.jor===HOY);
+
+/* ---------- caja, gastos, reservas, mermas, control ---------- */
+let CAJA={abierta:true,inicial:50000,gastos:[{c:'Hielo',m:12000,t:vnow()-150*60000}],cerrada:null};
+let GASTOS=[{c:'Alquiler',m:1350000,vence:addD(HOY,5),est:'pendiente',cat:'Fijos'},{c:'Luz',m:286000,vence:addD(HOY,-2),est:'pendiente',cat:'Servicios'},{c:'Gas',m:198000,vence:addD(HOY,9),est:'pendiente',cat:'Servicios'},{c:'Sueldos',m:3900000,vence:addD(HOY,-12),est:'pagado',cat:'Personal'},{c:'Carnicería El Corral (fact. 0003-4512)',m:842000,vence:addD(HOY,12),est:'pendiente',cat:'Proveedores'},{c:'Distribuidora Sur',m:534000,vence:addD(HOY,-20),est:'pagado',cat:'Proveedores'}];
+const CUENTAS=[['Caja',412000],['Banco',2860000],['Mercado Pago',935000]];
+const HORARIOS=['20:30','21:00','21:30','22:00','22:30','23:00'];const CUPO=20;
+let RES=[];let nrs=1;const NOMR=['Gómez','Fernández','Paz','Luna','Herrera','Molina','Ríos','Sosa','Ortiz','Vega','Correa','Benítez','Ibarra','Toledo'];
+for(let d=0;d<6;d++){const f=addD(HOY,d);const wd=new Date(f+'T12:00:00').getDay();if(wd===1)continue;const n=wd>=5||wd===0?9:4;for(let k=0;k<n;k++){RES.push({id:'r'+nrs++,f,h:pick(HORARIOS),n:pick(NOMR),pax:2+Math.floor(R()*5),tel:'11 5555-'+String(1000+Math.floor(R()*8999)),orig:R()<.5?'pagina':'telefono',est:d===0&&k<2?'pendiente':R()<.15&&d>0?'pendiente':'confirmada',nota:R()<.2?pick(['Cumpleaños','Con cochecito','Mesa afuera si hay']):''})}}
+let MERMAS=[{f:addD(HOY,-1),i:'lec',c:.6,mot:'Se echó a perder'},{f:addD(HOY,-2),i:'vac',c:.8,mot:'Se quemó'},{f:addD(HOY,-3),i:'pap',c:3,mot:'Se echó a perder'},{f:addD(HOY,-4),i:'cer',c:4,mot:'Barril con espuma'},{f:addD(HOY,-5),i:'ent',c:.35,mot:'Devolución del cliente'},{f:addD(HOY,-6),i:'mol',c:.5,mot:'Vencido'}];
+const CONTROL=[['vac',38.2,1.2,41.9],['ent',14.1,.35,16.6],['bif',22.5,0,23.1],['mol',6.3,.5,6.9],['pap',96,3,104.5],['prv',7.9,0,8.0],['cer',182,4,196],['fer',9.8,0,10.9],['gin',6.1,0,6.0],['mal',31,0,31],['col',58,0,61.5],['pic',11.2,0,11.4]].map(([i,t,m,u])=>{const x=ins(i);const se=u-t-m;return{i:x,teo:t,mer:m,usado:u,se,plata:Math.max(0,se)*x.costo}});
+
+/* ---------- roles y navegación ---------- */
+let ROLE='admin';
+const NAV={admin:[['mesas','Mesas'],['reservas','Reservas'],['cocina','Parrilla'],['barra','Barra'],['caja','Caja'],['stock','Stock'],['tableros','Tableros'],['carta','Carta y QR']],
+ mozo:[['mesas','Mesas'],['reservas','Reservas']],cocina:[['cocina','Parrilla']],barra:[['barra','Barra']],qr:[['qr','Carta de la mesa 4']]};
+const SUBST=[['stock/articulos','Artículos'],['stock/recetas','Recetas y costos'],['stock/compras','Compras'],['stock/control','Control semanal'],['stock/mermas','Mermas']];
+const SUBTB=[['tableros/resumen','Resumen'],['tableros/ventas','Ventas y servicio'],['tableros/costos','Costos y desperdicio'],['tableros/finanzas','Finanzas']];
+function counts(){const salon=LLAMADOS.length+PED.filter(p=>!p.conf).length+PED.filter(p=>p.conf&&(p.ec==='listo'||p.eb==='listo')).length;
+ return{mesas:salon,cocina:PED.filter(p=>p.conf&&['pendiente','preparando'].includes(p.ec)).length,barra:PED.filter(p=>p.conf&&['pendiente','preparando'].includes(p.eb)).length,
+ reservas:RES.filter(r=>r.est==='pendiente'&&r.f>=HOY).length,stock:INS.filter(i=>i.hay<=i.min).length}}
+function setRole(r,quiet){ROLE=r;$$('.role button').forEach(b=>b.classList.toggle('on',b.dataset.r===r));const v=location.hash.slice(1).split('/')[0];if(!NAV[r].some(n=>n[0]===v))location.hash='#'+NAV[r][0][0];else route();
+ if(!quiet)toast({admin:'Ves todo, como el dueño',mozo:'Ves lo del mozo: mesas y reservas, desde el celular',cocina:'Ves la pantalla de la parrilla',barra:'Ves la pantalla de la barra',qr:'Ves lo que ve el cliente al escanear el QR de la mesa'}[r])}
+$$('.role button').forEach(b=>b.onclick=()=>setRole(b.dataset.r));
+const cab=(et,t,der='')=>`<div class="cab"><div><div class="et">${et}</div><h1>${t}</h1></div><div style="display:flex;gap:8px;flex-wrap:wrap">${der}</div></div>`;
+const sub=(L,cur)=>`<div class="subnav">${L.map(([k,l])=>`<a href="#${k}" class="${k===cur?'on':''}">${l}</a>`).join('')}</div>`;
+const stat=(l,v,x='')=>`<div class="stat"><div class="l">${l}</div><div class="v">${v}</div>${x?`<div class="x">${x}</div>`:''}</div>`;
+
+/* ---------- MESAS ---------- */
+function vMesas(){const qr=PED.filter(p=>!p.conf);const listos=PED.filter(p=>p.conf&&(p.ec==='listo'||p.eb==='listo'));const prox=RES.filter(r=>r.f===HOY&&r.est==='confirmada').sort((a,b)=>a.h.localeCompare(b.h))[0];
+ const temps=MESAS.filter(m=>m.temp&&m.estado!=='libre');const fijas=MESAS.filter(m=>!m.temp);
+ return cab('Salón · en vivo','Mesas',`<button class="btn" id="sinMesa">+ Para llevar, delivery o barra</button>`)+
+ `<div id="avisos">${LLAMADOS.map(id=>`<div class="alert crit"><b>🔔 ${etq(mesa(id))} llama al mozo</b><span class="grow"></span><button class="btn sm" data-atend="${id}">Ya voy</button></div>`).join('')}
+ ${qr.map(p=>`<div class="alert acc"><b>📱 Pedido por QR · ${etq(mesa(p.mesa))}</b><span class="grow small">${p.items.map(i=>i.c+'× '+esc(prod(i.p).n)).join(', ')}</span><button class="btn sm pri" data-confqr="${p.id}">Confirmar y mandar</button></div>`).join('')}
+ ${listos.map(p=>`<div class="alert ok"><b>✅ Listo para llevar · ${etq(mesa(p.mesa))}</b><span class="grow small">${p.items.filter(i=>(i.est==='cocina'&&p.ec==='listo')||(i.est==='barra'&&p.eb==='listo')).map(i=>i.c+'× '+esc(prod(i.p).n)).join(', ')}</span><button class="btn sm ok" data-retiro="${p.id}">Llevado</button></div>`).join('')}
+ ${prox?`<div class="alert"><b>📅 Próxima reserva: ${prox.h} · ${esc(prox.n)} · ${prox.pax} personas</b><span class="grow"></span><button class="btn sm" data-sentar="${prox.id}">Llegaron: sentar</button></div>`:''}</div>
+ ${temps.length?`<h3 style="margin:8px 0">Sin mesa</h3><div class="salon" style="margin-bottom:16px">${temps.map(mesaCard).join('')}</div>`:''}
+ <div class="salon">${fijas.map(mesaCard).join('')}</div>
+ <p class="small muted" style="margin-top:12px">Amarillo: ocupada · a cuadros: pidió la cuenta.</p>`}
+function mesaCard(m){const t=totMesa(m);const flags=(LLAMADOS.includes(m.id)?'🔔':'')+(PED.some(p=>p.mesa===m.id&&!p.conf)?'📱':'');
+ return `<button class="mesa ${m.estado} ${m.temp?'temp':''}" data-mesa="${m.id}"><span class="flag">${flags}</span><span class="n">${m.temp?esc(m.nombre):m.num}</span>
+ <span class="s">${m.estado==='libre'?'Libre':m.estado==='cuenta'?'Pidió la cuenta':m.pax+' pers. · '+minDesde(m.abierta)+' min'}${m.mozo&&m.estado!=='libre'?' · '+m.mozo:''}</span>${m.estado!=='libre'?`<span class="tot">${plata(t)}</span>`:''}</button>`}
+let carrito=[],catSel='Parrilla';
+function panelMesa(id){const m=mesa(id);
+ if(m.estado==='libre'){modal(`<h3>${etq(m)}</h3><p class="muted small" style="margin:0 0 12px">Mesa libre. Abrila con los comensales.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><label class="campo">Comensales<input id="mPax" type="number" min="1" value="2"></label><label class="campo">Mozo<select id="mMozo">${MOZOS.map(x=>`<option>${x}</option>`).join('')}</select></label></div><div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn pri" id="mOpen">Abrir mesa</button></div>`);
+  $('#mOpen').onclick=()=>{abrir(m,+$('#mPax').value||2,$('#mMozo').value,0);carrito=[];panelMesa(id);keep()};return}
+ const peds=PED.filter(p=>p.mesa===m.id&&p.conf);const est=(p,i)=>{const e=i.est==='cocina'?p.ec:p.eb;return e==='entregado'?'<span class="pill ok">En la mesa</span>':e==='listo'?'<span class="pill ok">Listo</span>':e==='preparando'?'<span class="pill warn">Preparando</span>':'<span class="pill">Pendiente</span>'};
+ modal(`<div class="cab" style="margin-bottom:8px"><div><div class="et">${m.pax} comensales · ${m.mozo} · abierta hace ${minDesde(m.abierta)} min</div><h2>${etq(m)}</h2></div><b style="font-family:var(--disp);font-size:30px">${plata(totMesa(m))}</b></div>
+ <div class="carta-cats">${CATS.map(c=>`<button class="btn sm ${c===catSel?'pri':''}" data-cat="${c}">${c}</button>`).join('')}</div>
+ <div class="prods">${CARTA.filter(p=>p.cat===catSel).map(p=>`<button class="prod" data-add="${p.id}" ${p.activo?'':'disabled'}><b>${esc(p.n)}</b><span>${plata(p.precio)}${p.activo?'':' · pausado'}</span></button>`).join('')}</div>
+ ${carrito.length?`<div class="panel" style="margin-top:12px;background:var(--acc-soft)"><b>Para mandar</b>${carrito.map((c,k)=>`<div class="row"><span class="grow">${c.c}× ${esc(prod(c.p).n)}<input class="small" data-nota="${k}" placeholder="Aclaración" value="${esc(c.nota)}" style="margin-left:8px;padding:3px 8px;width:150px"></span><button class="btn sm ghost" data-menos="${k}">−</button></div>`).join('')}<div class="acts" style="margin-top:6px"><button class="btn pri" id="mSend">Mandar a parrilla y barra</button></div></div>`:''}
+ <h3 style="margin:14px 0 4px">Ya pedido</h3>${peds.length?peds.map(p=>p.items.map((i,k)=>`<div class="row"><span class="grow">${i.c}× ${esc(prod(i.p).n)}${i.nota?` <span class="small muted">(${esc(i.nota)})</span>`:''}${i.inv?' <span class="pill ok">Invita la casa</span>':''} <span class="small muted">${hhmm(p.t)}</span></span>${est(p,i)}<span class="r" style="min-width:80px">${i.inv?'—':plata(i.c*prod(i.p).precio)}</span><button class="btn sm ghost" data-dots="${p.id}|${k}" aria-label="Opciones">⋯</button></div>`).join('')).join(''):'<p class="muted small">Todavía nada.</p>'}
+ <div class="acts">${m.estado!=='cuenta'?'<button class="btn" id="mCuenta">Pidió la cuenta</button>':''}${ROLE==='admin'?'<button class="btn gold" id="mCobrar">Cobrar</button>':''}<button class="btn" data-x>Cerrar</button></div>`,true);
+ $$('[data-cat]').forEach(b=>b.onclick=()=>{catSel=b.dataset.cat;panelMesa(id)});
+ $$('[data-add]').forEach(b=>b.onclick=()=>{const e=carrito.find(c=>c.p===b.dataset.add&&!c.nota);e?e.c++:carrito.push({p:b.dataset.add,c:1,nota:''});panelMesa(id)});
+ $$('[data-menos]').forEach(b=>b.onclick=()=>{const c=carrito[+b.dataset.menos];c.c--;if(!c.c)carrito.splice(+b.dataset.menos,1);panelMesa(id)});
+ $$('[data-nota]').forEach(i=>i.oninput=()=>{carrito[+i.dataset.nota].nota=i.value});
+ const s=$('#mSend');if(s)s.onclick=()=>{pedido(m,carrito.map(c=>[c.p,c.c,c.nota]),0,'pendiente','pendiente');carrito=[];toast('Pedido mandado. La parrilla y la barra lo ven al instante.');panelMesa(id);keep()};
+ const cu=$('#mCuenta');if(cu)cu.onclick=()=>{m.estado='cuenta';closeM();toast(etq(m)+' pidió la cuenta. Aparece primera en la caja.');keep()};
+ const co=$('#mCobrar');if(co)co.onclick=()=>cobrar(m);
+ $$('[data-dots]').forEach(b=>b.onclick=()=>{const [pid,k]=b.dataset.dots.split('|');const p=PED.find(x=>x.id===pid);const it=p.items[+k];
+  modal(`<h3>${it.c}× ${esc(prod(it.p).n)}</h3><p class="small muted">Queda registrado con el motivo y aparece en la caja.</p><label class="campo">Motivo<input id="dM" placeholder="Ej: salió frío, cumpleaños, se equivocó la comanda"></label><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><label class="campo">Pasar a<select id="dP">${MESAS.filter(x=>x.estado!=='libre'&&x.id!==m.id).map(x=>`<option value="${x.id}">${etq(x)}</option>`).join('')}</select></label></div>
+  <div class="acts"><button class="btn" id="dS">Sacar</button><button class="btn" id="dI">Invita la casa</button><button class="btn" id="dPs">Pasar</button><button class="btn" id="dB">Volver</button></div>`);
+  const reg=(tipo)=>CAMBIOS.unshift({t:vnow(),mesa:etq(m),tipo,n:prod(it.p).n,c:it.c,imp:it.c*prod(it.p).precio,mot:$('#dM').value.trim()||'—',u:m.mozo});
+  $('#dB').onclick=()=>panelMesa(id);$('#dS').onclick=()=>{reg('sacado');p.items.splice(+k,1);toast('Sacado de la cuenta.');panelMesa(id);keep()};$('#dI').onclick=()=>{reg('invitado');it.inv=true;toast('Invita la casa. Queda registrado.');panelMesa(id);keep()};
+  $('#dPs').onclick=()=>{const to=$('#dP').value;if(!to){toast('No hay otra mesa abierta.');return}reg('pasado');p.items.splice(+k,1);PED.push({id:'pd'+npd++,mesa:to,items:[it],t:p.t,ec:it.est==='cocina'?p.ec:null,eb:it.est==='barra'?p.eb:null,conf:true});toast('Pasado a '+etq(mesa(to))+'.');panelMesa(id);keep()}})}
+function cobrar(m){const tot=totMesa(m);let desc=0,prop=0,dos=false;
+ const draw=()=>{const final=Math.round(tot*(1-desc/100))+prop;modal(`<h3>Cobrar · ${etq(m)}</h3><div class="tw"><table><tbody>${itemsMesa(m).map(i=>`<tr><td>${i.c}× ${esc(prod(i.p).n)}${i.inv?' <span class="pill ok">Invita</span>':''}</td><td class="r">${i.inv?'—':plata(i.c*prod(i.p).precio)}</td></tr>`).join('')}</tbody></table></div>
+ <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px"><label class="campo">Medio<select id="cM">${MEDIOS.map(x=>`<option>${x}</option>`).join('')}</select></label><label class="campo">Descuento %<input id="cD" type="number" min="0" max="100" value="${desc}"></label><label class="campo">Propina $<input id="cP" type="number" min="0" value="${prop}"></label></div>
+ ${dos?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><label class="campo">Segundo medio<select>${MEDIOS.map(x=>`<option>${x}</option>`).join('')}</select></label><label class="campo">Monto con el segundo<input type="number" value="${Math.round(final/2)}"></label></div>`:'<button class="btn sm ghost" id="cDos" style="margin-top:8px">Paga con más de un medio</button>'}
+ <div class="cab" style="margin:14px 0 0"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="cF" checked> Hacer Factura C electrónica</label><b style="font-family:var(--disp);font-size:32px">${plata(final)}</b></div>
+ <div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn gold" id="cOk">Cobrar ${plata(final)}</button></div>`);
+ $('#cD').oninput=e=>{desc=Math.min(100,Math.max(0,+e.target.value||0));draw();$('#cD').focus()};$('#cP').oninput=e=>{prop=Math.max(0,+e.target.value||0);draw();$('#cP').focus()};const d=$('#cDos');if(d)d.onclick=()=>{dos=true;draw()};
+ $('#cOk').onclick=()=>{const it=itemsMesa(m).filter(i=>!i.inv);const fac=$('#cF').checked;const medio=$('#cM').value;
+  it.forEach(i=>prod(i.p).rec.forEach(([x,c,k])=>{ins(x).hay=Math.max(0,ins(x).hay-bruto(ins(x),c,k)*i.c)}));
+  const tk={id:ntk++,jor:HOY,hora:vnow(),h:22,wd:NOW.getDay(),mesa:etq(m),pax:m.pax,items:it.map(i=>({p:i.p,c:i.c})),total:final,costo:it.reduce((s,i)=>s+i.c*costoPlato(prod(i.p)),0),medio:dos?medio+' + otro':medio,mozo:m.mozo,propina:prop,fac,desc};TICKETS.push(tk);
+  PED=PED.filter(p=>p.mesa!==m.id);LLAMADOS=LLAMADOS.filter(x=>x!==m.id);if(m.temp){MESAS=MESAS.filter(x=>x!==m)}else Object.assign(m,{estado:'libre',pax:0,abierta:null,mozo:null});
+  if(fac)facturaModal(tk);else{closeM();toast('Cobrado. Se descontó del stock lo que lleva cada plato.')}keep()}};draw()}
+function facturaModal(tk){const n=String(1240+tk.id%900).padStart(8,'0');modal(`<h3>Factura C autorizada</h3><div class="fac"><b>LA RECTA BAR Y PARRILLA</b> (datos ficticios)<br>CUIT 20-00000000-0 · Monotributo<br>FACTURA C · 0003-${n}<br>Fecha: ${fd(HOY)}/${HOY.slice(0,4)} · Consumidor final<br>${tk.items.map(i=>i.c+' × '+esc(prod(i.p).n)+' … '+plata(i.c*prod(i.p).precio)).join('<br>')}<br><b>TOTAL ${plata(tk.total)}</b><br>CAE 76${String(Math.floor(R()*1e12)).padStart(12,'0')} · Vto. ${fd(addD(HOY,10))}<br>[ QR de ARCA ]</div><p class="small muted">En el sistema real sale firmada por ARCA con su CAE y su QR, para imprimir o mandar por WhatsApp. En la demo es un ejemplo.</p><div class="acts"><button class="btn" data-x>Listo</button></div>`)}
+function sinMesaModal(){modal(`<h3>Pedido sin mesa</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><label class="campo">Tipo<select id="sT"><option>Para llevar</option><option>Delivery</option><option>Barra</option></select></label><label class="campo">Nombre del cliente<input id="sN" placeholder="Ej: Martín"></label></div><div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn pri" id="sOk">Crear y cargar pedido</button></div>`);
+ $('#sOk').onclick=()=>{const n=$('#sN').value.trim();if(!n){toast('Poné el nombre del cliente.');return}const m={id:'t'+vnow(),num:0,estado:'ocupada',pax:1,abierta:vnow(),mozo:'Flor',temp:true,nombre:$('#sT').value+' · '+n};MESAS.push(m);carrito=[];catSel='Parrilla';panelMesa(m.id);keep()}}
+
+/* ---------- RESERVAS ---------- */
+let resDia=HOY;
+function vReservas(){const dias=[];for(let d=0;d<7;d++)dias.push(addD(HOY,d));const pend=RES.filter(r=>r.est==='pendiente'&&r.f>=HOY);const L=RES.filter(r=>r.f===resDia&&r.est!=='cancelada');
+ return cab('Reservas','Reservas',`<button class="btn" id="rLink">Link y QR para clientes</button><button class="btn pri" id="rNew">+ Nueva reserva</button>`)+
+ (pend.length?`<section class="panel" style="margin-bottom:14px"><h3>Por confirmar <span class="pill warn">${pend.length}</span></h3><p class="small muted" style="margin:2px 0 8px">Entraron por la página. Al confirmar se abre WhatsApp con el mensaje listo.</p>${pend.map(r=>`<div class="row"><span class="grow"><b>${esc(r.n)}</b> · ${r.pax} personas · ${DC[new Date(r.f+'T12:00:00').getDay()]} ${fd(r.f)} ${r.h}${r.nota?` <span class="small muted">· ${esc(r.nota)}</span>`:''}</span><button class="btn sm pri" data-rconf="${r.id}">Confirmar por WhatsApp</button><button class="btn sm ghost" data-rno="${r.id}">No hay lugar</button></div>`).join('')}</section>`:'')+
+ `<div class="subnav">${dias.map(d=>`<a href="#reservas" data-rdia="${d}" class="${d===resDia?'on':''}">${d===HOY?'Hoy':DC[new Date(d+'T12:00:00').getDay()]+' '+fd(d)}</a>`).join('')}</div>
+ <div class="grid3">${HORARIOS.map(h=>{const X=L.filter(r=>r.h===h);const oc=X.reduce((s,r)=>s+r.pax,0);return `<section class="panel"><div class="row" style="padding-top:0"><h3 class="grow">${h}</h3><span class="pill ${oc>=CUPO?'crit':oc>=CUPO*.75?'warn':'ok'}">${CUPO-oc>0?'Quedan '+(CUPO-oc):'Completo'}</span></div>${X.map(r=>`<div class="row"><span class="grow"><b>${esc(r.n)}</b> · ${r.pax}p<div class="small muted">${r.orig==='pagina'?'Por la página':'Por teléfono'}${r.nota?' · '+esc(r.nota):''}</div></span>${r.est==='pendiente'?'<span class="pill warn">Por confirmar</span>':r.est==='sentada'?'<span class="pill ok">Sentada</span>':resDia===HOY?`<button class="btn sm" data-sentar="${r.id}">Sentar</button>`:'<span class="pill acc">Confirmada</span>'}</div>`).join('')||'<div class="small muted" style="padding:8px 0">Sin reservas.</div>'}</section>`}).join('')}</div>`}
+function waMsg(t){modal(`<h3>Así sale el WhatsApp</h3><p class="small muted" style="margin:0">En el sistema real se abre WhatsApp con este mensaje listo para mandar. En la demo no se envía nada.</p><div style="background:#DCF8C6;border-radius:12px 12px 4px 12px;padding:10px 14px;margin:12px 0;white-space:pre-line">${esc(t)}</div><div class="acts"><button class="btn" data-x>Entendido</button></div>`)}
+function sentarModal(r){const libres=MESAS.filter(m=>!m.temp&&m.estado==='libre');modal(`<h3>Llegaron: ${esc(r.n)} · ${r.pax} personas</h3><label class="campo">Mesa<select id="sM">${libres.map(m=>`<option value="${m.id}">Mesa ${m.num}</option>`).join('')}</select></label><div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn pri" id="sOk2">Sentar y abrir la mesa</button></div>`);
+ $('#sOk2').onclick=()=>{const m=mesa($('#sM').value);if(!m){toast('No hay mesas libres.');return}abrir(m,r.pax,'Nico',0);r.est='sentada';closeM();toast('Mesa '+m.num+' abierta con '+r.pax+' comensales.');keep()}}
+
+/* ---------- COMANDAS ---------- */
+function vComandas(est){const campo=est==='cocina'?'ec':'eb';const [am,ro]=est==='cocina'?[15,25]:[5,10];
+ const COL=[['pendiente','Pendientes','Empezar','preparando'],['preparando','En preparación','Listo para servir','listo'],['listo','Listos','Entregado a la mesa','entregado']];
+ return cab('Comandas',est==='cocina'?'Parrilla y cocina':'Barra',`<span class="small muted">Alerta a los ${am} min, urgente a los ${ro}</span>`)+
+ `<div class="kds">${COL.map(([e,t,b,sig])=>{const L=PED.filter(p=>p.conf&&p[campo]===e).sort((a,b)=>a.t-b.t);return `<section class="kcol"><h3>${t} <span class="pill">${L.length}</span></h3>${L.length?L.map(p=>{const mm=minDesde(p.t);const lv=e==='listo'?'':mm>=ro?'crit':mm>=am?'warn':'';
+  return `<article class="ticket ${lv?'t-'+lv:''}"><div class="th"><b>${esc(etq(mesa(p.mesa)))}</b><span class="pill ${lv}">${hhmm(p.t)} · ${mm} min</span></div><ul>${p.items.filter(i=>i.est===est).map(i=>`<li><b>${i.c}×</b> ${esc(prod(i.p).n)}${i.nota?`<i>${esc(i.nota)}</i>`:''}</li>`).join('')}</ul><button class="btn ${e==='listo'?'':'pri'}" data-av="${p.id}|${campo}|${sig}">${b}</button></article>`}).join(''):'<div class="kempty">Boxes libres: nada por acá</div>'}</section>`}).join('')}</div>`}
+
+/* ---------- CAJA ---------- */
+function vCaja(){const T=tkHoy();const tot=T.reduce((s,t)=>s+t.total,0);const ef=T.filter(t=>t.medio.startsWith('Efectivo')).reduce((s,t)=>s+t.total,0);const gas=CAJA.gastos.reduce((s,g)=>s+g.m,0);const esp=CAJA.inicial+ef-gas;const prop=T.reduce((s,t)=>s+t.propina,0);
+ const porC=MESAS.filter(m=>m.estado!=='libre').sort((a,b)=>(a.estado==='cuenta'?0:1)-(b.estado==='cuenta'?0:1)||a.num-b.num);const med={};T.forEach(t=>{const k=t.medio.split(' + ')[0];med[k]=(med[k]||0)+t.total});
+ const fac=T.filter(t=>t.fac).reduce((s,t)=>s+t.total,0);
+ return cab('Jornada '+fd(HOY),'Caja',CAJA.cerrada?`<span class="pill ok">Caja cerrada</span>`:`<button class="btn" id="cjG">Registrar gasto</button><button class="btn pri" id="cjC">Cerrar caja</button>`)+
+ `<div class="stats" style="margin-bottom:14px">${stat('Vendido',plata(tot))}${stat('Mesas cobradas',T.length)}${stat('Efectivo',plata(ef))}${stat('Gastos de caja',plata(gas))}${stat('Propinas',plata(prop),'para repartir')}${stat('Debería haber en caja',plata(esp))}${stat('Facturado',plata(fac))}${stat('Sin factura',plata(tot-fac))}</div>
+ ${CAJA.cerrada?`<div class="alert ${CAJA.cerrada.dif===0?'ok':''}">Cierre: contado <b>${plata(CAJA.cerrada.cont)}</b>, esperado ${plata(CAJA.cerrada.esp)}. Diferencia <b>${CAJA.cerrada.dif>0?'+':''}${plata(CAJA.cerrada.dif)}</b></div>`:''}
+ <div class="grid2"><section class="panel"><h3>Mesas por cobrar</h3>${porC.map(m=>`<div class="row"><b style="font-family:var(--disp);font-size:22px;min-width:2.4ch">${m.temp?'—':m.num}</b><span class="grow">${m.temp?'<b>'+esc(m.nombre)+'</b> ':''}${m.estado==='cuenta'?'<span class="pill acc">Pidió la cuenta</span>':`<span class="muted small">Abierta ${minDesde(m.abierta)} min</span>`}</span><span class="r">${plata(totMesa(m))}</span><button class="btn sm gold" data-cob="${m.id}" ${itemsMesa(m).length?'':'disabled'}>Cobrar</button></div>`).join('')||'<div class="kempty">No hay mesas abiertas</div>'}</section>
+ <section class="panel"><h3>Por medio de pago</h3>${MEDIOS.map(x=>`<div class="row"><span class="grow">${x}</span><span class="r">${plata(med[x]||0)}</span></div>`).join('')}</section></div>
+ <section class="panel" style="margin-top:14px"><h3>Movimientos de hoy</h3><div class="tw"><table><thead><tr><th>Hora</th><th>Detalle</th><th>Medio</th><th class="r">Importe</th><th>Factura</th></tr></thead><tbody>${[...T.map(t=>({h:t.hora,d:t.mesa+' · '+t.items.reduce((s,i)=>s+i.c,0)+' ítems',m:t.medio+(t.propina?' · propina '+plata(t.propina):''),v:t.total,f:t.fac?'<span class="pill ok">Factura C</span>':'<span class="pill">Sin factura</span>'})),...CAJA.gastos.map(g=>({h:g.t,d:'Gasto: '+g.c,m:'Efectivo',v:-g.m,f:''}))].sort((a,b)=>b.h-a.h).map(x=>`<tr><td class="mono">${hhmm(x.h)}</td><td>${esc(x.d)}</td><td class="muted">${x.m}</td><td class="r" style="${x.v<0?'color:var(--crit)':''}">${plata(x.v)}</td><td>${x.f}</td></tr>`).join('')}</tbody></table></div></section>
+ ${CAMBIOS.length?`<section class="panel" style="margin-top:14px"><h3>Sacado, invitado y pasado</h3><p class="small muted" style="margin:2px 0 8px">Lo que se corrigió en las mesas esta jornada, para tenerlo controlado.</p><div class="tw"><table><thead><tr><th>Hora</th><th>Mesa</th><th>Qué</th><th>Motivo</th><th>Quién</th><th class="r">Importe</th></tr></thead><tbody>${CAMBIOS.map(c=>`<tr><td class="mono">${hhmm(c.t)}</td><td>${esc(c.mesa)}</td><td><span class="pill ${c.tipo==='sacado'?'crit':c.tipo==='invitado'?'ok':''}">${c.tipo==='sacado'?'Sacado':c.tipo==='invitado'?'Invita la casa':'Pasado'}</span> ${c.c}× ${esc(c.n)}</td><td class="muted">${esc(c.mot)}</td><td class="muted">${c.u}</td><td class="r">${c.tipo==='pasado'?'—':plata(c.imp)}</td></tr>`).join('')}</tbody></table></div></section>`:''}`}
+
+/* ---------- STOCK ---------- */
+function vArticulos(){const L=[...INS].sort((a,b)=>((a.hay<=a.min)?0:1)-((b.hay<=b.min)?0:1)||a.n.localeCompare(b.n));
+ return cab('Depósito','Artículos','<button class="btn pri" id="aNew">+ Nuevo artículo</button>')+sub(SUBST,'stock/articulos')+
+ `<section class="panel"><div class="tw"><table><thead><tr><th>Artículo</th><th>Proveedor</th><th class="r">Hay</th><th class="r">Mínimo</th><th class="r">Costo</th><th class="r">Merma limpieza</th><th>Vence</th><th></th></tr></thead><tbody>${L.map(i=>{const v=i.vence&&i.vence<=addD(HOY,2);return `<tr><td><b>${esc(i.n)}</b></td><td class="small muted">${esc(i.prov)}</td><td class="r">${num(i.hay)} ${i.u}</td><td class="r muted">${num(i.min)}</td><td class="r">${plata(i.costo)}/${i.u}</td><td class="r muted">${i.mer?pct(i.mer):'—'}</td><td class="small">${i.vence?fd(i.vence):'—'}</td><td>${i.hay<=i.min?'<span class="pill crit">Comprar</span>':''} ${v?'<span class="pill warn">Vence pronto</span>':''}</td></tr>`}).join('')}</tbody></table></div></section>`}
+let recSel='p1';
+function vRecetas(){const p=prod(recSel);const co=costoPlato(p);
+ return cab('Depósito','Recetas y costos')+sub(SUBST,'stock/recetas')+
+ `<div class="grid2" style="grid-template-columns:1fr 1.3fr"><section class="panel"><h3>Platos</h3><div class="tw"><table><thead><tr><th>Plato</th><th class="r">Precio</th><th class="r">Costo</th><th></th></tr></thead><tbody>${CARTA.map(x=>{const c=x.rec.length?costoPlato(x):null;return `<tr style="cursor:pointer;${x.id===recSel?'background:var(--acc-soft)':''}" data-rec="${x.id}"><td><b>${esc(x.n)}</b></td><td class="r">${plata(x.precio)}</td><td class="r">${c==null?'—':plata(c)}</td><td>${pillCosto(c==null?null:c/x.precio)}</td></tr>`}).join('')}</tbody></table></div></section>
+ <section class="panel"><div class="row" style="padding-top:0"><h3 class="grow">${esc(p.n)}</h3>${pillCosto(p.rec.length?co/p.precio:null)}</div>
+ <div class="stats" style="margin:8px 0">${stat('Precio',plata(p.precio))}${stat('Costo por porción',plata(co))}${stat('Deja por unidad',plata(p.precio-co))}</div>
+ ${p.rec.length?`<div class="tw"><table><thead><tr><th>Ingrediente</th><th class="r">Por porción</th><th class="r">Hay que comprar</th><th class="r">Costo</th><th class="r">% del plato</th></tr></thead><tbody>${p.rec.map(([i,c,k])=>{const x=ins(i);const b=bruto(x,c,k);return `<tr><td>${esc(x.n)}</td><td class="r">${num(c)} ${x.u}${k?' al plato':''}</td><td class="r muted">${num(b.toFixed(3))} ${x.u}</td><td class="r">${plata(b*x.costo)}</td><td class="r">${co?pct(b*x.costo/co):'—'}</td></tr>`}).join('')}</tbody></table></div>
+ <p class="small muted" style="margin:10px 0 0">"Al plato" es cocido: para servir ${p.rec[0]&&p.rec[0][2]?num(p.rec[0][1])+' '+ins(p.rec[0][0]).u:'la porción'} hay que comprar más, por la merma de limpieza y lo que pierde al cocinarse. El objetivo de costo es ${pct(OBJ)} del precio.</p>`:'<div class="kempty">Este producto no lleva receta (se cuenta por unidad).</div>'}
+ <div class="acts"><label class="campo" style="flex-direction:row;align-items:center;gap:8px">Probar otro precio<input id="rP" type="number" value="${p.precio}" style="width:120px"></label><button class="btn" id="rPGo">Simular</button></div></section></div>`}
+let facLeida=null;
+function vCompras(){const ventaDia={};TICKETS.filter(t=>t.jor<HOY&&t.jor>=addD(HOY,-28)).forEach(t=>t.items.forEach(i=>prod(i.p).rec.forEach(([x,c,k])=>{ventaDia[x]=(ventaDia[x]||0)+bruto(ins(x),c,k)*i.c})));
+ const L=INS.map(i=>{const uso=(ventaDia[i.id]||0)/24*3;const falta=uso+i.min*.5-i.hay;return{i,uso,falta}}).filter(x=>x.falta>0).sort((a,b)=>b.falta*b.i.costo-a.falta*a.i.costo);const porP={};L.forEach(x=>(porP[x.i.prov]=porP[x.i.prov]||[]).push(x));
+ return cab('Depósito','Compras','<button class="btn" id="cmMan">Cargar compra a mano</button><button class="btn pri" id="cmFac">📷 Cargar factura con foto o PDF</button>')+sub(SUBST,'stock/compras')+
+ `<section class="panel" style="margin-bottom:14px"><h3>Qué comprar para los próximos 3 días</h3><p class="small muted" style="margin:2px 0 8px">Lo que se espera vender (promedio por día de la semana) más un colchón, menos lo que hay.</p>${Object.entries(porP).map(([pv,X])=>`<div style="margin-top:10px"><b>${esc(pv)}</b>${X.map(x=>`<div class="row"><span class="grow">${esc(x.i.n)}</span><span class="small muted">hay ${num(x.i.hay)} ${x.i.u}</span><span class="r" style="min-width:110px"><b>${num(Math.ceil(x.falta*10)/10)} ${x.i.u}</b></span><span class="r muted" style="min-width:100px">${plata(x.falta*x.i.costo)}</span></div>`).join('')}</div>`).join('')||'<div class="kempty">No hace falta comprar nada.</div>'}
+ <div class="acts"><button class="btn" id="cmWA">Mandar pedidos por WhatsApp</button></div></section>
+ <section class="panel"><h3>Compras cargadas (30 días)</h3><div class="tw"><table><thead><tr><th>Fecha</th><th>Proveedor</th><th>Comprobante</th><th class="r">Total</th></tr></thead><tbody>${[[1,'Carnicería El Corral','Factura A 0003-4512',842000],[2,'Verdulería Central','Remito 18822',96500],[3,'Distribuidora Sur','Factura A 0011-2290',534000],[5,'Cervecería del Puerto','Factura A 0002-0771',388000],[8,'Lácteos del Valle','Factura B 0005-1180',121400],[9,'Carnicería El Corral','Factura A 0003-4470',910500]].map(c=>`<tr><td>${fd(addD(HOY,-c[0]))}</td><td>${c[1]}</td><td class="muted">${c[2]}</td><td class="r">${plata(c[3])}</td></tr>`).join('')}</tbody></table></div></section>`}
+function facturaIA(){modal(`<h3>Cargar factura</h3><p class="small muted" style="margin:0 0 12px">Sacale foto o subí el PDF. El sistema lee cada línea y te la muestra para revisar antes de cargar.</p><div style="border:2px dashed var(--line);border-radius:14px;padding:26px;text-align:center"><button class="btn pri" id="fiGo">Usar una factura de ejemplo</button><p class="small muted" style="margin:8px 0 0">En la demo no se sube ningún archivo.</p></div><div class="acts"><button class="btn" data-x>Cancelar</button></div>`);
+ $('#fiGo').onclick=()=>{$('#modal').innerHTML='<h3>Leyendo la factura…</h3><p class="muted">Reconociendo proveedor, fecha y cada línea.</p>';setTimeout(()=>{const L=[['vac',12,9650],['ent',6,14800],['mol',4,11900],['cho',60,1180]];
+  modal(`<h3>Revisá antes de cargar</h3><p class="small muted" style="margin:0 0 10px"><b>Carnicería El Corral</b> · Factura A 0003-4531 · ${fd(HOY)} · vence a 15 días</p><div class="tw"><table><thead><tr><th>Línea leída</th><th>Artículo</th><th class="r">Cantidad</th><th class="r">Precio</th><th class="r">Antes</th></tr></thead><tbody>${L.map(([i,c,p])=>{const x=ins(i);const d=(p-x.costo)/x.costo;return `<tr><td class="small muted">${x.n.toUpperCase()} x ${x.u.toUpperCase()}</td><td><b>${esc(x.n)}</b></td><td class="r">${c} ${x.u}</td><td class="r">${plata(p)}</td><td class="r">${Math.abs(d)>.005?`<span class="pill ${d>0?'crit':'ok'}">${d>0?'+':'−'}${pct(Math.abs(d),1)}</span>`:'<span class="muted">=</span>'}</td></tr>`}).join('')}</tbody></table></div>
+  <p class="small" style="margin:10px 0 0">Total ${plata(L.reduce((s,[i,c,p])=>s+c*p,0))} · queda a pagar con vencimiento en Administración → Gastos.</p><div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn pri" id="fiOk">Cargar al stock</button></div>`);
+  $('#fiOk').onclick=()=>{L.forEach(([i,c,p])=>{const x=ins(i);x.hay+=c;x.costo=p});GASTOS.unshift({c:'Carnicería El Corral (fact. 0003-4531)',m:L.reduce((s,[i,c,p])=>s+c*p,0),vence:addD(HOY,15),est:'pendiente',cat:'Proveedores'});closeM();toast('Compra cargada: sumó al stock, actualizó costos y quedó el gasto a pagar.');keep()}},1200)}}
+function vControl(){const per=CONTROL.filter(r=>r.se>0).reduce((s,r)=>s+r.plata,0);const teo=CONTROL.reduce((s,r)=>s+r.teo*r.i.costo,0);const p=per/teo;
+ const pl=r=>{const rel=r.teo?r.se/r.teo:0;if(r.se<0&&Math.abs(rel)>.03)return'<span class="pill acc">Se usó menos</span>';const x=Math.abs(rel);return x<=.03?'<span class="pill ok">Bien</span>':x<=.08?'<span class="pill warn">Revisar</span>':'<span class="pill crit">Pérdida</span>'};
+ return cab('Depósito','Control semanal','<button class="btn pri" id="ctInv">Inventario completo</button>')+sub(SUBST,'stock/control')+
+ `<p class="small muted" style="max-width:76ch;margin:0 0 14px">Compara lo que se tendría que haber usado según lo vendido y las recetas, con lo que realmente salió del depósito entre dos inventarios. Lo que no explican las ventas ni las mermas cargadas es plata que se pierde sin que nadie lo vea.</p>
+ <p class="small" style="margin:0 0 12px">Entre el inventario del <b>${DC[new Date(addD(HOY,-7)+'T12:00:00').getDay()]} ${fd(addD(HOY,-7))}</b> y el de <b>${DC[new Date(addD(HOY,-1)+'T12:00:00').getDay()]} ${fd(addD(HOY,-1))}</b></p>
+ <div class="stats" style="margin-bottom:12px">${stat('Plata sin explicar',`<span style="color:var(--crit)">${plata(per)}</span>`)}${stat('Sobre lo que se debía usar',pct(p,1))}${stat('Artículos comparados',CONTROL.length)}</div>
+ <div class="alert ${p>.05?'crit':''}">${p<=.02?'<span class="pill ok">Muy fino</span> Menos del 2 % sin explicar.':p<=.05?'<span class="pill warn">A ajustar</span> Entre 2 % y 5 %: mirá los primeros de la lista.':'<span class="pill crit">Se está perdiendo plata</span> Más del 5 %: revisá porciones, mermas sin cargar y compras sin registrar.'}</div>
+ <section class="panel"><div class="tw"><table><thead><tr><th>Artículo</th><th class="r">Debía usarse</th><th class="r">Merma cargada</th><th class="r">Se usó</th><th class="r">Sin explicar</th><th class="r">Plata</th><th></th></tr></thead><tbody>${[...CONTROL].sort((a,b)=>b.plata-a.plata).map(r=>`<tr><td><b>${esc(r.i.n)}</b></td><td class="r">${num(r.teo)} ${r.i.u}</td><td class="r muted">${num(r.mer)}</td><td class="r">${num(r.usado)}</td><td class="r"><b>${r.se>0?'+':''}${num(r.se.toFixed(2))}</b></td><td class="r" style="${r.plata>0?'color:var(--crit)':''}">${plata(r.plata)}</td><td>${pl(r)}</td></tr>`).join('')}</tbody></table></div></section>`}
+function vMermas(){return cab('Depósito','Mermas')+sub(SUBST,'stock/mermas')+
+ `<section class="panel" style="margin-bottom:14px"><h3>Registrar algo que se tiró</h3><div style="display:grid;grid-template-columns:2fr 1fr 2fr auto;gap:10px;align-items:end;margin-top:8px" class="mfrm"><label class="campo">Artículo<select id="meI">${INS.map(i=>`<option value="${i.id}">${esc(i.n)} (${i.u})</option>`).join('')}</select></label><label class="campo">Cantidad<input id="meC" type="number" step="any" min="0"></label><label class="campo">Motivo<select id="meM"><option>Se echó a perder</option><option>Se quemó</option><option>Vencido</option><option>Devolución del cliente</option><option>Se cayó</option><option>Otro</option></select></label><button class="btn pri" id="meGo">Registrar</button></div></section>
+ <section class="panel"><h3>Últimas mermas</h3><div class="tw"><table><thead><tr><th>Fecha</th><th>Artículo</th><th class="r">Cantidad</th><th>Motivo</th><th class="r">Plata</th></tr></thead><tbody>${MERMAS.map(m=>{const x=ins(m.i);return `<tr><td>${fd(m.f)}</td><td>${esc(x.n)}</td><td class="r">${num(m.c)} ${x.u}</td><td class="muted">${m.mot}</td><td class="r" style="color:var(--crit)">${plata(m.c*x.costo)}</td></tr>`}).join('')}</tbody></table></div></section>`}
+
+/* ---------- TABLEROS ---------- */
+const sumT=L=>L.reduce((s,t)=>s+t.total,0);
+function vTResumen(){const T=tkHoy();const ab=MESAS.filter(m=>m.estado!=='libre');const pas=TICKETS.filter(t=>t.jor===addD(HOY,-7)&&new Date(t.hora).getHours()<=22&&new Date(t.hora).getHours()>=12);
+ const mes=HOY.slice(0,7);const TM=TICKETS.filter(t=>t.jor.startsWith(mes));const vm=sumT(TM),cm=TM.reduce((s,t)=>s+t.costo,0);const gm=GASTOS.filter(g=>g.est==='pagado').reduce((s,g)=>s+g.m,0)*.6;
+ const ult=[];for(let d=13;d>=0;d--){const f=addD(HOY,-d);ult.push({f,v:sumT(TICKETS.filter(t=>t.jor===f)),wd:new Date(f+'T12:00:00').getDay()})}const mx=Math.max(1,...ult.map(u=>u.v));
+ const alert=[...INS.filter(i=>i.hay<=i.min).map(i=>['crit','Stock',`${i.n}: quedan ${num(i.hay)} ${i.u} (mínimo ${num(i.min)})`,'stock/compras']),...GASTOS.filter(g=>g.est==='pendiente'&&g.vence<HOY).map(g=>['crit','Vencido',`${g.c}: ${plata(g.m)}`,'tableros/finanzas']),...INS.filter(i=>i.vence&&i.vence<=addD(HOY,2)).map(i=>['warn','Vence',`${i.n} vence el ${fd(i.vence)}`,'stock/articulos']),...RES.filter(r=>r.est==='pendiente'&&r.f>=HOY).slice(0,3).map(r=>['acc','Reserva',`${r.n} pidió para ${r.pax} el ${fd(r.f)} ${r.h}`,'reservas'])];
+ return cab('En vivo','Tableros')+sub(SUBTB,'tableros/resumen')+
+ `<div class="small muted" style="font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Esta noche · ${DL[NOW.getDay()]}</div><div class="stats" style="margin-bottom:16px">${stat('Vendido hasta ahora',plata(sumT(T)),pas.length?`${sumT(T)>=sumT(pas)?'▲':'▼'} vs. ${DL[NOW.getDay()]} pasado a esta hora`:'')}${stat('En mesas abiertas',plata(ab.reduce((s,m)=>s+totMesa(m),0)),ab.length+' mesas')}${stat('Cubiertos',T.reduce((s,t)=>s+t.pax,0)+ab.reduce((s,m)=>s+m.pax,0))}${stat('Ticket promedio',T.length?plata(sumT(T)/T.length):'—')}</div>
+ <div class="small muted" style="font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">El mes</div><div class="stats" style="margin-bottom:16px">${stat('Ventas del mes',plata(vm))}${stat('Costo de mercadería',pct(cm/vm),'objetivo 25–35 %')}${stat('Gastos pagados',plata(gm))}${stat('Resultado',`<span style="color:var(--ok)">${plata(vm-cm-gm)}</span>`)}</div>
+ <div class="grid2"><section class="panel"><h3>Para atender <span class="pill">${alert.length}</span></h3>${alert.slice(0,9).map(a=>`<div class="row"><span class="pill ${a[0]}">${a[1]}</span><span class="grow small">${esc(a[2])}</span><a class="btn sm ghost" href="#${a[3]}">Ir</a></div>`).join('')}</section>
+ <section class="panel"><h3>Ventas de las últimas 2 semanas</h3><div class="bars">${ult.map(u=>`<div class="${u.wd===5||u.wd===6?'we':''}" style="height:${Math.max(2,u.v/mx*100)}%" title="${DC[u.wd]} ${fd(u.f)}: ${plata(u.v)}"></div>`).join('')}</div><div style="display:flex;gap:4px;font-size:10.5px;color:var(--muted)">${ult.map(u=>`<span style="flex:1;text-align:center">${DC[u.wd][0]}</span>`).join('')}</div><p class="small muted" style="margin:6px 0 0">Dorado: viernes y sábado. Los lunes está cerrado.</p></section></div>`}
+function vTVentas(){const T=TICKETS.filter(t=>t.jor>=addD(HOY,-28));const H=[20,21,22,23,0,1,2,3];const DW=[2,3,4,5,6,0];const cell={};T.forEach(t=>{const k=t.wd+'|'+t.h;cell[k]=(cell[k]||0)+t.total});const mx=Math.max(1,...Object.values(cell));
+ const pl={};T.forEach(t=>t.items.forEach(i=>{pl[i.p]=(pl[i.p]||0)+i.c}));const top=Object.entries(pl).sort((a,b)=>b[1]-a[1]).slice(0,8);const mxp=top[0][1];
+ const mz={};T.forEach(t=>{const m=(mz[t.mozo]=mz[t.mozo]||{v:0,n:0,p:0});m.v+=t.total;m.n++;m.p+=t.propina});
+ return cab('Tableros','Ventas y servicio')+sub(SUBTB,'tableros/ventas')+
+ `<div class="stats" style="margin-bottom:14px">${stat('Ventas (28 días)',plata(sumT(T)))}${stat('Mesas',T.length)}${stat('Ticket promedio',plata(sumT(T)/T.length))}${stat('Por cubierto',plata(sumT(T)/T.reduce((s,t)=>s+t.pax,0)))}</div>
+ <div class="grid2"><section class="panel"><h3>Cuándo se vende</h3><p class="small muted" style="margin:2px 0 10px">Plata por día y hora. Sirve para armar los turnos.</p><div class="heat"><div class="h"></div>${H.map(h=>`<div class="h">${pad(h)}</div>`).join('')}${DW.map(d=>`<div class="h">${DC[d]}</div>${H.map(h=>{const v=cell[d+'|'+h]||0;const a=v/mx;return `<div style="background:rgba(31,58,95,${(.06+a*.9).toFixed(2)});color:${a>.5?'#fff':'var(--fg)'}" title="${DC[d]} ${pad(h)} h: ${plata(v)}">${v?Math.round(v/1e5)/10+'M':''}</div>`}).join('')}`).join('')}</div></section>
+ <section class="panel"><h3>Platos más pedidos</h3><div class="hb">${top.map(([p,n])=>`<div class="r2"><span>${esc(prod(p).n)}</span><div class="t"><div class="b" style="width:${n/mxp*100}%"></div></div><span class="r small muted">${n} u.</span></div>`).join('')}</div></section></div>
+ <section class="panel" style="margin-top:14px"><h3>Mozos</h3><div class="tw"><table><thead><tr><th>Mozo</th><th class="r">Mesas</th><th class="r">Vendido</th><th class="r">Ticket promedio</th><th class="r">Propinas</th></tr></thead><tbody>${Object.entries(mz).map(([k,m])=>`<tr><td><b>${k}</b></td><td class="r">${m.n}</td><td class="r">${plata(m.v)}</td><td class="r">${plata(m.v/m.n)}</td><td class="r">${plata(m.p)}</td></tr>`).join('')}</tbody></table></div></section>`}
+function vTCostos(){const T=TICKETS.filter(t=>t.jor>=addD(HOY,-28));const pl={};T.forEach(t=>t.items.forEach(i=>{const x=(pl[i.p]=pl[i.p]||{c:0});x.c+=i.c}));
+ const rows=Object.entries(pl).map(([id,x])=>{const p=prod(id);const co=p.rec.length?costoPlato(p):null;return{p,c:x.c,co,deja:co==null?null:p.precio-co}}).sort((a,b)=>(b.deja||0)*b.c-(a.deja||0)*a.c);
+ const con=rows.filter(r=>r.co!=null);const qm=con.reduce((s,r)=>s+r.c,0)/con.length*.7;const mm=con.reduce((s,r)=>s+r.deja*r.c,0)/con.reduce((s,r)=>s+r.c,0);const g={e:[],c:[],n:[],r:[]};con.forEach(r=>{const pop=r.c>=qm,ren=r.deja>=mm;g[pop&&ren?'e':pop?'c':ren?'n':'r'].push(r)});
+ const v=sumT(T),c=T.reduce((s,t)=>s+t.costo,0),tir=MERMAS.reduce((s,m)=>s+m.c*ins(m.i).costo,0);
+ const caja=(k,t,col,tip)=>`<div class="panel" style="border-top:4px solid var(--${col})"><div class="row" style="padding-top:0"><b class="grow" style="font-family:var(--disp);font-size:20px;text-transform:uppercase;font-style:italic">${t}</b><span class="pill">${g[k].length}</span></div><p class="small muted" style="margin:0 0 6px">${tip}</p>${g[k].map(r=>`<div class="small">${esc(r.p.n)} <span class="muted">×${r.c} · deja ${plata(r.deja)}</span></div>`).join('')||'<span class="muted">—</span>'}</div>`;
+ return cab('Tableros','Costos y desperdicio')+sub(SUBTB,'tableros/costos')+
+ `<div class="stats" style="margin-bottom:14px">${stat('Ventas (28 días)',plata(v))}${stat('Costo de mercadería',plata(c),pct(c/v)+' de las ventas')}${stat('Margen bruto',plata(v-c))}${stat('Tirado (mermas)',plata(tir))}</div>
+ <section class="panel" style="margin-bottom:14px"><h3>Rentabilidad por plato</h3><div class="tw"><table><thead><tr><th>Plato</th><th class="r">Vendidos</th><th class="r">Precio</th><th class="r">Costo</th><th class="r">Deja c/u</th><th class="r">Margen generado</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td><b>${esc(r.p.n)}</b></td><td class="r">${r.c}</td><td class="r">${plata(r.p.precio)}</td><td class="r">${r.co==null?'—':plata(r.co)}</td><td class="r">${r.deja==null?'—':plata(r.deja)}</td><td class="r"><b>${r.deja==null?'—':plata(r.deja*r.c)}</b></td><td>${pillCosto(r.co==null?null:r.co/r.p.precio)}</td></tr>`).join('')}</tbody></table></div></section>
+ <h3 style="margin-bottom:4px">Qué platos convienen</h3><p class="small muted" style="margin:0 0 10px">Cruza cuánto se vende cada plato con cuánto deja por unidad.</p>
+ <div class="grid4">${caja('e','Estrellas','ok','Se venden mucho y dejan buena plata. Que nunca falten.')}${caja('c','Caballitos','ember','Se venden mucho pero dejan poco. Subí el precio o ajustá la porción.')}${caja('n','Enigmas','acc','Dejan buena plata pero salen poco. Recomendalos en la mesa.')}${caja('r','Para revisar','crit','Salen poco y dejan poco. Candidatos a salir de la carta.')}</div>`}
+function vTFinanzas(){const disp=CUENTAS.reduce((s,c)=>s+c[1],0);const deu=GASTOS.filter(g=>g.est==='pendiente');const td=deu.reduce((s,g)=>s+g.m,0);const venc=deu.filter(g=>g.vence<HOY).reduce((s,g)=>s+g.m,0);
+ return cab('Tableros','Finanzas')+sub(SUBTB,'tableros/finanzas')+
+ `<div class="stats" style="margin-bottom:14px">${stat('Disponible',plata(disp),CUENTAS.map(c=>c[0]+' '+plata(c[1])).join(' · '))}${stat('Deudas a pagar',plata(td))}${stat('Vencido',`<span style="color:var(--crit)">${plata(venc)}</span>`)}${stat('Queda libre',plata(disp-td),'disponible menos deudas')}</div>
+ <section class="panel"><h3>Por pagar</h3>${deu.sort((a,b)=>a.vence.localeCompare(b.vence)).map((g,k)=>`<div class="row"><span class="grow"><b>${esc(g.c)}</b><div class="small muted">${g.cat}</div></span><span class="small ${g.vence<HOY?'':'muted'}" style="${g.vence<HOY?'color:var(--crit);font-weight:700':''}">${g.vence<HOY?'Venció el ':'Vence el '}${fd(g.vence)}</span><span class="r" style="min-width:110px">${plata(g.m)}</span><button class="btn sm" data-pagar="${GASTOS.indexOf(g)}">Pagar</button></div>`).join('')||'<div class="kempty">No hay deudas.</div>'}</section>`}
+
+/* ---------- CARTA (gestión) ---------- */
+function vCarta(){return cab('Carta y QR','Carta','<button class="btn" id="qrPrint">Mesas y QR para imprimir</button>')+
+ `<p class="small muted" style="margin:0 0 12px">Lo que se ve en la carta del QR y en la pantalla del mozo. "Pausar" saca un producto al toque (se acabó el vacío) sin borrarlo.</p>
+ ${CATS.map(c=>`<section class="panel" style="margin-bottom:12px"><h3>${c}</h3><div class="tw"><table><thead><tr><th>Producto</th><th class="r">Precio</th><th class="r">Costo</th><th>Estado</th><th></th></tr></thead><tbody>${CARTA.filter(p=>p.cat===c).map(p=>{const co=p.rec.length?costoPlato(p):null;return `<tr><td><b>${esc(p.n)}</b><div class="small muted">${esc(p.desc)}</div></td><td class="r">${plata(p.precio)}</td><td class="r">${co==null?'<span class="muted">sin receta</span>':plata(co)+' '+pillCosto(co/p.precio)}</td><td>${p.activo?'<span class="pill ok">En carta</span>':'<span class="pill warn">Pausado</span>'}</td><td><button class="btn sm" data-pausa="${p.id}">${p.activo?'Pausar':'Activar'}</button></td></tr>`}).join('')}</tbody></table></div></section>`).join('')}`}
+
+/* ---------- QR (cliente) ---------- */
+let qrCart=[];let qrCat='Parrilla';
+function vQR(){const tot=qrCart.reduce((s,c)=>s+c.c*prod(c.p).precio,0);const mios=PED.filter(p=>p.mesa==='m4');
+ return `<div class="qr-wrap"><div class="qr-top"><svg width="48" height="48" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#1F3A5F" stroke="#C9A35A" stroke-width="5"/><path d="M28 74 L44 26 L56 26 L40 74Z M52 74 L68 26 L80 26 L64 74Z" fill="#C9A35A"/></svg><div><h2>La Recta</h2><small>Mesa 4 · Bar y parrilla</small></div></div>
+ <div class="qr-body"><div class="carta-cats" style="margin-top:4px">${CATS.map(c=>`<button class="btn sm ${c===qrCat?'pri':''}" data-qcat="${c}">${c}</button>`).join('')}</div>
+ ${CARTA.filter(p=>p.cat===qrCat&&p.activo).map(p=>{const e=qrCart.find(c=>c.p===p.id);return `<div class="qr-item"><div class="grow"><b>${esc(p.n)}</b>${p.desc?`<div class="small muted">${esc(p.desc)}</div>`:''}<div><b>${plata(p.precio)}</b></div></div>${e?`<button class="btn sm" data-qm="${p.id}">−</button><b>${e.c}</b>`:''}<button class="btn sm pri" data-qa="${p.id}">+</button></div>`}).join('')}
+ ${mios.length?`<h3 style="margin:16px 0 6px">En pista</h3>${mios.map(p=>`<div class="small">${p.items.map(i=>i.c+'× '+esc(prod(i.p).n)).join(', ')} — <span class="pill ${p.conf?'ok':'warn'}">${p.conf?'Confirmado, en preparación':'Esperando que el mozo confirme'}</span></div>`).join('')}`:''}</div>
+ <div class="qr-cart"><button class="btn" id="qCall">🔔 Llamar al mozo</button><button class="btn pri grow" id="qSend" ${qrCart.length?'':'disabled'}>Ver mi pedido${qrCart.length?' · '+plata(tot):''}</button></div></div>
+ <p class="small muted" style="text-align:center;margin-top:12px">Así se ve la carta al escanear el QR de la mesa. El pedido llega al mozo para confirmar: probá mandarlo y pasá a la vista del Mozo.</p>`}
+
+const VIEWS={mesas:vMesas,reservas:vReservas,cocina:()=>vComandas('cocina'),barra:()=>vComandas('barra'),caja:vCaja,'stock/articulos':vArticulos,'stock/recetas':vRecetas,'stock/compras':vCompras,'stock/control':vControl,'stock/mermas':vMermas,'tableros/resumen':vTResumen,'tableros/ventas':vTVentas,'tableros/costos':vTCostos,'tableros/finanzas':vTFinanzas,carta:vCarta,qr:vQR};
+
+/* ---------- modal / router ---------- */
+function modal(h,wide){const m=$('#modal');m.className='modal'+(wide?' wide':'');m.innerHTML=h;$('#ov').classList.add('show');$$('#modal [data-x]').forEach(b=>b.onclick=closeM)}
+function closeM(){$('#ov').classList.remove('show');carrito=[]}
+$('#ov').addEventListener('mousedown',e=>{if(e.target.id==='ov')closeM()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+function route(){let h=location.hash.slice(1)||NAV[ROLE][0][0];if(h==='stock')h='stock/articulos';if(h==='tableros')h='tableros/resumen';const top=h.split('/')[0];
+ if(!NAV[ROLE].some(n=>n[0]===top)){h=NAV[ROLE][0][0]}if(!VIEWS[h])h=NAV[ROLE][0][0];const c=counts();
+ $('#nav').innerHTML=NAV[ROLE].map(([k,l])=>`<a href="#${k}" class="${h.split('/')[0]===k?'on':''}">${l}${c[k]?`<span class="dot">${c[k]}</span>`:''}</a>`).join('');
+ $('#main').innerHTML=VIEWS[h]()+'<p class="proto">Demo con datos ficticios: el bar, los platos, precios, proveedores y clientes son inventados. Los cambios se ven al instante pero se pierden al recargar.</p>';wire(h);window.scrollTo(0,0)}
+function keep(){const y=scrollY;route();scrollTo(0,y)}
+function wire(v){
+ $$('[data-mesa]').forEach(b=>b.onclick=()=>{carrito=[];catSel='Parrilla';panelMesa(b.dataset.mesa)});
+ $$('[data-atend]').forEach(b=>b.onclick=()=>{LLAMADOS=LLAMADOS.filter(x=>x!==b.dataset.atend);toast('Listo, la mesa ve que vas.');keep()});
+ $$('[data-confqr]').forEach(b=>b.onclick=()=>{const p=PED.find(x=>x.id===b.dataset.confqr);p.conf=true;p.t=vnow();const m=mesa(p.mesa);if(m.estado==='libre')abrir(m,2,'Flor',0);toast('Confirmado: ya está en la parrilla y la barra.');keep()});
+ $$('[data-retiro]').forEach(b=>b.onclick=()=>{const p=PED.find(x=>x.id===b.dataset.retiro);if(p.ec==='listo')p.ec='entregado';if(p.eb==='listo')p.eb='entregado';keep()});
+ $$('[data-sentar]').forEach(b=>b.onclick=()=>sentarModal(RES.find(r=>r.id===b.dataset.sentar)));
+ const sm=$('#sinMesa');if(sm)sm.onclick=sinMesaModal;
+ $$('[data-av]').forEach(b=>b.onclick=()=>{const [id,campo,sig]=b.dataset.av.split('|');const p=PED.find(x=>x.id===id);p[campo]=sig;if(sig==='listo')toast('El mozo ve que tiene que retirar.');keep()});
+ if(v==='reservas'){$$('[data-rdia]').forEach(a=>a.onclick=e=>{e.preventDefault();resDia=a.dataset.rdia;keep()});
+  $('#rLink').onclick=()=>modal(`<h3>Link y QR para clientes</h3><p class="small muted">Compartilo en Instagram y WhatsApp o imprimí el QR. El cliente elige día, horario y cuántos son.</p><div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><div style="width:130px;height:130px;background:var(--cuadros);border:8px solid #fff;outline:1px solid var(--line);border-radius:8px"></div><div><b>larecta.ejemplo/reservar</b><p class="small muted" style="margin:4px 0 0">Una reserva por teléfono y noche, cupo por horario y freno a pedidos en masa.</p></div></div><div class="acts"><button class="btn" data-x>Cerrar</button></div>`);
+  $('#rNew').onclick=()=>{modal(`<h3>Nueva reserva</h3><p class="small muted" style="margin:0 0 10px">Las que tomás por teléfono o en el local entran confirmadas.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><label class="campo">Nombre<input id="nN"></label><label class="campo">Celular<input id="nT" placeholder="Con código de área"></label><label class="campo">Día<input type="date" id="nF" value="${resDia}" min="${HOY}"></label><label class="campo">Horario<select id="nH">${HORARIOS.map(h=>`<option>${h}</option>`).join('')}</select></label><label class="campo">Personas<input type="number" id="nP" value="2" min="1"></label><label class="campo">Nota<input id="nNo"></label></div><div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn pri" id="nOk">Guardar reserva</button></div>`);
+   $('#nOk').onclick=()=>{const n=$('#nN').value.trim();if(!n){toast('Poné el nombre.');return}const f=$('#nF').value||HOY,h=$('#nH').value,p=+$('#nP').value||2;const oc=RES.filter(r=>r.f===f&&r.h===h&&r.est!=='cancelada').reduce((s,r)=>s+r.pax,0);if(oc+p>CUPO){toast('No hay lugar en ese horario: quedan '+(CUPO-oc)+'.');return}RES.push({id:'r'+nrs++,f,h,n,pax:p,tel:$('#nT').value,orig:'telefono',est:'confirmada',nota:$('#nNo').value});resDia=f;closeM();toast('Reserva guardada.');keep()}};
+  $$('[data-rconf]').forEach(b=>b.onclick=()=>{const r=RES.find(x=>x.id===b.dataset.rconf);r.est='confirmada';keep();waMsg(`¡Hola ${r.n}! Te confirmamos la reserva en La Recta para ${r.pax} personas el ${DL[new Date(r.f+'T12:00:00').getDay()]} ${fd(r.f)} a las ${r.h}. ¡Te esperamos!`)});
+  $$('[data-rno]').forEach(b=>b.onclick=()=>{const r=RES.find(x=>x.id===b.dataset.rno);r.est='cancelada';keep();waMsg(`¡Hola ${r.n}! Te pedimos disculpas: para el ${fd(r.f)} a las ${r.h} ya no tenemos lugar. ¿Te sirve otro horario?`)})}
+ if(v==='caja'){$$('[data-cob]').forEach(b=>b.onclick=()=>cobrar(mesa(b.dataset.cob)));const g=$('#cjG');if(g)g.onclick=()=>{modal(`<h3>Gasto con la plata de la caja</h3><label class="campo">Concepto<input id="gC" placeholder="Hielo, un proveedor…"></label><label class="campo" style="margin-top:10px">Monto ($)<input id="gM" type="number" min="0"></label><div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn pri" id="gOk">Guardar gasto</button></div>`);$('#gOk').onclick=()=>{const m=+$('#gM').value;if(!$('#gC').value.trim()||!m){toast('Completá concepto y monto.');return}CAJA.gastos.push({c:$('#gC').value.trim(),m,t:vnow()});closeM();toast('Gasto registrado.');keep()}};
+  const c=$('#cjC');if(c)c.onclick=()=>{const T=tkHoy();const ef=T.filter(t=>t.medio.startsWith('Efectivo')).reduce((s,t)=>s+t.total,0);const gas=CAJA.gastos.reduce((s,g)=>s+g.m,0);const esp=CAJA.inicial+ef-gas;
+   modal(`<h3>Cerrar caja</h3><div class="row"><span class="grow">Inicial</span><span class="r">${plata(CAJA.inicial)}</span></div><div class="row"><span class="grow">Cobrado en efectivo</span><span class="r">${plata(ef)}</span></div><div class="row"><span class="grow">Gastos de caja</span><span class="r">−${plata(gas)}</span></div><div class="row"><b class="grow">Debería haber</b><b class="r">${plata(esp)}</b></div><label class="campo" style="margin-top:10px">Efectivo contado ($)<input id="zC" type="number" min="0"></label><div id="zD" class="small" style="margin-top:6px"></div>${MESAS.some(m=>m.estado!=='libre')?'<div class="alert" style="margin-top:10px">Todavía hay mesas abiertas sin cobrar.</div>':''}<div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn pri" id="zOk">Cerrar caja</button></div>`);
+   $('#zC').oninput=e=>{const d=(+e.target.value||0)-esp;$('#zD').textContent='Diferencia: '+(d>0?'+':'')+plata(d)};$('#zOk').onclick=()=>{const cont=+$('#zC').value;if(!$('#zC').value){toast('Cargá lo que contaste.');return}CAJA.cerrada={cont,esp,dif:cont-esp};closeM();toast('Caja cerrada. Lo que se cobre ahora va a la jornada siguiente.');keep()}}}
+ if(v==='stock/articulos'){$('#aNew').onclick=()=>{modal(`<h3>Nuevo artículo</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><label class="campo">Nombre<input id="iN" placeholder="Ej: Cuadril"></label><label class="campo">Unidad<select id="iU"><option>kg</option><option>u</option><option>l</option></select></label><label class="campo">Costo por unidad<input id="iC" type="number"></label><label class="campo">Mínimo<input id="iM" type="number"></label><label class="campo">Merma de limpieza %<input id="iL" type="number" value="0"></label><label class="campo">Proveedor<input id="iP"></label></div><div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn pri" id="iOk">Guardar</button></div>`);
+  $('#iOk').onclick=()=>{const n=$('#iN').value.trim();if(!n){toast('Poné el nombre.');return}INS.push({id:'x'+vnow(),n,u:$('#iU').value,costo:+$('#iC').value||0,hay:0,min:+$('#iM').value||0,mer:(+$('#iL').value||0)/100,rin:1,vence:null,prov:$('#iP').value||'—'});closeM();toast('Artículo creado.');keep()}}}
+ if(v==='stock/recetas'){$$('[data-rec]').forEach(r=>r.onclick=()=>{recSel=r.dataset.rec;keep()});$('#rPGo').onclick=()=>{const p=prod(recSel);const np=+$('#rP').value;if(!np)return;const co=costoPlato(p);toast(`A ${plata(np)} el costo sería ${pct(co/np)} y dejaría ${plata(np-co)} por plato.`)}}
+ if(v==='stock/compras'){$('#cmFac').onclick=facturaIA;$('#cmMan').onclick=()=>toast('En el sistema real cargás cada artículo con cantidad y precio; suma al stock y queda el gasto.');$('#cmWA').onclick=()=>waMsg('¡Hola! Para mañana necesitamos:\n• Entraña 6 kg\n• Mollejas 4 kg\n• Vacío 8 kg\nGracias, La Recta.')}
+ if(v==='stock/control'){$('#ctInv').onclick=()=>{modal(`<h3>Inventario completo</h3><p class="small muted" style="margin:0 0 8px">Cargá lo que hay de verdad. Lo que dejes vacío no se cuenta esta vez.</p>${INS.slice(0,10).map(i=>`<div class="row"><span class="grow"><b>${esc(i.n)}</b><div class="small muted">la app dice: ${num(i.hay)} ${i.u}</div></span><input type="number" step="any" style="width:100px" aria-label="${esc(i.n)} contado"><span class="muted small" style="min-width:2em">${i.u}</span></div>`).join('')}<p class="small muted">… y el resto de los artículos.</p><div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn pri" id="inOk">Guardar inventario</button></div>`,true);$('#inOk').onclick=()=>{closeM();toast('Inventario guardado. Con el próximo se arma la comparación.')}}}
+ if(v==='stock/mermas'){$('#meGo').onclick=()=>{const c=+$('#meC').value;if(!c){toast('Poné la cantidad.');return}const x=ins($('#meI').value);x.hay=Math.max(0,x.hay-c);MERMAS.unshift({f:HOY,i:x.id,c,mot:$('#meM').value});toast('Registrado: '+plata(c*x.costo)+' tirados. Se descontó del stock.');keep()}}
+ if(v==='tableros/finanzas'){$$('[data-pagar]').forEach(b=>b.onclick=()=>{const g=GASTOS[+b.dataset.pagar];modal(`<h3>Pagar · ${esc(g.c)}</h3><label class="campo">Sale de<select>${CUENTAS.map(c=>`<option>${c[0]} (${plata(c[1])})</option>`).join('')}</select></label><div class="acts"><button class="btn" data-x>Cancelar</button><button class="btn pri" id="pgOk">Pagar ${plata(g.m)}</button></div>`);$('#pgOk').onclick=()=>{g.est='pagado';CUENTAS[1][1]-=g.m;closeM();toast('Pagado. El saldo de la cuenta se actualizó.');keep()}})}
+ if(v==='carta'){$$('[data-pausa]').forEach(b=>b.onclick=()=>{const p=prod(b.dataset.pausa);p.activo=!p.activo;toast(p.activo?p.n+' vuelve a la carta.':p.n+' pausado: ya no aparece en el QR ni al mozo.');keep()});$('#qrPrint').onclick=()=>modal(`<h3>Mesas y QR</h3><p class="small muted">Imprimí la hoja y pegá cada QR en su mesa.</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px">${MESAS.filter(m=>!m.temp).slice(0,8).map(m=>`<div style="text-align:center;border:1px solid var(--line);border-radius:10px;padding:8px"><div style="height:80px;background:var(--cuadros);border-radius:4px"></div><b style="font-family:var(--disp);font-style:italic">Mesa ${m.num}</b></div>`).join('')}</div><div class="acts"><button class="btn" data-x>Cerrar</button></div>`,true)}
+ if(v==='qr'){$$('[data-qcat]').forEach(b=>b.onclick=()=>{qrCat=b.dataset.qcat;keep()});$$('[data-qa]').forEach(b=>b.onclick=()=>{const e=qrCart.find(c=>c.p===b.dataset.qa);e?e.c++:qrCart.push({p:b.dataset.qa,c:1});keep()});$$('[data-qm]').forEach(b=>b.onclick=()=>{const k=qrCart.findIndex(c=>c.p===b.dataset.qm);qrCart[k].c--;if(!qrCart[k].c)qrCart.splice(k,1);keep()});
+  $('#qCall').onclick=()=>{if(!LLAMADOS.includes('m4'))LLAMADOS.push('m4');toast('Listo, le avisamos al mozo.')};
+  $('#qSend').onclick=()=>{const tot=qrCart.reduce((s,c)=>s+c.c*prod(c.p).precio,0);modal(`<h3>Tu pedido</h3>${qrCart.map(c=>`<div class="row"><span class="grow">${c.c}× ${esc(prod(c.p).n)}</span><span class="r">${plata(c.c*prod(c.p).precio)}</span></div>`).join('')}<label class="campo" style="margin-top:10px">Aclaración<input id="qN" placeholder="Sin sal, punto jugoso…"></label><div class="row"><b class="grow">Total</b><b class="r">${plata(tot)}</b></div><p class="small muted">El mozo confirma el pedido antes de que salga. Se paga al final, en la mesa.</p><div class="acts"><button class="btn" data-x>Seguir mirando</button><button class="btn pri" id="qOk">Mandar pedido</button></div>`);
+   $('#qOk').onclick=()=>{const m=mesa('m4');pedido(m,qrCart.map((c,k)=>[c.p,c.c,k===0?$('#qN').value.trim():'']),0,'pendiente','pendiente',false);qrCart=[];closeM();toast('¡Pedido enviado! El mozo lo confirma en un momento.');keep()}}}
+}
+addEventListener('hashchange',route);
+setInterval(()=>{if(!$('#ov').classList.contains('show')&&['mesas','cocina','barra','caja'].includes(location.hash.slice(1)))keep()},30000);
+
+/* ---------- recorrido ---------- */
+const TOUR=[['admin','mesas','1. Mesas','Así se ve el salón. Tocás una mesa libre, la abrís con los comensales y cargás el pedido.'],['cocina','cocina','2. Parrilla','La comanda llega sola. El parrillero toca Empezar y después Listo, y el mozo ve que tiene que retirar.'],['admin','caja','3. Caja','Se cobra con el medio de pago, propina y Factura C. Al cobrar se descuentan solos los artículos de cada plato.'],['qr','qr','4. Carta por QR','El cliente escanea, ve la carta, pide y llama al mozo. El mozo confirma antes de que salga.'],['admin','stock/compras','5. Compras','Qué comprar según lo que se vende cada día, y la factura se carga con una foto.'],['admin','stock/control','6. Control semanal','Lo que salió del depósito y no explican las ventas: plata que se pierde sin que nadie lo vea.'],['admin','tableros/costos','7. Qué platos convienen','Cuánto deja cada plato y cuáles subir de precio o sacar de la carta.']];
+function abrirTour(){modal(`<h3>Recorrido en 2 minutos</h3><p class="small muted" style="margin:0">Sistema para un bar y parrilla: mesas, comandas, caja, stock con recetas y tableros. Tocá un paso para ir.</p><ol class="tour-list">${TOUR.map((t,i)=>`<li data-t="${i}"><span class="k">${i+1}</span><div><b>${t[2].replace(/^\d+\. /,'')}</b><span class="small muted">${t[3]}</span></div></li>`).join('')}</ol><div class="acts"><button class="btn pri" data-x>Empezar</button></div>`);
+ $$('[data-t]').forEach(li=>li.onclick=()=>{const t=TOUR[+li.dataset.t];closeM();if(ROLE!==t[0])setRole(t[0],true);location.hash='#'+t[1];toast(t[3])})}
+$('#tourBtn').onclick=abrirTour;
+setRole('admin',true);setTimeout(()=>{if(innerWidth>640)abrirTour()},400);
+})();
+</script>
+</body>
+</html>
