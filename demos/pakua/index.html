@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academia · Demo · FloWer</title>
+<meta name="description" content="Demo navegable con datos ficticios de un sistema de gestión para una academia de artes marciales: clases, asistencia, cuotas, cobranzas e informes de alumnos.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0E0E10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230E0E10'/%3E%3Cpolygon points='88.8,66.1 66.1,88.8 33.9,88.8 11.2,66.1 11.2,33.9 33.9,11.2 66.1,11.2 88.8,33.9' fill='none' stroke='%23E4141B' stroke-width='7'/%3E%3Ccircle cx='50' cy='50' r='9' fill='%23E4141B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0E0E10;--surface:#17171B;--surface-2:#1F1F25;--border:#32323A;--ink:#F2F0EA;--muted:#9A9AA4;--red:#E4141B;--red-dim:#B20F15;--red-soft:rgba(228,20,27,.14);--ok:#3FA66A;--ok-soft:rgba(63,166,106,.16);--warn:#D6A43C;--warn-soft:rgba(214,164,60,.16);--strip:40px;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:120px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Barlow",system-ui,sans-serif;font-size:15px;line-height:1.5;padding-top:var(--strip)}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.demo-strip{position:fixed;top:0;left:0;right:0;height:var(--strip);z-index:300;display:flex;align-items:center;justify-content:center;gap:14px;padding:0 12px;background:#000;color:#fff;font-size:13px;font-weight:600;border-bottom:1px solid #26262c}
+.demo-strip .back{opacity:.85;text-decoration:underline;text-underline-offset:3px}
+.demo-strip .tour{background:none;border:1px solid #444;border-radius:999px;padding:4px 12px;cursor:pointer;font-weight:700;font-size:12.5px}
+.demo-strip .cta{background:var(--red);color:#fff;text-decoration:none;padding:6px 14px;border-radius:999px;font-weight:800;font-size:12.5px}
+@media (max-width:520px){.demo-strip .long{display:none}.demo-strip{gap:8px}}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px;border-bottom:1px solid var(--border);background:var(--surface)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-name{font-weight:800;font-size:18px;letter-spacing:.2px}
+.brand-sub{font-size:12.5px;color:var(--muted);font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.who{font-weight:600;font-size:14px}
+.role{display:flex;gap:2px;background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:3px}
+.role button{border:0;background:none;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.role button.on{background:var(--red);color:#fff}
+.tabs{display:flex;gap:4px;padding:0 22px;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto;scrollbar-width:none;position:sticky;top:var(--strip);z-index:20}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:12px 14px;text-decoration:none;color:var(--muted);font-weight:700;font-size:14.5px;border-bottom:3px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);border-bottom-color:var(--red)}
+main{max-width:1180px;margin:0 auto;padding:24px 22px 90px}
+h1{font-size:28px;font-weight:800;margin:0 0 4px;letter-spacing:-.2px}
+h2{font-size:17px;font-weight:700;margin:0 0 12px}
+.sub{color:var(--muted);margin:0 0 20px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;min-width:0}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:1fr 1fr}.g21{grid-template-columns:2fr 1fr}
+@media (max-width:860px){.g4{grid-template-columns:1fr 1fr}.g2,.g21{grid-template-columns:1fr}}
+.stat-num{font-size:28px;font-weight:800;line-height:1.1}
+.stat-lbl{color:var(--muted);font-size:13px}
+.stat.red .stat-num{color:var(--red)}.stat.ok .stat-num{color:var(--ok)}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+input,select,textarea{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:9px 12px}
+textarea{width:100%;min-height:110px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted);font-weight:600}
+.form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 14px}
+@media (max-width:760px){.form{grid-template-columns:1fr}}
+.btn{border:1px solid var(--border);background:var(--surface-2);border-radius:999px;padding:9px 18px;font-weight:700;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.pri{background:var(--red);border-color:var(--red);color:#fff}
+.btn.pri:hover{background:var(--red-dim)}
+.btn.sm{padding:5px 12px;font-size:13px}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.ghost{background:none}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;padding:9px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.small{font-size:12.5px}.muted{color:var(--muted)}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--surface-2);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.warn{background:var(--warn-soft);color:var(--warn)}.pill.bad{background:var(--red-soft);color:#ff5a5f}
+.aviso{border-radius:12px;padding:12px 16px;margin-bottom:16px;font-weight:600}
+.aviso.warn{background:var(--warn-soft);color:var(--warn);border:1px solid rgba(214,164,60,.35)}
+.aviso.bad{background:var(--red-soft);color:#ff6a6f;border:1px solid rgba(228,20,27,.35)}
+.aviso.ok{background:var(--ok-soft);color:var(--ok);border:1px solid rgba(63,166,106,.35)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .h{font-size:12px;color:var(--muted);text-align:center;font-weight:700;text-transform:uppercase}
+.cal .d{min-height:104px;border:1px solid var(--border);border-radius:10px;padding:6px;background:var(--surface);display:flex;flex-direction:column;gap:3px}
+.cal .d.off{border:0;background:none}
+.cal .d.today{border-color:var(--red);border-width:2px}
+.cal .n{font-weight:800;font-size:13px;display:flex;justify-content:space-between}
+.cal .ev{font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 18%,transparent)}
+@media (max-width:760px){.cal .d{min-height:64px}.cal .ev{font-size:0;padding:0;height:6px;border-left:0;background:var(--c)}}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c);margin-right:6px;vertical-align:-1px}
+.chk{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--border);cursor:pointer}
+.chk:last-child{border:0}
+.chk input{width:22px;height:22px;accent-color:var(--red);flex:none}
+.chk .nm{flex:1;font-weight:600}
+.hb .r{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;margin:7px 0;font-size:13.5px}
+.hb .t{height:10px;border-radius:5px;background:var(--surface-2);overflow:hidden}.hb .b{height:100%;background:var(--red);border-radius:5px}
+@media (max-width:560px){.hb .r{grid-template-columns:100px 1fr 60px}}
+.inf{border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:var(--surface)}
+.inf .h{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.inf p{margin:0;color:#d9d6cf;white-space:pre-line}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.ov.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;width:100%;max-width:520px;max-height:calc(100vh - 80px);overflow:auto}
+.modal h3{margin:0 0 6px;font-size:18px}
+.modal .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.comp{background:#fff;color:#111;border-radius:10px;padding:16px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;font-size:14px;transition:all .25s;z-index:400;max-width:calc(100% - 32px);text-align:center;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.tour-list li{padding:10px 12px;border-radius:12px;cursor:pointer;list-style:none;display:flex;gap:12px}
+.tour-list li:hover{background:var(--surface-2)}
+.tour-list li b{display:block}
+.tour-list li span.k{flex:none;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+.tour-list{padding:0;margin:8px 0 0}
+.proto{font-size:12px;color:var(--muted);margin-top:32px}
+@media (max-width:640px){.topbar{padding:12px 14px;flex-wrap:wrap}.topbar-right{width:100%;justify-content:flex-start}.brand-name{font-size:16px}.tabs{padding:0 10px}main{padding:18px 14px 90px}h1{font-size:23px}.who{display:none}}
+</style>
+</head>
+<body>
+<div class="demo-strip" role="region" aria-label="Aviso de demo">
+  <a class="back" href="../../proyectos.html#pakua">← FloWer</a>
+  <span>Demo con datos ficticios<span class="long"> · nada se guarda</span></span>
+  <button class="tour" id="tourBtn">Recorrido</button>
+  <a class="cta" href="https://wa.me/5492975212008" target="_blank" rel="noopener">Quiero uno así</a>
+</div>
+<header class="topbar">
+  <div class="brand"><svg width="40" height="40" viewBox="0 0 100 100" role="img" aria-label="Academia Ocho Vientos (logo ficticio)"><polygon points="88.8,66.1 66.1,88.8 33.9,88.8 11.2,66.1 11.2,33.9 33.9,11.2 66.1,11.2 88.8,33.9" fill="none" stroke="#E4141B" stroke-width="4"/><g stroke="#F2F0EA" stroke-width="1.6" opacity=".5"><line x1="50" y1="50" x2="88.8" y2="66.1"/><line x1="50" y1="50" x2="66.1" y2="88.8"/><line x1="50" y1="50" x2="33.9" y2="88.8"/><line x1="50" y1="50" x2="11.2" y2="66.1"/><line x1="50" y1="50" x2="11.2" y2="33.9"/><line x1="50" y1="50" x2="33.9" y2="11.2"/><line x1="50" y1="50" x2="66.1" y2="11.2"/><line x1="50" y1="50" x2="88.8" y2="33.9"/></g><circle cx="50" cy="50" r="7" fill="#E4141B"/></svg>
+    <div><div class="brand-name">Academia Ocho Vientos</div><div class="brand-sub" id="roleLbl"></div></div></div>
+  <div class="topbar-right"><span class="who" id="who"></span><div class="role" role="group" aria-label="Ver la demo como"><button data-role="admin">Dirección</button><button data-role="profesor">Profesor</button><button data-role="alumno">Alumno</button></div></div>
+</header>
+<nav class="tabs" id="tabs" aria-label="Secciones"></nav>
+<main id="main"></main>
+
+<div class="ov" id="ov"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+/* =====================================================================
+   DEMO — todos los datos son FICTICIOS. Las fechas se calculan desde hoy.
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const NOW=new Date();NOW.setHours(12,0,0,0);const TODAY=iso(NOW);const PER=TODAY.slice(0,7);
+const addD=(s,n)=>{const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return iso(d)};
+const fd=s=>s?s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4):'—';
+const money=n=>'$'+Math.round(Number(n)||0).toLocaleString('es-AR');
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DIAS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const DC=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+let seed=20261117;const R=()=>{seed=(seed+0x6D2B79F5)|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const pick=a=>a[Math.floor(R()*a.length)];
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2800)}
+const perLbl=p=>MESES[+p.slice(5,7)-1]+' '+p.slice(0,4);
+const prevPer=(p,k)=>{const d=new Date(p+'-15T12:00:00');d.setMonth(d.getMonth()-k);return iso(d).slice(0,7)};
+
+const RANGOS=['Cinta blanca','Cinta amarilla','Cinta naranja','Cinta verde','Cinta azul','Cinta roja','Cinta marrón','Cinta negra','Instructor'];
+const RECINTOS=['Sede Centro','Club Náutico','Gimnasio Municipal Norte'];
+const MEDIOS=['Transferencia','Efectivo','Mercado Pago'];
+const PROFES=[{id:'p1',n:'Lucía Ferreyra'},{id:'p2',n:'Martín Acosta'},{id:'p3',n:'Diego Sandoval'}];
+const DIR={id:'d1',n:'Gabriela Ruiz'};
+let CLASES=[
+ {id:'c1',n:'Infantiles',dias:[2,4],h:'18:00',prof:'p1',rec:'Sede Centro',cuota:18000,esp:false,c:'#3FA66A'},
+ {id:'c2',n:'Adultos',dias:[1,3,5],h:'19:30',prof:'p2',rec:'Sede Centro',cuota:22000,esp:false,c:'#4C8DF6'},
+ {id:'c3',n:'Avanzados',dias:[6],h:'10:00',prof:'p2',rec:'Sede Centro',cuota:15000,esp:true,c:'#E4141B'},
+ {id:'c4',n:'Armas',dias:[3],h:'21:00',prof:'p3',rec:'Sede Centro',cuota:12000,esp:true,c:'#D6A43C'},
+ {id:'c5',n:'Acrobacia',dias:[5],h:'18:00',prof:'p3',rec:'Club Náutico',cuota:14000,esp:false,c:'#B06CF0'},
+ {id:'c6',n:'Mañanas Norte',dias:[2,4],h:'09:00',prof:'p1',rec:'Gimnasio Municipal Norte',cuota:16000,esp:false,c:'#2BB3B3'}];
+const NOMBRES=['Valentina','Mateo','Sofía','Benjamín','Martina','Thiago','Catalina','Joaquín','Emma','Lautaro','Olivia','Bautista','Julieta','Felipe','Mía','Santino','Lucía','Tomás','Camila','Nicolás','Agustina','Facundo','Abril','Ignacio','Florencia','Gonzalo','Paula','Ramiro','Carla','Esteban','Micaela','Hernán'];
+const APES=['Gómez','Fernández','López','Díaz','Martínez','Pérez','Romero','Sosa','Álvarez','Torres','Ruiz','Ramírez','Flores','Benítez','Acosta','Medina','Herrera','Aguirre','Molina','Castro','Ortiz','Silva','Rojas','Vera','Luna','Ríos','Paz','Ibáñez','Cabrera','Quiroga','Ledesma','Navarro'];
+let ALUMNOS=NOMBRES.map((n,i)=>{const kid=i<9;const age=kid?6+Math.floor(R()*7):16+Math.floor(R()*35);let nac=new Date(NOW.getFullYear()-age,Math.floor(R()*12),1+Math.floor(R()*27));
+ if(i===4||i===17){nac=new Date(NOW.getFullYear()-age,NOW.getMonth(),NOW.getDate())}
+ if(i===11){nac=new Date(NOW.getFullYear()-age,NOW.getMonth(),Math.min(27,NOW.getDate()+2))}
+ const rec=i<24?'Sede Centro':i<28?'Club Náutico':'Gimnasio Municipal Norte';
+ return {id:'a'+(i+1),n:n+' '+APES[i],u:(n[0]+APES[i]).toLowerCase().normalize('NFD').replace(/[^a-z]/g,''),nac:iso(nac),rango:RANGOS[kid?Math.floor(R()*3):Math.min(8,Math.floor(R()*8))],rec,tel:'(0297) 15-555-'+String(1000+Math.floor(R()*8999)),c1:(kid?'Mamá: ':'')+pick(['Laura','Pablo','Silvia','Jorge','Mónica','Daniel'])+' · (0297) 15-555-'+String(1000+Math.floor(R()*8999)),salud:pick(['','','','Asma leve: trae inhalador','Lesión de rodilla (2025): evitar saltos','Alergia a la penicilina','']),activo:i!==31,alta:addD(TODAY,-Math.floor(60+R()*900))}});
+const age=nac=>{const n=new Date(nac+'T12:00:00');let e=NOW.getFullYear()-n.getFullYear();const m=NOW.getMonth()-n.getMonth();if(m<0||(m===0&&NOW.getDate()<n.getDate()))e--;return e};
+const cumpleEn=(nac,f)=>nac&&f&&nac.slice(5)===f.slice(5);
+let INSC=[];ALUMNOS.forEach((a,i)=>{if(a.rec==='Club Náutico'){INSC.push(['c5',a.id]);if(i%2)INSC.push(['c2',a.id])}else if(a.rec==='Gimnasio Municipal Norte'){INSC.push(['c6',a.id])}else if(i<9){INSC.push(['c1',a.id])}else{INSC.push(['c2',a.id]);if(R()<.45)INSC.push(['c3',a.id]);if(R()<.3)INSC.push(['c4',a.id])}});
+const insc=cid=>INSC.filter(x=>x[0]===cid).map(x=>ALUMNOS.find(a=>a.id===x[1])).filter(Boolean).sort((a,b)=>a.n.localeCompare(b.n));
+const clasesDe=aid=>INSC.filter(x=>x[1]===aid).map(x=>CLASES.find(c=>c.id===x[0])).filter(Boolean);
+const esperadoDe=aid=>clasesDe(aid).reduce((s,c)=>s+c.cuota,0);
+const alu=id=>ALUMNOS.find(a=>a.id===id);const cla=id=>CLASES.find(c=>c.id===id);const prof=id=>(PROFES.find(p=>p.id===id)||{n:'Sin asignar'}).n;
+// asistencia de las últimas 9 semanas
+let ASIS={};(function(){for(let k=63;k>=0;k--){const f=addD(TODAY,-k);const wd=new Date(f+'T12:00:00').getDay();CLASES.forEach(c=>{if(!c.dias.includes(wd)||f>=TODAY)return;const pres={};insc(c.id).forEach(a=>{if(!a.activo)return;const base=a.id==='a14'?.35:a.id==='a22'?.55:.84;pres[a.id]=R()<base});ASIS[c.id+'|'+f]=pres})}})();
+// pagos: dos meses anteriores y el actual
+let PAGOS=[];let np=1;(function(){[2,1,0].forEach(k=>{const p=prevPer(PER,k);ALUMNOS.filter(a=>a.activo).forEach((a,i)=>{const esp=esperadoDe(a.id);if(!esp)return;const deudor=k===0&&[7,13,21,26].includes(i),pend=k===0&&[3,10,19,29].includes(i),parcial=k===0&&i===15;if(deudor)return;if(k===0&&NOW.getDate()<=10&&R()<.25&&!pend)return;
+ const dia=Math.min(28,1+Math.floor(R()*12));const fe=p+'-'+pad(dia);PAGOS.push({id:'pg'+np++,a:a.id,per:p,monto:parcial?Math.round(esp/2):esp,medio:pick(MEDIOS),fecha:fe>TODAY?TODAY:fe,estado:pend?'pendiente':'aprobado',comp:pick(MEDIOS)!=='Efectivo',nota:''})})})})();
+// informes de clases especiales
+const TXT=['Trabajamos la forma de manos en el lugar y la secuencia de desplazamientos. Me cuesta mantener la guardia alta en el giro final; la profe me dio un ejercicio para casa.','Primera clase con bastón corto. Repasamos agarres y los cuatro bloqueos básicos. Terminé con las muñecas cansadas pero salió bastante fluido.','Practicamos caídas hacia atrás y la rueda. Ya me sale la rueda hacia la derecha; hacia la izquierda todavía pierdo el eje.','Repasamos toda la forma para el examen de cinta. Me marcaron mejorar la respiración en las patadas altas.','Clase de abanico: aprendimos apertura y cierre en movimiento. Me resultó más difícil coordinar que con el bastón.','Trabajo de flexibilidad y fuerza de piernas. Mejoré dos centímetros en la apertura lateral desde el mes pasado.'];
+let INFORMES=[];(function(){const esp=INSC.filter(x=>cla(x[0]).esp);for(let i=0;i<12;i++){const [cid,aid]=esp[Math.floor(R()*esp.length)];INFORMES.push({id:'in'+(i+1),a:aid,c:cid,fecha:addD(TODAY,-Math.floor(R()*50)-1),txt:TXT[i%TXT.length],leido:R()<.6})}INFORMES.sort((a,b)=>b.fecha.localeCompare(a.fecha))})();
+
+/* ---------- roles, navegación ---------- */
+let ROLE='admin';const ME_ALUMNO='a11';if(!INSC.some(x=>x[0]==='c3'&&x[1]===ME_ALUMNO))INSC.push(['c3',ME_ALUMNO]);const ME_PROF='p2';
+const NAV={admin:[['calendario','Calendario'],['asistencia','Asistencia'],['reportes','Reportes'],['informes','Informes'],['pagos','Pagos'],['clases','Clases'],['cobranzas','Cobranzas'],['usuarios','Usuarios']],
+ profesor:[['calendario','Calendario'],['asistencia','Asistencia'],['reportes','Reportes'],['informes','Informes'],['pagos','Pagos'],['clases','Clases']],
+ alumno:[['mispagos','Mis pagos'],['misinformes','Mis informes'],['miasistencia','Mi asistencia']]};
+const ROLE_LBL={admin:'Dirección',profesor:'Profesor',alumno:'Alumno'};
+function setRole(r){ROLE=r;document.querySelectorAll('.role button').forEach(b=>b.classList.toggle('on',b.dataset.role===r));$('#roleLbl').textContent=ROLE_LBL[r];$('#who').textContent=r==='admin'?DIR.n:r==='profesor'?prof(ME_PROF):alu(ME_ALUMNO).n;
+ const v=(location.hash.slice(1)||'').split('/')[0];if(!NAV[r].some(n=>n[0]===v))location.hash='#'+NAV[r][0][0];else route()}
+document.querySelectorAll('.role button').forEach(b=>b.onclick=()=>{setRole(b.dataset.role);toast('Ahora ves la demo como '+ROLE_LBL[b.dataset.role].toLowerCase())});
+
+/* ---------- vistas ---------- */
+let calM=PER,asisC='',asisF=TODAY,repD=addD(TODAY,-30),repC='',pagF='pendiente',cobRec='',usrQ='',usrRec='',claSel=null;
+function vCalendario(){const [y,m]=calM.split('-').map(Number);const first=new Date(y,m-1,1);const lead=(first.getDay()+6)%7;const days=new Date(y,m,0).getDate();let cells='';for(let i=0;i<lead;i++)cells+='<div class="d off"></div>';
+ const cs=ROLE==='profesor'?CLASES.filter(c=>c.prof===ME_PROF):CLASES;
+ for(let d=1;d<=days;d++){const f=calM+'-'+pad(d);const wd=new Date(f+'T12:00:00').getDay();const ev=cs.filter(c=>c.dias.includes(wd)).sort((x,y)=>x.h.localeCompare(y.h));const cu=ALUMNOS.filter(a=>a.activo&&cumpleEn(a.nac,f));
+  cells+=`<div class="d ${f===TODAY?'today':''}"><div class="n"><span>${d}</span>${cu.length?`<span title="Cumple: ${esc(cu.map(a=>a.n).join(', '))}">🎂</span>`:''}</div>${ev.map(c=>`<div class="ev" style="--c:${c.c}" title="${esc(c.n+' · '+c.h+' · '+c.rec)}">${c.h} ${esc(c.n)}</div>`).join('')}</div>`}
+ return `<h1>Calendario de clases</h1><p class="sub">Cada clase en sus días y horarios, con los cumpleaños del mes.</p>
+ <div class="bar"><button class="btn sm" data-cm="-1">← Anterior</button><b style="min-width:150px;text-align:center;text-transform:capitalize">${MESES[m-1]} ${y}</b><button class="btn sm" data-cm="1">Siguiente →</button><button class="btn sm ghost" data-cm="0">Hoy</button></div>
+ <div class="card"><div class="cal">${DC.slice(1).concat(DC[0]).map(x=>`<div class="h">${x}</div>`).join('')}${cells}</div><div class="legend">${cs.map(c=>`<span style="--c:${c.c}">${esc(c.n)} · ${c.dias.map(x=>DC[x]).join('/')} ${c.h}</span>`).join('')}</div></div>`}
+function cuotaEstado(aid){const esp=esperadoDe(aid);const ps=PAGOS.filter(p=>p.a===aid&&p.per===PER);const pag=ps.filter(p=>p.estado==='aprobado').reduce((s,p)=>s+p.monto,0);
+ if(esp<=0||pag>=esp)return['Al día','ok'];if(ps.some(p=>p.estado==='pendiente'))return['Pago en revisión','warn'];if(pag>0)return['Debe '+money(esp-pag),'bad'];return NOW.getDate()>10?['Con deuda','bad']:['Sin pagar (en plazo)','warn']}
+function vAsistencia(){const cs=ROLE==='profesor'?CLASES.filter(c=>c.prof===ME_PROF):CLASES;if(!asisC||!cs.some(c=>c.id===asisC)){const wd=new Date(TODAY+'T12:00:00').getDay();asisC=(cs.find(c=>c.dias.includes(wd))||cs[0]).id}
+ const c=cla(asisC);const wd=new Date(asisF+'T12:00:00').getDay();const al=insc(c.id).filter(a=>a.activo);const key=c.id+'|'+asisF;const prev=ASIS[key]||{};const cu=al.filter(a=>cumpleEn(a.nac,asisF));
+ return `<h1>Tomar asistencia</h1><p class="sub">Elegí la clase y la fecha, y marcá quién vino. Al lado de cada alumno ves cómo está con la cuota del mes.</p>
+ <div class="bar"><select id="aC" aria-label="Clase">${cs.map(x=>`<option value="${x.id}" ${x.id===asisC?'selected':''}>${esc(x.n)} · ${x.dias.map(d=>DC[d]).join('/')} ${x.h}</option>`).join('')}</select><input type="date" id="aF" value="${asisF}" max="${TODAY}" aria-label="Fecha"></div>
+ ${!c.dias.includes(wd)?'<div class="aviso warn">Ojo: la fecha elegida no es un día de clase de este grupo.</div>':''}
+ ${cu.length?`<div class="aviso ok">🎂 ¡Hoy cumple${cu.length>1?'n':''} años: ${esc(cu.map(a=>a.n.split(' ')[0]).join(', '))}!</div>`:''}
+ <div class="card">${al.length?al.map(a=>{const [t,k]=cuotaEstado(a.id);return `<label class="chk"><input type="checkbox" class="ach" data-a="${a.id}" ${prev[a.id]?'checked':''}><span class="nm">${esc(a.n)} ${cumpleEn(a.nac,asisF)?'<span title="Cumple años">🎂</span>':''}<span class="small muted" style="display:block;font-weight:500">${esc(a.rango)}${a.salud?' · ⚠ '+esc(a.salud):''}</span></span><span class="pill ${k}">${t}</span></label>`}).join(''):'<p class="muted">No hay alumnos inscriptos en esta clase.</p>'}
+ <div class="bar" style="margin:14px 0 0;justify-content:space-between"><span class="small muted" id="aCnt"></span><button class="btn pri" id="aGo">Guardar asistencia</button></div></div>`}
+function vReportes(){const cs=ROLE==='profesor'?CLASES.filter(c=>c.prof===ME_PROF):CLASES;const sel=cs.filter(c=>!repC||c.id===repC);const rows={};
+ Object.entries(ASIS).forEach(([k,pres])=>{const [cid,f]=k.split('|');if(f<repD||!sel.some(c=>c.id===cid))return;Object.entries(pres).forEach(([aid,v])=>{const r=(rows[aid]=rows[aid]||{p:0,t:0});r.t++;if(v)r.p++})});
+ const L=Object.entries(rows).map(([aid,r])=>({a:alu(aid),...r,pct:Math.round(r.p/r.t*100)})).filter(x=>x.a).sort((a,b)=>a.pct-b.pct);
+ const tot=L.reduce((s,x)=>s+x.p,0),cls=Object.keys(ASIS).filter(k=>{const [cid,f]=k.split('|');return f>=repD&&sel.some(c=>c.id===cid)}).length;
+ return `<h1>Reporte de asistencia</h1><p class="sub">Presentismo de cada alumno en el período. Los de menos asistencia arriba, para hablar con ellos a tiempo.</p>
+ <div class="bar"><select id="rC" aria-label="Clase"><option value="">Todas las clases</option>${cs.map(c=>`<option value="${c.id}" ${c.id===repC?'selected':''}>${esc(c.n)}</option>`).join('')}</select><label class="small muted">Desde <input type="date" id="rD" value="${repD}"></label></div>
+ <div class="grid g4" style="margin-bottom:14px"><div class="card stat"><div class="stat-num">${cls}</div><div class="stat-lbl">clases dictadas</div></div><div class="card stat"><div class="stat-num">${tot}</div><div class="stat-lbl">presentes en total</div></div><div class="card stat ok"><div class="stat-num">${L.length?Math.round(L.reduce((s,x)=>s+x.pct,0)/L.length):0}%</div><div class="stat-lbl">presentismo promedio</div></div><div class="card stat red"><div class="stat-num">${L.filter(x=>x.pct<60).length}</div><div class="stat-lbl">alumnos con menos del 60%</div></div></div>
+ <div class="card"><div class="hb">${L.map(x=>`<div class="r"><span title="${esc(x.a.n)}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.a.n)}</span><div class="t"><div class="b" style="width:${x.pct}%;background:${x.pct<60?'var(--red)':x.pct<80?'var(--warn)':'var(--ok)'}"></div></div><span class="small muted" style="text-align:right">${x.pct}% · ${x.p}/${x.t}</span></div>`).join('')||'<p class="muted">Sin clases en el período.</p>'}</div></div>`}
+function vInformes(){const L=ROLE==='profesor'?INFORMES.filter(i=>cla(i.c).prof===ME_PROF):INFORMES;
+ return `<h1>Informes de alumnos</h1><p class="sub">Lo que cada alumno escribe después de una clase especial. Solo lo ven él y los profesores.</p>
+ ${L.map(i=>`<div class="inf"><div class="h"><b>${esc(alu(i.a).n)} <span class="small muted">· ${esc(cla(i.c).n)} · ${fd(i.fecha)}</span></b>${i.leido?'<span class="pill">Leído</span>':`<button class="btn sm" data-leer="${i.id}">Marcar como leído</button>`}</div><p>${esc(i.txt)}</p></div>`).join('')||'<div class="card muted">No hay informes.</div>'}`}
+function vPagos(){const L=PAGOS.filter(p=>!pagF||p.estado===pagF).sort((a,b)=>b.fecha.localeCompare(a.fecha));const pend=PAGOS.filter(p=>p.estado==='pendiente').length;
+ return `<h1>Pagos</h1><p class="sub">Los alumnos registran el pago con el comprobante. Acá se revisa y se aprueba o rechaza.</p>
+ <div class="bar"><select id="pF" aria-label="Estado"><option value="pendiente" ${pagF==='pendiente'?'selected':''}>En revisión (${pend})</option><option value="aprobado" ${pagF==='aprobado'?'selected':''}>Aprobados</option><option value="rechazado" ${pagF==='rechazado'?'selected':''}>Rechazados</option><option value="" ${pagF===''?'selected':''}>Todos</option></select></div>
+ <div class="card"><div class="tw"><table><thead><tr><th>Fecha</th><th>Alumno</th><th>Período</th><th>Medio</th><th class="num">Monto</th><th>Comprobante</th><th></th></tr></thead><tbody>${L.slice(0,80).map(p=>`<tr><td>${fd(p.fecha)}</td><td><b>${esc(alu(p.a).n)}</b></td><td style="text-transform:capitalize">${perLbl(p.per)}</td><td>${p.medio}</td><td class="num">${money(p.monto)}</td><td>${p.comp?`<button class="btn sm ghost" data-comp="${p.id}">Ver</button>`:'<span class="muted small">—</span>'}</td><td style="white-space:nowrap">${p.estado==='pendiente'?`<button class="btn sm ok" data-ap="${p.id}">Aprobar</button> <button class="btn sm" data-re="${p.id}">Rechazar</button>`:`<span class="pill ${p.estado==='aprobado'?'ok':'bad'}">${p.estado==='aprobado'?'Aprobado':'Rechazado'}</span>`}</td></tr>`).join('')||'<tr><td colspan="7" class="muted">No hay pagos con ese estado.</td></tr>'}</tbody></table></div></div>`}
+function vClases(){const cs=ROLE==='profesor'?CLASES.filter(c=>c.prof===ME_PROF):CLASES;const c=claSel&&cla(claSel);
+ return `<h1>Clases</h1><p class="sub">Horarios, profesor, cuota e inscriptos de cada clase. Las clases especiales piden informe al alumno y van a la caja de la escuela.</p>
+ ${ROLE==='admin'?'<div class="bar"><button class="btn pri" id="cNew">+ Nueva clase</button></div>':''}
+ <div class="card"><div class="tw"><table><thead><tr><th>Clase</th><th>Días y horario</th><th>Profesor</th><th>Recinto</th><th class="num">Cuota</th><th>Especial</th><th class="num">Inscriptos</th></tr></thead><tbody>${cs.map(x=>`<tr style="cursor:pointer" data-cl="${x.id}"><td><b style="border-left:4px solid ${x.c};padding-left:8px">${esc(x.n)}</b></td><td>${x.dias.map(d=>DC[d]).join(', ')} · ${x.h}</td><td>${esc(prof(x.prof))}</td><td>${esc(x.rec)}</td><td class="num">${money(x.cuota)}</td><td>${x.esp?'<span class="pill bad">Especial</span>':''}</td><td class="num">${insc(x.id).length}</td></tr>`).join('')}</tbody></table></div></div>
+ ${c?`<div class="card" style="margin-top:14px" id="insC"><h2>Inscriptos · ${esc(c.n)}</h2>${ROLE==='admin'?`<div class="bar"><select id="iA" aria-label="Alumno"><option value="">Agregar alumno…</option>${ALUMNOS.filter(a=>a.activo&&!insc(c.id).includes(a)).map(a=>`<option value="${a.id}">${esc(a.n)}</option>`).join('')}</select><button class="btn sm pri" id="iGo">Inscribir</button></div>`:''}
+  ${insc(c.id).map(a=>`<div class="chk" style="cursor:default"><span class="nm">${esc(a.n)} <span class="small muted">· ${esc(a.rango)} · ${age(a.nac)} años</span></span>${ROLE==='admin'?`<button class="btn sm ghost" data-baja="${a.id}">Sacar</button>`:''}</div>`).join('')||'<p class="muted">Nadie inscripto todavía.</p>'}</div>`:''}`}
+function vCobranzas(){const enR=a=>!cobRec||a.rec===cobRec;const act=ALUMNOS.filter(a=>a.activo&&enR(a));
+ const filas=CLASES.map(c=>{const n=insc(c.id).filter(a=>a.activo&&enR(a)).length;return{c,n,esp:n*c.cuota}}).filter(f=>f.n);
+ const esp=filas.reduce((s,f)=>s+f.esp,0);const pM=PAGOS.filter(p=>p.per===PER&&enR(alu(p.a)));const ap=pM.filter(p=>p.estado==='aprobado');const rec=ap.reduce((s,p)=>s+p.monto,0);
+ const cajaE=ap.reduce((s,p)=>{const cs=clasesDe(p.a);const t=cs.reduce((a,c)=>a+c.cuota,0)||1;return s+p.monto*cs.filter(c=>c.esp).reduce((a,c)=>a+c.cuota,0)/t},0);
+ const med={};ap.forEach(p=>med[p.medio]=(med[p.medio]||0)+p.monto);const mx=Math.max(1,...Object.values(med));
+ const deu=act.map(a=>{const e=esperadoDe(a.id);const ps=pM.filter(p=>p.a===a.id);const pg=ps.filter(p=>p.estado==='aprobado').reduce((s,p)=>s+p.monto,0);return{a,e,pg,rev:ps.some(p=>p.estado==='pendiente')}}).filter(x=>x.e>x.pg).sort((a,b)=>(b.e-b.pg)-(a.e-a.pg));
+ return `<h1>Tablero de cobranzas</h1><p class="sub" style="text-transform:none">Cuotas de ${perLbl(PER)}: lo que se espera cobrar según las clases de cada alumno, lo cobrado y quién debe.</p>
+ <div class="bar"><select id="cR" aria-label="Recinto"><option value="">Todos los recintos</option>${RECINTOS.map(r=>`<option ${r===cobRec?'selected':''}>${r}</option>`).join('')}</select></div>
+ <div class="grid g4" style="margin-bottom:14px"><div class="card stat"><div class="stat-num">${money(esp)}</div><div class="stat-lbl">Esperado del mes</div></div><div class="card stat ok"><div class="stat-num">${money(rec)}</div><div class="stat-lbl">Recaudado</div></div><div class="card stat red"><div class="stat-num">${money(Math.max(0,esp-rec))}</div><div class="stat-lbl">Falta cobrar</div></div><div class="card stat"><div class="stat-num">${esp?Math.round(rec/esp*100):0}%</div><div class="stat-lbl">Cobrado del esperado</div></div></div>
+ <div class="grid g2" style="margin-bottom:14px"><div class="card"><h2>Cajas</h2><div class="grid g2"><div><div class="stat-num" style="font-size:22px">${money(cajaE)}</div><div class="stat-lbl">Caja Escuela</div></div><div><div class="stat-num" style="font-size:22px">${money(rec-cajaE)}</div><div class="stat-lbl">Caja Recinto</div></div></div><p class="small muted" style="margin:10px 0 0">Las clases especiales van a Caja Escuela; las no especiales, a Caja Recinto.</p></div>
+ <div class="card"><h2>Recaudación por medio</h2><div class="hb">${Object.entries(med).sort((a,b)=>b[1]-a[1]).map(([m,v])=>`<div class="r"><span>${m}</span><div class="t"><div class="b" style="width:${v/mx*100}%"></div></div><span class="small muted" style="text-align:right">${money(v)}</span></div>`).join('')||'<p class="muted">Sin cobros aprobados todavía.</p>'}</div></div></div>
+ <div class="grid g2"><div class="card"><h2>Esperado por clase</h2><div class="tw"><table><thead><tr><th>Clase</th><th class="num">Alumnos</th><th class="num">Esperado</th><th>Caja</th></tr></thead><tbody>${filas.map(f=>`<tr><td>${esc(f.c.n)}</td><td class="num">${f.n}</td><td class="num">${money(f.esp)}</td><td>${f.c.esp?'Escuela':'Recinto'}</td></tr>`).join('')}</tbody></table></div></div>
+ <div class="card"><h2>Deudores del período</h2>${deu.length?`<div class="tw"><table><thead><tr><th>Alumno</th><th>Recinto</th><th class="num">Debe</th><th></th></tr></thead><tbody>${deu.map(x=>`<tr><td><b>${esc(x.a.n)}</b><div class="small muted">${esc(x.a.tel)}</div></td><td class="small">${esc(x.a.rec)}</td><td class="num">${money(x.e-x.pg)}</td><td>${x.rev?'<span class="pill warn">En revisión</span>':`<button class="btn sm" data-wa="${x.a.id}">Avisar</button>`}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted">Todos los alumnos activos están al día con su cuota. 🎉</p>'}</div></div>`}
+function vUsuarios(){const q=usrQ.toLowerCase();const L=ALUMNOS.filter(a=>(!q||a.n.toLowerCase().includes(q))&&(!usrRec||a.rec===usrRec)).sort((a,b)=>a.n.localeCompare(b.n));
+ return `<h1>Usuarios</h1><p class="sub">Alumnos y profesores. Cada alumno entra con su usuario y contraseña, sin email.</p>
+ <div class="bar"><input type="search" id="uQ" placeholder="Nombre…" value="${esc(usrQ)}" aria-label="Buscar" style="flex:1;min-width:180px;max-width:300px"><select id="uR" aria-label="Recinto"><option value="">Todos los recintos</option>${RECINTOS.map(r=>`<option ${r===usrRec?'selected':''}>${r}</option>`).join('')}</select><button class="btn pri" id="uNew">+ Nuevo usuario</button></div>
+ <div class="card"><div class="tw"><table><thead><tr><th>Nombre</th><th>Usuario</th><th>Rango</th><th>Recinto</th><th class="num">Edad</th><th>Salud</th><th>Estado</th></tr></thead><tbody>${L.map(a=>`<tr style="cursor:pointer" data-us="${a.id}"><td><b>${esc(a.n)}</b>${cumpleEn(a.nac,TODAY)?' 🎂':''}<div class="small muted">${esc(a.tel)}</div></td><td class="small">${esc(a.u)}</td><td>${esc(a.rango)}</td><td class="small">${esc(a.rec)}</td><td class="num">${age(a.nac)}</td><td class="small">${a.salud?'⚠ '+esc(a.salud):'—'}</td><td>${a.activo?'<span class="pill ok">Activo</span>':'<span class="pill">De baja</span>'}</td></tr>`).join('')}</tbody></table></div></div>
+ <div class="grid g2" style="margin-top:14px"><div class="card"><h2>Profesores</h2>${PROFES.map(p=>`<div class="chk" style="cursor:default"><span class="nm">${esc(p.n)} <span class="small muted">· ${CLASES.filter(c=>c.prof===p.id).map(c=>esc(c.n)).join(', ')}</span></span></div>`).join('')}</div>
+ <div class="card"><h2>Recintos</h2>${RECINTOS.map(r=>`<div class="chk" style="cursor:default"><span class="nm">${r}</span><span class="small muted">${ALUMNOS.filter(a=>a.activo&&a.rec===r).length} alumnos</span></div>`).join('')}<p class="small muted" style="margin:8px 0 0">Dar de baja a un alumno no borra su historia: deja de contar en cobranzas y asistencia.</p></div></div>`}
+// alumno
+function avisoCuota(){const [t,k]=cuotaEstado(ME_ALUMNO);if(k==='ok')return '<div class="aviso ok">Tu cuota de este mes está al día. ¡Gracias!</div>';
+ return `<div class="aviso ${k==='bad'?'bad':'warn'}">${t==='Pago en revisión'?'Tu pago de este mes está en revisión.':t.startsWith('Debe')?'Pagaste parte de la cuota. Te falta abonar '+t.slice(5)+'.':t==='Con deuda'?'Tenés la cuota de este mes pendiente. Regularizala cuando puedas.':'Todavía no registraste el pago de este mes.'}</div>`}
+function vMisPagos(){const L=PAGOS.filter(p=>p.a===ME_ALUMNO).sort((a,b)=>b.fecha.localeCompare(a.fecha));const esp=esperadoDe(ME_ALUMNO);
+ return `<h1>Mis pagos</h1><p class="sub">Tus clases: ${clasesDe(ME_ALUMNO).map(c=>esc(c.n)+' ('+money(c.cuota)+')').join(' · ')} — cuota del mes ${money(esp)}.</p>${avisoCuota()}
+ <div class="card" style="margin-bottom:14px"><h2>Registrar un pago</h2><div class="form"><label class="f">Período<select id="mP">${[0,1].map(k=>`<option value="${prevPer(PER,k)}">${perLbl(prevPer(PER,k))}</option>`).join('')}</select></label><label class="f">Monto<input id="mM" inputmode="numeric" value="${esp}"></label><label class="f">Medio<select id="mMe">${MEDIOS.map(m=>`<option>${m}</option>`).join('')}</select></label></div>
+ <div class="bar" style="margin:12px 0 0"><button class="btn" id="mC">📎 Adjuntar comprobante</button><span class="small muted" id="mCn">Sin comprobante</span><span style="flex:1"></span><button class="btn pri" id="mGo">Registrar pago</button></div></div>
+ <div class="card"><h2>Mis pagos</h2><div class="tw"><table><thead><tr><th>Fecha</th><th>Período</th><th>Medio</th><th class="num">Monto</th><th>Estado</th></tr></thead><tbody>${L.map(p=>`<tr><td>${fd(p.fecha)}</td><td style="text-transform:capitalize">${perLbl(p.per)}</td><td>${p.medio}</td><td class="num">${money(p.monto)}</td><td><span class="pill ${p.estado==='aprobado'?'ok':p.estado==='pendiente'?'warn':'bad'}">${p.estado==='aprobado'?'Aprobado':p.estado==='pendiente'?'En revisión':'Rechazado'}</span>${p.nota?`<div class="small muted">${esc(p.nota)}</div>`:''}</td></tr>`).join('')||'<tr><td colspan="5" class="muted">Todavía no registraste pagos.</td></tr>'}</tbody></table></div></div>`}
+function vMisInformes(){const esp=clasesDe(ME_ALUMNO).filter(c=>c.esp);const L=INFORMES.filter(i=>i.a===ME_ALUMNO);
+ return `<h1>Mis informes</h1><p class="sub">Después de cada clase especial contá qué trabajaste. Solo lo ven vos y tus profesores.</p>
+ ${esp.length?`<div class="card" style="margin-bottom:14px"><h2>Nuevo informe</h2><div class="form" style="grid-template-columns:1fr 1fr"><label class="f">Clase<select id="nC">${esp.map(c=>`<option value="${c.id}">${esc(c.n)}</option>`).join('')}</select></label><label class="f">Fecha de la clase<input type="date" id="nF" value="${TODAY}" max="${TODAY}"></label></div><label class="f" style="margin-top:12px">Qué trabajaste<textarea id="nT" placeholder="Formas, técnicas, qué te costó, qué te marcó el profe…"></textarea></label><div class="bar" style="margin:12px 0 0;justify-content:flex-end"><button class="btn pri" id="nGo">Enviar informe</button></div></div>`:'<div class="aviso warn">No estás inscripto en ninguna clase especial.</div>'}
+ <h2>Mis informes enviados</h2>${L.map(i=>`<div class="inf"><div class="h"><b>${esc(cla(i.c).n)} <span class="small muted">· ${fd(i.fecha)}</span></b>${i.leido?'<span class="pill ok">Leído por el profe</span>':'<span class="pill">Sin leer</span>'}</div><p>${esc(i.txt)}</p></div>`).join('')||'<p class="muted">Todavía no enviaste informes.</p>'}`}
+function vMiAsistencia(){const L=[];Object.entries(ASIS).forEach(([k,pres])=>{if(ME_ALUMNO in pres){const [cid,f]=k.split('|');L.push({c:cla(cid),f,p:pres[ME_ALUMNO]})}});L.sort((a,b)=>b.f.localeCompare(a.f));const p=L.filter(x=>x.p).length;
+ return `<h1>Mi asistencia</h1><p class="sub">Tus clases de las últimas semanas.</p>
+ <div class="grid g4" style="margin-bottom:14px"><div class="card stat ok"><div class="stat-num">${L.length?Math.round(p/L.length*100):0}%</div><div class="stat-lbl">presentismo</div></div><div class="card stat"><div class="stat-num">${p}</div><div class="stat-lbl">clases con presente</div></div><div class="card stat red"><div class="stat-num">${L.length-p}</div><div class="stat-lbl">ausencias</div></div><div class="card stat"><div class="stat-num" style="font-size:20px">${esc(alu(ME_ALUMNO).rango)}</div><div class="stat-lbl">tu rango</div></div></div>
+ <div class="card"><div class="tw"><table><thead><tr><th>Fecha</th><th>Clase</th><th>Asistencia</th></tr></thead><tbody>${L.map(x=>`<tr><td>${DIAS[new Date(x.f+'T12:00:00').getDay()]} ${fd(x.f)}</td><td>${esc(x.c.n)}</td><td>${x.p?'<span class="pill ok">Presente</span>':'<span class="pill bad">Ausente</span>'}</td></tr>`).join('')}</tbody></table></div></div>`}
+const VIEWS={calendario:vCalendario,asistencia:vAsistencia,reportes:vReportes,informes:vInformes,pagos:vPagos,clases:vClases,cobranzas:vCobranzas,usuarios:vUsuarios,mispagos:vMisPagos,misinformes:vMisInformes,miasistencia:vMiAsistencia};
+
+/* ---------- modales ---------- */
+function modal(html){$('#modal').innerHTML=html;$('#ov').classList.add('show');const f=$('#modal').querySelector('input,select,textarea,button');if(f)f.focus()}
+function closeModal(){$('#ov').classList.remove('show')}
+$('#ov').addEventListener('mousedown',e=>{if(e.target.id==='ov')closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+function compHTML(p){const a=alu(p.a);return `<div class="comp"><b>${p.medio==='Mercado Pago'?'Comprobante de pago':'Comprobante de transferencia'}</b><br>Fecha: ${fd(p.fecha)}<br>De: ${esc(a.n.toUpperCase())}<br>Para: ACADEMIA OCHO VIENTOS (cuenta ficticia)<br>Concepto: Cuota ${perLbl(p.per)}<br><b>Importe: ${money(p.monto)}</b><br>Operación Nº ${String(70000000+parseInt(p.id.slice(2))*7919).slice(0,8)}</div><p class="small muted">Comprobante de ejemplo con datos ficticios.</p>`}
+function usuarioModal(a){const nuevo=!a;a=a||{n:'',u:'',nac:addD(TODAY,-365*20),rango:RANGOS[0],rec:RECINTOS[0],tel:'',c1:'',salud:'',activo:true};
+ modal(`<h3>${nuevo?'Nuevo usuario':'Editar usuario'}</h3><p class="small muted" style="margin:0 0 12px">${nuevo?'El alumno ingresa con ese usuario y esa contraseña. No hace falta email.':'Alta: '+fd(a.alta)}</p>
+ <div class="form" style="grid-template-columns:1fr 1fr"><label class="f">Nombre y apellido<input id="eN" value="${esc(a.n)}"></label><label class="f">Usuario<input id="eU" value="${esc(a.u)}" placeholder="ej: juan.perez"></label>
+ ${nuevo?'<label class="f">Contraseña<input id="eP" type="password" placeholder="mínimo 6 caracteres"></label>':''}<label class="f">Fecha de nacimiento<input id="eNac" type="date" value="${a.nac}"></label><label class="f">Rango<select id="eR">${RANGOS.map(r=>`<option ${r===a.rango?'selected':''}>${r}</option>`).join('')}</select></label><label class="f">Recinto<select id="eRec">${RECINTOS.map(r=>`<option ${r===a.rec?'selected':''}>${r}</option>`).join('')}</select></label>
+ <label class="f">Teléfono<input id="eT" value="${esc(a.tel)}"></label><label class="f">Contacto 1<input id="eC" value="${esc(a.c1)}"></label></div>
+ <label class="f" style="margin-top:12px">Salud<input id="eS" value="${esc(a.salud)}" placeholder="Alergias, lesiones, condiciones a tener en cuenta…"></label>
+ ${nuevo?'':`<label class="f" style="margin-top:12px;flex-direction:row;align-items:center;gap:8px;color:var(--ink)"><input type="checkbox" id="eA" ${a.activo?'checked':''} style="width:18px;height:18px;accent-color:var(--red)"> Activo</label>`}
+ <div class="acts"><button class="btn" id="mX">Cancelar</button><button class="btn pri" id="mOk">${nuevo?'Crear usuario':'Guardar cambios'}</button></div>`);
+ $('#mX').onclick=closeModal;$('#mOk').onclick=()=>{const n=$('#eN').value.trim(),u=$('#eU').value.trim().toLowerCase();if(!n||!/^[a-z0-9._-]{3,}$/.test(u))return toast('Completá el nombre y un usuario válido.');if(ALUMNOS.some(x=>x.u===u&&x!==a&&(nuevo||x.id!==a.id)))return toast('Ese usuario ya existe. Elegí otro.');if(nuevo&&($('#eP').value||'').length<6)return toast('La contraseña necesita al menos 6 caracteres.');
+  const v={n,u,nac:$('#eNac').value,rango:$('#eR').value,rec:$('#eRec').value,tel:$('#eT').value.trim(),c1:$('#eC').value.trim(),salud:$('#eS').value.trim()};
+  if(nuevo){ALUMNOS.push(Object.assign({id:'a'+(ALUMNOS.length+1),activo:true,alta:TODAY},v));toast('Usuario creado. Ya puede entrar.')}else{Object.assign(a,v,{activo:$('#eA').checked});toast('Usuario actualizado.')}closeModal();route()}}
+function claseModal(){modal(`<h3>Nueva clase</h3><div class="form" style="grid-template-columns:1fr 1fr;margin-top:10px"><label class="f">Nombre<input id="kN" placeholder="Ej: Juveniles"></label><label class="f">Horario<input id="kH" type="time" value="19:00"></label><label class="f">Profesor<select id="kP"><option value="">Sin asignar</option>${PROFES.map(p=>`<option value="${p.id}">${esc(p.n)}</option>`).join('')}</select></label><label class="f">Recinto<select id="kR">${RECINTOS.map(r=>`<option>${r}</option>`).join('')}</select></label><label class="f">Cuota<input id="kC" inputmode="numeric" placeholder="0"></label><label class="f" style="flex-direction:row;align-items:center;gap:8px;color:var(--ink);padding-top:22px"><input type="checkbox" id="kE" style="width:18px;height:18px;accent-color:var(--red)"> Especial (pide informe)</label></div>
+ <div class="f" style="margin-top:12px;font-size:13px;color:var(--muted);font-weight:600">Días de clase</div><div class="bar" style="margin-top:6px">${[1,2,3,4,5,6].map(d=>`<label style="display:flex;gap:5px;align-items:center"><input type="checkbox" class="kD" value="${d}" style="accent-color:var(--red)">${DC[d]}</label>`).join('')}</div>
+ <div class="acts"><button class="btn" id="mX">Cancelar</button><button class="btn pri" id="mOk">Crear clase</button></div>`);
+ $('#mX').onclick=closeModal;$('#mOk').onclick=()=>{const n=$('#kN').value.trim();const dias=[...document.querySelectorAll('.kD:checked')].map(x=>+x.value);if(!n||!dias.length)return toast('Completá el nombre y al menos un día.');CLASES.push({id:'c'+(CLASES.length+1),n,dias,h:$('#kH').value||'19:00',prof:$('#kP').value,rec:$('#kR').value,cuota:+$('#kC').value.replace(/\D/g,'')||0,esp:$('#kE').checked,c:['#F06C9B','#7FB800','#FF9F1C'][CLASES.length%3]});closeModal();toast('Clase creada. Ya aparece en el calendario.');route()}}
+
+/* ---------- router ---------- */
+function route(){const v=(location.hash.slice(1)||NAV[ROLE][0][0]).split('/')[0];const ok=NAV[ROLE].some(n=>n[0]===v)?v:NAV[ROLE][0][0];
+ $('#tabs').innerHTML=NAV[ROLE].map(([k,l])=>`<a class="tab ${k===ok?'on':''}" href="#${k}">${l}</a>`).join('');
+ $('#main').innerHTML=VIEWS[ok]()+'<p class="proto">Demo con datos ficticios: alumnos, profesores, recintos, teléfonos y pagos son inventados. Los cambios se ven al instante pero se pierden al recargar.</p>';wire(ok);window.scrollTo(0,0)}
+function wire(v){const keep=()=>{const y=scrollY;route();scrollTo(0,y)};
+ document.querySelectorAll('[data-cm]').forEach(b=>b.onclick=()=>{const k=+b.dataset.cm;if(!k)calM=PER;else{const d=new Date(calM+'-15T12:00:00');d.setMonth(d.getMonth()+k);calM=iso(d).slice(0,7)}keep()});
+ if(v==='asistencia'){$('#aC').onchange=e=>{asisC=e.target.value;keep()};$('#aF').onchange=e=>{asisF=e.target.value||TODAY;keep()};const cnt=()=>{const n=document.querySelectorAll('.ach:checked').length,t=document.querySelectorAll('.ach').length;const c=$('#aCnt');if(c)c.textContent=n+' de '+t+' presentes'};cnt();document.querySelectorAll('.ach').forEach(c=>c.onchange=cnt);
+  const g=$('#aGo');if(g)g.onclick=()=>{const pres={};document.querySelectorAll('.ach').forEach(c=>pres[c.dataset.a]=c.checked);ASIS[asisC+'|'+asisF]=pres;toast('Asistencia guardada.')}}
+ if(v==='reportes'){$('#rC').onchange=e=>{repC=e.target.value;keep()};$('#rD').onchange=e=>{repD=e.target.value||repD;keep()}}
+ document.querySelectorAll('[data-leer]').forEach(b=>b.onclick=()=>{INFORMES.find(i=>i.id===b.dataset.leer).leido=true;toast('Marcado como leído. El alumno lo ve.');keep()});
+ if(v==='pagos'){$('#pF').onchange=e=>{pagF=e.target.value;keep()}}
+ document.querySelectorAll('[data-comp]').forEach(b=>b.onclick=()=>{const p=PAGOS.find(x=>x.id===b.dataset.comp);modal(`<h3>Comprobante · ${esc(alu(p.a).n)}</h3>${compHTML(p)}<div class="acts"><button class="btn" id="mX">Cerrar</button></div>`);$('#mX').onclick=closeModal});
+ document.querySelectorAll('[data-ap]').forEach(b=>b.onclick=()=>{PAGOS.find(x=>x.id===b.dataset.ap).estado='aprobado';toast('Pago aprobado. Ya cuenta en cobranzas.');keep()});
+ document.querySelectorAll('[data-re]').forEach(b=>b.onclick=()=>{const p=PAGOS.find(x=>x.id===b.dataset.re);modal(`<h3>Rechazar pago</h3><p class="small muted">${esc(alu(p.a).n)} · ${money(p.monto)}. El alumno ve el motivo.</p><label class="f">Motivo<input id="rM" placeholder="Ej: el comprobante no se lee"></label><div class="acts"><button class="btn" id="mX">Cancelar</button><button class="btn pri" id="mOk">Rechazar</button></div>`);$('#mX').onclick=closeModal;$('#mOk').onclick=()=>{p.estado='rechazado';p.nota=$('#rM').value.trim()||'Rechazado por el profesor';closeModal();toast('Pago rechazado. El alumno ve el motivo.');keep()}});
+ if(v==='clases'){document.querySelectorAll('[data-cl]').forEach(r=>r.onclick=()=>{claSel=r.dataset.cl;route();const c=$('#insC');if(c)c.scrollIntoView({block:'start'})});const n=$('#cNew');if(n)n.onclick=claseModal;
+  const ig=$('#iGo');if(ig)ig.onclick=()=>{const a=$('#iA').value;if(!a)return toast('Elegí un alumno.');INSC.push([claSel,a]);toast('Inscripto. Ya cuenta en la cuota y en la asistencia.');keep()};
+  document.querySelectorAll('[data-baja]').forEach(b=>b.onclick=()=>{INSC=INSC.filter(x=>!(x[0]===claSel&&x[1]===b.dataset.baja));toast('Ya no está inscripto en esta clase.');keep()})}
+ if(v==='cobranzas'){$('#cR').onchange=e=>{cobRec=e.target.value;keep()};document.querySelectorAll('[data-wa]').forEach(b=>b.onclick=()=>{const a=alu(b.dataset.wa);toast('En el sistema real se abre WhatsApp con el mensaje a '+a.n.split(' ')[0]+'. En la demo no se envía nada.')})}
+ if(v==='usuarios'){const q=$('#uQ');q.oninput=e=>{usrQ=e.target.value;const p=q.selectionStart;route();const n=$('#uQ');n.focus();n.setSelectionRange(p,p)};$('#uR').onchange=e=>{usrRec=e.target.value;keep()};$('#uNew').onclick=()=>usuarioModal(null);document.querySelectorAll('[data-us]').forEach(r=>r.onclick=()=>usuarioModal(alu(r.dataset.us)))}
+ if(v==='mispagos'){let comp=false;$('#mC').onclick=()=>{comp=true;$('#mCn').textContent='comprobante.jpg · listo';toast('En la demo no se sube ningún archivo.')};
+  $('#mGo').onclick=()=>{const m=+$('#mM').value.replace(/\D/g,'');if(!(m>0))return toast('Completá el monto.');if($('#mMe').value!=='Efectivo'&&!comp)return toast('Adjuntá el comprobante de la transferencia.');PAGOS.push({id:'pg'+np++,a:ME_ALUMNO,per:$('#mP').value,monto:m,medio:$('#mMe').value,fecha:TODAY,estado:'pendiente',comp,nota:''});toast('Pago registrado. Queda en revisión hasta que lo apruebe un profesor.');keep()}}
+ if(v==='misinformes'){const g=$('#nGo');if(g)g.onclick=()=>{const t=$('#nT').value.trim();if(t.length<15)return toast('Contá un poco más de lo que trabajaste.');INFORMES.unshift({id:'in'+(INFORMES.length+1),a:ME_ALUMNO,c:$('#nC').value,fecha:$('#nF').value||TODAY,txt:t,leido:false});toast('Informe enviado. Lo ven tus profesores.');keep()}}}
+addEventListener('hashchange',route);
+
+/* ---------- recorrido ---------- */
+const TOUR=[['admin','calendario','El calendario','Todas las clases del mes en sus días y horarios, con los cumpleaños marcados.'],['admin','asistencia','Tomar asistencia','El profesor marca quién vino y ve al lado cómo está cada alumno con la cuota.'],['admin','cobranzas','Cobranzas','Lo esperado según las clases de cada alumno, lo cobrado por caja y por medio, y los deudores.'],['admin','pagos','Revisar pagos','Los alumnos suben el comprobante y acá se aprueba o se rechaza con un motivo.'],['alumno','mispagos','Lo que ve el alumno','Su cuota, el aviso si debe, y el registro del pago con comprobante.'],['alumno','misinformes','Informes de clase','Después de cada clase especial, el alumno cuenta qué trabajó. Solo lo ven él y los profes.']];
+function abrirTour(){modal(`<h3>Recorrido en 2 minutos</h3><p class="small muted" style="margin:0">Sistema para una academia de artes marciales: clases, asistencia, cuotas e informes, con lo que ve cada rol. Tocá un paso para ir.</p><ol class="tour-list">${TOUR.map((t,i)=>`<li data-t="${i}"><span class="k">${i+1}</span><div><b>${t[2]}</b><span class="small muted">${t[3]}</span></div></li>`).join('')}</ol><div class="acts"><button class="btn pri" id="mX">Empezar</button></div>`);
+ $('#mX').onclick=closeModal;document.querySelectorAll('[data-t]').forEach(li=>li.onclick=()=>{const t=TOUR[+li.dataset.t];closeModal();if(ROLE!==t[0])setRole(t[0]);location.hash='#'+t[1];toast(t[3])})}
+$('#tourBtn').onclick=abrirTour;
+setRole('admin');setTimeout(()=>{if(innerWidth>640)abrirTour()},400);
+})();
+</script>
+</body>
+</html>
