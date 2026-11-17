@@ -1,0 +1,1524 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Automotora · Demo · FloWer</title><meta name="description" content="Demo con datos ficticios de un catálogo online para una agencia de autos, con consulta por WhatsApp y panel de administración."><meta name="robots" content="noindex"><meta name="theme-color" content="#062B4D"><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22380%22%20height%3D%22228%22%20viewBox%3D%220%200%20380%20228%22%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%22368%22%20height%3D%22216%22%20rx%3D%2240%22%20fill%3D%22%23053661%22%20stroke%3D%22%23C9D2DC%22%20stroke-width%3D%2210%22%2F%3E%3Cpath%20d%3D%22M150%2C34%20L230%2C34%20L268%2C112%20L112%2C112%20Z%22%20fill%3D%22%230B3A66%22%20stroke%3D%22%23C9D2DC%22%20stroke-width%3D%224%22%2F%3E%3Cpath%20d%3D%22M186%2C44%20L194%2C44%20L196%2C62%20L184%2C62%20Z%20M183%2C74%20L197%2C74%20L200%2C100%20L180%2C100%20Z%22%20fill%3D%22%23F5B301%22%2F%3E%3Ctext%20x%3D%22190%22%20y%3D%22166%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%20Black%2CArial%2CHelvetica%2Csans-serif%22%20font-weight%3D%22900%22%20font-size%3D%2254%22%20fill%3D%22%23fff%22%20letter-spacing%3D%222%22%3ERUTA%20SUR%3C%2Ftext%3E%3Ctext%20x%3D%22190%22%20y%3D%22200%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2CHelvetica%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2224%22%20fill%3D%22%23C9D2DC%22%20letter-spacing%3D%227%22%3EAUTOMOTORES%3C%2Ftext%3E%3C%2Fsvg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="app-fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&display=swap">
+<style id="app-style">
+:root{
+  --navy:#062B4D; --navy-2:#0B3A66; --navy-deep:#041D35; --shield:#053661;
+  --ink:#0B1A2B; --muted:#586A7E; --paper:#EDF1F5; --card:#FFFFFF; --line:#D5DDE6;
+  --go:#22C55E; --sky:#1E9BE0; --hot:#E23B2E; --sun:#F5B301;
+  --silver:#C9D2DC;
+  --chrome:linear-gradient(180deg,#FFFFFF 0%,#D9E0E7 40%,#8E9BAA 52%,#E4E9EE 100%);
+  --font:"Archivo","Arial",Helvetica,sans-serif;
+  --r:14px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(76px + env(safe-area-inset-top,0px))}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--font);font-stretch:100%;-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
+img{max-width:100%;display:block}
+[hidden]{display:none!important}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:20px}
+@media (max-width:480px){.wrap{padding-inline:16px}}
+h1,h2,h3{margin:0;text-wrap:balance}
+.disp{font-family:var(--font);font-stretch:125%;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:1}
+.price{font-variant-numeric:tabular-nums}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer;text-decoration:none;line-height:1.1;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn-wa{background:#1FB855;color:#fff}
+.btn-wa:hover{background:#18A34A}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-navy:hover{background:var(--navy-2)}
+.btn-chrome{background:var(--chrome);color:var(--ink);box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 1px 0 rgba(0,0,0,.25)}
+.btn-ghost{background:transparent;color:inherit;box-shadow:inset 0 0 0 2px currentColor}
+.btn-sm{padding:9px 13px;font-size:14px}
+.btn-icon{padding:8px;width:40px;height:40px}
+.btn-icon svg{width:22px;height:22px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:30;background:var(--navy);color:#fff;padding-top:env(safe-area-inset-top,0px);border-bottom:2px solid var(--silver)}
+.top .wrap{display:flex;align-items:center;gap:16px;min-height:72px}
+.logo{display:block;flex:none;line-height:0}
+.logo img{height:52px;width:auto}
+.nav{display:flex;gap:2px;margin-left:auto}
+.nav a{font-weight:600;text-decoration:none;padding:8px 12px;border-radius:8px;font-size:15px;color:#DCE5EE}
+.nav a:hover{background:var(--navy-2);color:#fff}
+@media (max-width:860px){.nav{display:none}.top .btn-wa{margin-left:auto}}
+@media (max-width:480px){.logo img{height:44px}.top .btn-wa span{display:none}.top .btn-wa{padding:9px}}
+
+/* hero */
+.hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(165deg,var(--navy-2) 0%,var(--navy) 55%,var(--navy-deep) 100%)}
+.hero::before{content:"";position:absolute;left:-10%;right:-10%;bottom:-2px;height:38%;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.05) 100%);transform:skewY(-4deg);transform-origin:left}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding-block:56px 64px}
+.hero h1{font-size:clamp(36px,5.4vw,68px);font-weight:800;font-stretch:125%;text-transform:uppercase;line-height:.98;letter-spacing:-.015em;margin:0 0 18px}
+.hero .lead{font-size:19px;color:#C6D3E1;max-width:40ch;margin:0 0 28px}
+.hero .ctas{display:flex;gap:12px;flex-wrap:wrap}
+.hero .btn-ghost{color:#fff}
+.hero .feat{max-width:440px;justify-self:end;width:100%}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:36px;padding-block:40px 48px}.hero .feat{justify-self:start}}
+
+/* services strip */
+.strip{background:var(--chrome);color:var(--navy);border-block:1px solid #7F8C9B}
+.strip .wrap{display:flex;justify-content:center;align-items:center;gap:22px;flex-wrap:wrap;padding-block:14px}
+.strip span{font-stretch:125%;font-weight:800;text-transform:uppercase;font-size:clamp(16px,2.4vw,22px);letter-spacing:.02em}
+@media (max-width:480px){.strip .wrap{gap:10px}.strip span{font-size:15px;font-stretch:108%}.strip i{width:7px!important;height:7px!important}}
+.strip i{width:9px;height:9px;background:var(--navy);transform:rotate(45deg);display:inline-block}
+
+/* sections */
+section.block{padding-block:64px}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.sec-head h2{font-size:clamp(32px,4.6vw,52px);font-weight:800;font-stretch:125%;text-transform:uppercase;line-height:1;letter-spacing:-.01em;color:var(--navy)}
+.sec-head p{margin:8px 0 0;color:var(--muted);max-width:56ch}
+.empty{border:2px dashed var(--line);border-radius:var(--r);padding:28px;text-align:center;color:var(--muted);background:#fff}
+
+/* offer "story" cards */
+.stories{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:24px}
+.story{position:relative;background:#08111C;color:#fff;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 40px -22px rgba(4,29,53,.7)}
+.story .media{position:relative;aspect-ratio:4/3;background:#0B1A2B}
+.story .media img,.story .media .ph{width:100%;height:100%;object-fit:cover}
+.story .media::after{pointer-events:none;content:"";position:absolute;inset:auto 0 0 0;height:30%;background:linear-gradient(180deg,rgba(8,17,28,0),#08111C)}
+.story .body{padding:6px 20px 22px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;flex:1;position:relative;z-index:1}
+.story h3{font-size:clamp(20px,2.2vw,25px);font-weight:800;font-stretch:125%;text-transform:uppercase;line-height:1.02}
+.story .ver{margin:2px 0 0;color:#D6DEE7;font-weight:600;font-size:15px}
+.story .spec{margin:0;color:#9FB0C2;font-size:15px;font-variant-numeric:tabular-nums}
+.story .big{font-stretch:125%;font-weight:900;font-size:clamp(56px,6.4vw,76px);line-height:.95;letter-spacing:-.03em;margin-top:12px}
+.story .big.ask{font-size:28px;letter-spacing:0;margin-block:18px 8px;color:#D6DEE7}
+.story .old{color:#9FB0C2;font-size:15px;text-decoration:line-through;text-decoration-color:var(--hot);text-decoration-thickness:2px}
+.band{--b:var(--go);--bt:#04121F;display:block;width:100%;background:var(--b);color:var(--bt);font-weight:800;font-stretch:112%;text-transform:uppercase;font-size:15px;letter-spacing:.02em;padding:7px 12px;margin-top:10px}
+.story .until{font-size:13px;color:#9FB0C2;margin-top:6px}
+.story .actions{display:flex;gap:10px;margin-top:auto;padding-top:18px;width:100%}
+.story .actions .btn{flex:1}
+.tag{position:absolute;left:12px;top:12px;z-index:2;background:#fff;color:var(--navy);font-weight:700;font-size:13px;padding:5px 11px;border-radius:999px}
+.sticker{position:absolute;right:12px;top:12px;z-index:2;background:var(--hot);color:#fff;font-weight:900;font-stretch:125%;font-size:20px;padding:10px 8px;border-radius:50%;width:66px;height:66px;display:grid;place-items:center;transform:rotate(8deg)}
+
+/* stock */
+.tools{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.search{flex:1 1 280px;display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #B9C5D2;border-radius:10px;padding:2px 6px 2px 14px}
+.search:focus-within{border-color:var(--navy)}
+.search input{border:0;outline:0;background:transparent;padding:10px 4px;flex:1;min-width:0}
+.sort{border:1.5px solid #B9C5D2;border-radius:10px;padding:10px 12px;background:#fff}
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.chip{display:inline-flex;align-items:center;gap:8px;border:1.5px solid #B9C5D2;background:#fff;border-radius:999px;padding:7px 14px 7px 10px;font-weight:600;cursor:pointer;font-size:15px}
+.chip i{width:12px;height:12px;border-radius:50%;flex:none}
+.chip small{color:var(--muted);font-weight:600}
+.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip[aria-pressed="true"] small{color:#B9C8D8}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+.car{position:relative;background:var(--card);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--line)}
+.car:hover{border-color:#9FB0C2}
+.car .media{position:relative;aspect-ratio:4/3;background:#DDE4EB}
+.car .media img,.car .media .ph{width:100%;height:100%;object-fit:cover}
+.car.sold .media img{filter:grayscale(.7) brightness(.9)}
+.ribbon{position:absolute;left:-25%;right:-25%;top:50%;z-index:2;transform:translateY(-50%) rotate(-14deg);background:var(--hot);color:#fff;text-align:center;font-weight:900;font-stretch:125%;text-transform:uppercase;letter-spacing:.08em;font-size:clamp(22px,3vw,30px);padding:8px 0;border-block:4px solid #fff;box-shadow:0 8px 20px rgba(0,0,0,.35);pointer-events:none}
+.gal .main .ribbon{font-size:clamp(28px,5vw,48px)}
+.flag{position:absolute;left:10px;top:10px;font-weight:700;font-size:13px;padding:4px 10px;border-radius:6px;background:var(--hot);color:#fff}
+.flag.star{background:var(--navy);color:#fff}
+.flag.res{background:var(--sun);color:var(--ink)}
+.flag.sold{background:var(--ink);color:#fff}
+.slides{position:absolute;inset:0}
+.slides>img,.slides>.ph{width:100%;height:100%;object-fit:cover}
+.tapnext{position:absolute;inset:0;z-index:2;border:0;background:transparent;cursor:pointer;padding:0}
+.tapnext:focus-visible{outline:none}
+.cnav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:var(--ink);font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.25);opacity:.9}
+.cprev{left:8px}.cnext{right:8px}
+@media (hover:hover){.cnav{opacity:0;transition:opacity .15s}.media:hover .cnav,.cnav:focus-visible{opacity:1}}
+.cctr{position:absolute;right:10px;bottom:10px;z-index:3;background:rgba(4,18,31,.72);color:#fff;font-size:12px;font-weight:600;padding:3px 8px;border-radius:6px;pointer-events:none}
+.dots{position:absolute;left:0;right:0;bottom:12px;z-index:3;display:flex;justify-content:center;gap:5px;pointer-events:none}
+.dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 0 0 1px rgba(0,0,0,.2)}
+.dots i.on{background:#fff}
+.story .dots{bottom:34px}.story .cctr{bottom:auto;top:12px;right:12px}
+.story .media:has(.sticker) .cctr{display:none}
+.count{position:absolute;right:10px;bottom:10px;background:rgba(4,18,31,.72);color:#fff;font-size:12px;font-weight:600;padding:3px 8px;border-radius:6px}
+.car .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.car .cat{font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px}
+.car .cat i{width:9px;height:9px;border-radius:50%}
+.car h3{font-size:20px;font-weight:800;font-stretch:115%;line-height:1.15}
+.open{all:unset;cursor:pointer}
+.open::after{content:"";position:absolute;inset:0;z-index:1}
+.open:focus-visible{outline:none}
+.car:has(.open:focus-visible){outline:3px solid var(--sky);outline-offset:2px}
+.car .ver{margin:-2px 0 0;color:var(--muted);font-size:15px}
+.specs{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.specs span{background:var(--paper);border-radius:6px;padding:3px 8px;font-size:13px;font-weight:600;color:#334458;font-variant-numeric:tabular-nums}
+.car .fin{margin:0;font-size:13px;font-weight:700;color:#12813D}
+.car .foot{margin-top:auto;padding-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.car .pr{font-stretch:125%;font-weight:900;font-size:28px;letter-spacing:-.02em;color:var(--navy)}
+.car .pr.ask{font-stretch:100%;font-size:15px;font-weight:600;color:var(--muted);letter-spacing:0}
+.car .foot .btn{position:relative;z-index:2}
+.more{grid-column:1/-1;text-align:center;padding-top:8px}
+
+/* placeholder art */
+.ph{--c:var(--navy-2);display:grid;place-items:center;background:linear-gradient(160deg,var(--c),#0A2744);color:#fff}
+.ph svg{width:58%;height:auto;opacity:.85}
+
+/* detail modal */
+.dlg{position:fixed;inset:0;z-index:50;background:rgba(4,18,31,.72);display:flex;align-items:center;justify-content:center;padding:24px}
+.dlg .panel{position:relative;background:#fff;border-radius:18px;width:min(1040px,100%);max-height:calc(100% - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto;display:grid;grid-template-columns:1.25fr 1fr}
+.dlg .x{position:absolute;right:12px;top:12px;z-index:3;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:24px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.gal{background:#0B1A2B;display:flex;flex-direction:column}
+.gal .main{position:relative;aspect-ratio:4/3;overflow:hidden}
+.gal .main img,.gal .main .ph{width:100%;height:100%;object-fit:cover}
+.gal .nav-b{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:22px;cursor:pointer;display:grid;place-items:center}
+.gal .prev{left:10px}.gal .next{right:10px}
+.gal .ctr{position:absolute;left:12px;bottom:12px;background:rgba(4,18,31,.72);color:#fff;font-size:13px;font-weight:600;padding:3px 9px;border-radius:6px}
+.thumbs{display:flex;gap:8px;padding:10px;overflow-x:auto}
+.thumbs button{flex:none;width:76px;height:57px;border-radius:8px;overflow:hidden;border:2px solid transparent;padding:0;cursor:pointer;background:none;opacity:.7}
+.thumbs button[aria-current="true"]{border-color:#fff;opacity:1}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+.info{padding:26px 24px 24px;display:flex;flex-direction:column;gap:12px}
+.info .cat{font-size:14px;font-weight:600;color:var(--muted)}
+.info h2{font-size:clamp(26px,3vw,34px);font-weight:800;font-stretch:125%;text-transform:uppercase;line-height:1;color:var(--navy)}
+.info .ver{margin:-4px 0 0;color:var(--muted);font-size:17px}
+.info .big{font-stretch:125%;font-weight:900;font-size:48px;line-height:1;letter-spacing:-.03em;color:var(--ink)}
+.info .full{font-size:14px;color:var(--muted)}
+.info .old{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--hot);text-decoration-thickness:2px}
+.info .band{border-radius:6px;margin:0;width:auto;align-self:flex-start}
+.st-note{font-weight:700;padding:8px 12px;border-radius:8px;background:#FFF4D6;color:#6B4E00}
+.st-note.sold{background:#EEF1F4;color:var(--ink)}
+dl.sp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:4px 0 0;border-top:1px solid var(--line)}
+dl.sp div{padding:9px 0;border-bottom:1px solid var(--line)}
+dl.sp dt{font-size:13px;color:var(--muted)}
+dl.sp dd{margin:0;font-weight:700}
+.info .desc{margin:0;white-space:pre-line}
+.info .acts{display:grid;gap:10px;margin-top:6px;justify-content:stretch}
+.info .acts .btn{width:100%;padding:14px 18px}
+.info .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:820px){
+  .dlg{padding:0;align-items:stretch}
+  .dlg .panel{grid-template-columns:1fr;border-radius:0;max-height:none;height:100%;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .dlg .x{top:calc(10px + env(safe-area-inset-top,0px))}
+}
+
+/* financing / trade-in */
+.fin-sec .wrap{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.fin-card{background:var(--navy);color:#fff;border-radius:18px;padding:32px 30px}
+.fin-card h2{font-size:clamp(30px,4vw,44px);font-weight:800;font-stretch:125%;text-transform:uppercase;line-height:1}
+.fin-card p{color:#C6D3E1;margin:14px 0 0;font-size:17px;max-width:48ch}
+.steps{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:14px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;counter-increment:s}
+.steps li::before{content:counter(s);width:44px;height:44px;border-radius:50%;background:var(--chrome);color:var(--navy);display:grid;place-items:center;font-weight:900;font-stretch:125%;font-size:20px}
+.steps b{display:block;font-size:17px}
+.steps span{color:#AFC0D2;font-size:15px}
+.form-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px 26px;display:grid;gap:14px}
+.form-card h3{font-size:24px;font-weight:800;font-stretch:115%;color:var(--navy)}
+.form-card .sub{margin:-8px 0 0;color:var(--muted)}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:560px){.fgrid{grid-template-columns:1fr}}
+.field{display:grid;gap:4px}
+.field.full{grid-column:1/-1}
+.field label{font-size:14px;font-weight:600;color:#2A3B4F}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid #B9C5D2;border-radius:10px;padding:10px 12px;background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--navy);outline:none}
+.field textarea{min-height:88px;resize:vertical}
+.pmf{display:flex;gap:8px;flex-wrap:wrap}
+.pmf .t{position:relative;width:84px;height:63px;border-radius:8px;overflow:hidden;background:#DDE4EB}
+.pmf .t img{width:100%;height:100%;object-fit:cover}
+.pmf .t button{position:absolute;right:3px;top:3px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(4,18,31,.8);color:#fff;cursor:pointer;line-height:1;font-size:16px}
+.pmf .addp{position:relative;overflow:hidden;width:84px;height:63px;border:2px dashed #9FB0C2;border-radius:8px;display:grid;place-items:center;font-size:14px;font-weight:700;color:var(--navy);cursor:pointer;background:#fff}
+.pmf .addp input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.pmf .addp:focus-within{outline:3px solid var(--sky);outline-offset:2px}
+.pmstep{background:#EAF7EF;border:1.5px solid #9ED9B3;border-radius:12px;padding:14px;display:grid;gap:10px}
+.pmstep p{margin:0}
+.pmnote:empty{display:none}
+.err{color:#B3261E;font-weight:600;margin:0;font-size:14px}
+@media (max-width:860px){.fin-sec .wrap{grid-template-columns:1fr}}
+
+/* contact */
+.contact{background:var(--navy-deep);color:#fff}
+.contact .wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:36px;padding-block:60px}
+.contact h2{font-size:clamp(32px,5vw,56px);font-weight:800;font-stretch:125%;text-transform:uppercase;line-height:1}
+.contact p{color:#C6D3E1;font-size:18px;max-width:42ch}
+.cinfo{display:grid;gap:12px;align-content:start}
+.cinfo .item{background:var(--navy);border-radius:12px;padding:14px 16px;border:1px solid #16466F}
+.cinfo .k{font-size:13px;color:#9FB0C2;font-weight:600}
+.cinfo .v{font-size:19px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.copy{background:transparent;border:1.5px solid #3D5F80;color:#DCE5EE;border-radius:999px;padding:3px 10px;font-size:13px;cursor:pointer}
+@media (max-width:760px){.contact .wrap{grid-template-columns:1fr}}
+footer.foot{background:#020F1C;color:#8193A6;font-size:14px}
+footer.foot .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:18px}
+footer.foot img{height:40px;width:auto}
+
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:25;width:60px;height:60px;border-radius:50%;background:#1FB855;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.3);border:3px solid #fff}
+.fab svg{width:30px;height:30px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:90;background:var(--ink);color:#fff;border-radius:999px;padding:10px 18px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:calc(100% - 32px);text-align:center}
+
+/* ---------- admin ---------- */
+.admin-pill{position:fixed;left:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:25;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.sample-note{background:var(--sun);color:var(--ink);font-size:14px;font-weight:600;text-align:center;padding:8px 16px}
+.adm{position:fixed;inset:0;z-index:60;display:flex;justify-content:flex-end;background:rgba(4,18,31,.55)}
+.adm .panel{width:min(780px,100%);height:100%;background:var(--paper);display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(0,0,0,.3)}
+.adm header{background:var(--navy);color:#fff;padding:14px 18px 10px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:grid;gap:12px}
+.adm .hrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.adm .hrow h2{font-size:24px;font-weight:800;font-stretch:125%;text-transform:uppercase;margin-right:auto}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:0;background:var(--navy-2);color:#DCE5EE;padding:8px 14px;border-radius:999px;font-weight:700;cursor:pointer}
+.tab[aria-selected="true"]{background:#fff;color:var(--navy)}
+.status{font-size:14px;color:#C6D3E1}
+.status.dirty{color:#FFD466}
+.status.err{color:#FF9A90}
+.adm .content{overflow:auto;padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));flex:1;display:grid;gap:14px;align-content:start}
+.adm .hint{font-size:14px;color:var(--muted);margin:0}
+.arow{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;align-items:center;gap:12px}
+.arow .thumb{width:72px;height:54px;border-radius:8px;overflow:hidden;flex:none}
+.arow .thumb img,.arow .thumb .ph{width:100%;height:100%;object-fit:cover}
+.arow{flex-wrap:wrap}
+.arow .meta{flex:1;min-width:0}
+.quick{display:flex;gap:8px;flex-wrap:wrap;align-items:center;width:100%;padding-top:10px;border-top:1px dashed var(--line)}
+.quick .money{display:flex;align-items:center;gap:2px;border:1.5px solid #B9C5D2;border-radius:10px;background:#fff;padding-left:10px;flex:1 1 170px;font-weight:700;color:var(--muted)}
+.quick .money:focus-within{border-color:var(--navy)}
+.quick .money input{border:0;outline:0;padding:8px;width:100%;min-width:0;background:transparent;font-weight:600;color:var(--ink)}
+.quick select{border:1.5px solid #B9C5D2;border-radius:10px;padding:8px 10px;background:#fff}
+.arow .meta strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arow .meta span{font-size:13px;color:var(--muted)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.form{background:#fff;border:1.5px solid #9FB0C2;border-radius:14px;padding:16px;display:grid;gap:12px}
+.form .ftitle{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.form .ftitle strong{font-size:19px;font-weight:800;font-stretch:115%;color:var(--navy)}
+.check{display:flex;gap:8px;align-items:center;font-weight:600}
+.check input{width:18px;height:18px;accent-color:var(--navy)}
+.gedit{display:flex;gap:10px;flex-wrap:wrap}
+.gedit .gi{position:relative;width:120px;height:90px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#DDE4EB}
+.gedit .gi img{width:100%;height:100%;object-fit:cover}
+.gedit .gi .del{position:absolute;right:4px;top:4px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(4,18,31,.8);color:#fff;cursor:pointer;font-size:16px;line-height:1}
+.gedit .gi .mk{position:absolute;left:4px;bottom:4px;border:0;border-radius:6px;font-size:12px;font-weight:700;padding:2px 7px;cursor:pointer;background:rgba(255,255,255,.92);color:var(--navy)}
+.gedit .gi .mk.on{background:var(--navy);color:#fff;cursor:default}
+.gedit .add{display:grid;place-items:center;text-align:center;font-weight:700;color:var(--navy);border:2px dashed #9FB0C2;background:#fff;cursor:pointer;font-size:14px;padding:6px}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.danger{background:#fff;color:var(--hot);box-shadow:inset 0 0 0 2px var(--hot)}
+.danger.solid{background:var(--hot);color:#fff}
+.pill{font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px;background:#E3E8EE;color:var(--muted)}
+.pill.on{background:#D9F5E3;color:#12813D}
+.pill.exp{background:#FFE1DE;color:#B3261E}
+.pill.res{background:#FFF1C7;color:#6B4E00}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #9FB0C2;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--navy)}
+
+/* login */
+.lock-wrap{position:fixed;inset:0;z-index:100;background:linear-gradient(165deg,var(--navy-2),var(--navy-deep));display:grid;place-items:center;padding:20px}
+.lock-card{background:#fff;border-radius:18px;padding:28px 26px;width:min(380px,100%);display:grid;gap:14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+.lock-card img{background:var(--navy);border-radius:12px;padding:10px 14px;width:auto;height:72px;justify-self:start;box-sizing:content-box}
+.lock-card h2{font-size:26px;font-weight:800;font-stretch:125%;text-transform:uppercase;color:var(--navy)}
+.lock-card .btn{width:100%;padding:13px}
+.lk-back{font-size:14px;color:var(--muted);justify-self:center}
+/* historias */
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.seg{grid-template-columns:1fr}}
+.seg label{display:flex;gap:10px;align-items:flex-start;border:1.5px solid #B9C5D2;border-radius:12px;padding:12px;cursor:pointer;background:#fff}
+.seg label:has(input:checked){border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy);background:#F3F7FB}
+.seg input{margin-top:3px;accent-color:var(--navy);width:18px;height:18px;flex:none}
+.seg small{display:block;color:var(--muted);font-size:13px}
+.hlist{display:grid;gap:8px}
+.hitem{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:8px 12px 8px 10px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.hitem.on{border-color:var(--navy);background:#F3F7FB}
+.hitem input{width:22px;height:22px;accent-color:var(--navy);flex:none}
+.hitem .thumb{width:64px;height:48px;border-radius:8px;overflow:hidden;flex:none}
+.hitem .thumb img,.hrow .thumb .ph{width:100%;height:100%;object-fit:cover}
+.hitem .meta{flex:1;min-width:0}
+.hitem .meta strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hitem .meta span{font-size:13px;color:var(--muted)}
+.hbar{position:sticky;bottom:calc(-18px - env(safe-area-inset-bottom,0px));z-index:2;background:var(--paper);border-top:1px solid var(--line);margin:0 -18px;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hprev{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.hprev img{height:300px;width:auto;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.2);flex:none}
+</style>
+<style>
+.demo-strip{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:8px 12px;background:#000;color:#fff;font:600 13px/1.3 Archivo,Arial,sans-serif;text-align:center}
+.demo-strip a{color:#fff}.demo-strip .back{opacity:.85;text-underline-offset:3px}
+.demo-strip button{background:none;border:1px solid #555;color:#fff;border-radius:999px;padding:4px 12px;font:700 12.5px Archivo,Arial,sans-serif;cursor:pointer}
+.demo-strip .cta{background:#22C55E;color:#04210f;text-decoration:none;padding:5px 14px;border-radius:999px;font-weight:800}
+@media (max-width:520px){.demo-strip .long{display:none}}
+.demo-wa{position:fixed;inset:0;z-index:9999;background:rgba(4,29,53,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.demo-wa .box{background:#fff;color:#0B1A2B;border-radius:16px;max-width:440px;width:100%;padding:20px;font:15px/1.5 Archivo,Arial,sans-serif;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.demo-wa h3{margin:0 0 6px;font-size:18px}.demo-wa .msg{background:#DCF8C6;border-radius:12px 12px 4px 12px;padding:10px 14px;white-space:pre-line;margin:12px 0;font-size:14.5px}
+.demo-wa .row{display:flex;justify-content:flex-end;gap:8px}
+.demo-wa button{border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;background:#062B4D;color:#fff}
+</style>
+</head><body>
+<noscript><p style="padding:40px 20px;font-family:Arial">Esta demo necesita JavaScript.</p></noscript>
+<div class="demo-strip" role="region" aria-label="Aviso de demo"><a class="back" href="../../proyectos.html#automotora">← FloWer</a><span>Demo con datos ficticios<span class="long"> · agencia, unidades y precios inventados</span></span><button type="button" id="demoAdmin">⚙ Ver el panel de la agencia</button><a class="cta" href="https://wa.me/5492975212008" target="_blank" rel="noopener">Quiero uno así</a></div>
+<div id="root"></div>
+<script>
+(function(){
+function show(url){var t="";try{t=new URL(url).searchParams.get("text")||""}catch(e){}
+ var d=document.createElement("div");d.className="demo-wa";d.innerHTML='<div class="box" role="dialog" aria-modal="true"><h3>Así le llega la consulta a la agencia</h3><p style="margin:0;color:#586A7E">En el sitio real se abre WhatsApp con este mensaje ya escrito. En la demo no se envía nada.</p><div class="msg"></div><div class="row"><button type="button">Entendido</button></div></div>';
+ d.querySelector(".msg").textContent=t||"¡Hola! Quería hacer una consulta.";document.body.appendChild(d);var b=d.querySelector("button");b.focus();
+ var close=function(){d.remove()};b.onclick=close;d.onclick=function(e){if(e.target===d)close()};document.addEventListener("keydown",function k(e){if(e.key==="Escape"){close();document.removeEventListener("keydown",k)}})}
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('a[href^="https://wa.me/"]');if(!a||a.closest(".demo-strip"))return;e.preventDefault();e.stopPropagation();show(a.href)},true);
+var wo=window.open;window.open=function(u){if(String(u).indexOf("https://wa.me/")===0){show(u);return null}return wo.apply(window,arguments)};
+document.getElementById("demoAdmin").onclick=function(){location.hash="admin"};
+})();
+</script>
+
+<script type="application/json" id="app-data">{
+ "settings": {
+  "whatsapp": "5492970000000",
+  "whatsappVisible": "297 000-0000",
+  "instagram": "",
+  "direccion": "Av. de los Inmigrantes 1450 (dirección ficticia)",
+  "horario": "Lunes a viernes de 9 a 13 y de 16 a 20 · Sábados de 10 a 13",
+  "ciudad": "la Patagonia",
+  "heroTitulo": "Tu próximo vehículo está en Ruta Sur",
+  "heroTexto": "Pickups, SUV, autos y utilitarios. Tomamos tu usado y te ayudamos con la financiación.",
+  "financTexto": "Tomamos tu usado como parte de pago y trabajamos con financiación bancaria en unidades seleccionadas. Consultanos y armamos la mejor opción para vos.",
+  "ejemplo": false
+ },
+ "categorias": [
+  {
+   "id": "pickup",
+   "nombre": "Pickups",
+   "color": "navy"
+  },
+  {
+   "id": "suv",
+   "nombre": "SUV",
+   "color": "sky"
+  },
+  {
+   "id": "auto",
+   "nombre": "Autos",
+   "color": "go"
+  },
+  {
+   "id": "util",
+   "nombre": "Utilitarios y camiones",
+   "color": "sun"
+  }
+ ],
+ "vehiculos": [
+  {
+   "id": "v1",
+   "marca": "Toyota",
+   "modelo": "Hilux",
+   "version": "SRX 4x4 2.8 TDI",
+   "anio": 2021,
+   "km": 78000,
+   "cat": "pickup",
+   "combustible": "Diésel",
+   "caja": "Automática",
+   "color": "Blanco",
+   "moneda": "ARS",
+   "precio": 46500000,
+   "financ": "Financiación bancaria",
+   "estado": "disponible",
+   "fotos": [
+    "img:v1a",
+    "img:v1b"
+   ],
+   "desc": "Única mano, service oficial al día. Cubiertas nuevas.",
+   "destacado": true
+  },
+  {
+   "id": "v2",
+   "marca": "Volkswagen",
+   "modelo": "Amarok",
+   "version": "V6 Highline",
+   "anio": 2022,
+   "km": 62000,
+   "cat": "pickup",
+   "combustible": "Diésel",
+   "caja": "Automática",
+   "color": "Gris",
+   "moneda": "ARS",
+   "precio": 52000000,
+   "financ": "100% financiada",
+   "estado": "disponible",
+   "fotos": [
+    "img:v2a",
+    "img:v2b"
+   ],
+   "desc": "Cuero, cámara de retroceso y lona marítima.",
+   "destacado": true
+  },
+  {
+   "id": "v3",
+   "marca": "Ford",
+   "modelo": "Ranger",
+   "version": "XLT 3.2 4x2",
+   "anio": 2019,
+   "km": 118000,
+   "cat": "pickup",
+   "combustible": "Diésel",
+   "caja": "Manual",
+   "color": "Azul",
+   "moneda": "ARS",
+   "precio": 31500000,
+   "financ": "",
+   "estado": "reservado",
+   "fotos": [
+    "img:v3a",
+    "img:v3b"
+   ],
+   "desc": "Ideal trabajo. Enganche y protector de caja.",
+   "destacado": false
+  },
+  {
+   "id": "v4",
+   "marca": "Toyota",
+   "modelo": "SW4",
+   "version": "SRX 7 asientos",
+   "anio": 2021,
+   "km": 85000,
+   "cat": "suv",
+   "combustible": "Diésel",
+   "caja": "Automática",
+   "color": "Plata",
+   "moneda": "ARS",
+   "precio": 58000000,
+   "financ": "100% financiada",
+   "estado": "disponible",
+   "fotos": [
+    "img:v4a",
+    "img:v4b"
+   ],
+   "desc": "Tope de gama, 7 asientos, techo corredizo.",
+   "destacado": true
+  },
+  {
+   "id": "v5",
+   "marca": "Jeep",
+   "modelo": "Renegade",
+   "version": "Sport 1.8",
+   "anio": 2020,
+   "km": 54000,
+   "cat": "suv",
+   "combustible": "Nafta",
+   "caja": "Manual",
+   "color": "Rojo",
+   "moneda": "ARS",
+   "precio": 24900000,
+   "financ": "",
+   "estado": "disponible",
+   "fotos": [
+    "img:v5a",
+    "img:v5b"
+   ],
+   "desc": "Muy cuidada, todos los services.",
+   "destacado": false
+  },
+  {
+   "id": "v6",
+   "marca": "Volkswagen",
+   "modelo": "Gol Trend",
+   "version": "Comfortline 5p",
+   "anio": 2018,
+   "km": 96000,
+   "cat": "auto",
+   "combustible": "Nafta",
+   "caja": "Manual",
+   "color": "Blanco",
+   "moneda": "ARS",
+   "precio": 12800000,
+   "financ": "Tomamos tu usado",
+   "estado": "disponible",
+   "fotos": [
+    "img:v6a",
+    "img:v6b"
+   ],
+   "desc": "Aire, dirección, levantavidrios.",
+   "destacado": false
+  },
+  {
+   "id": "v7",
+   "marca": "Peugeot",
+   "modelo": "208",
+   "version": "Allure 1.6",
+   "anio": 2021,
+   "km": 41000,
+   "cat": "auto",
+   "combustible": "Nafta",
+   "caja": "Manual",
+   "color": "Negro",
+   "moneda": "ARS",
+   "precio": 19900000,
+   "financ": "",
+   "estado": "disponible",
+   "fotos": [
+    "img:v7a",
+    "img:v7b"
+   ],
+   "desc": "Pantalla táctil y sensores de estacionamiento.",
+   "destacado": false
+  },
+  {
+   "id": "v8",
+   "marca": "Chevrolet",
+   "modelo": "Cruze",
+   "version": "LTZ 1.4T",
+   "anio": 2019,
+   "km": 72000,
+   "cat": "auto",
+   "combustible": "Nafta",
+   "caja": "Automática",
+   "color": "Gris",
+   "moneda": "ARS",
+   "precio": 23500000,
+   "financ": "Financiación bancaria",
+   "estado": "disponible",
+   "fotos": [
+    "img:v8a",
+    "img:v8b"
+   ],
+   "desc": "Full equipo, cuero.",
+   "destacado": false
+  },
+  {
+   "id": "v9",
+   "marca": "Fiat",
+   "modelo": "Cronos",
+   "version": "Drive 1.3",
+   "anio": 2022,
+   "km": 28000,
+   "cat": "auto",
+   "combustible": "Nafta",
+   "caja": "Manual",
+   "color": "Bordó",
+   "moneda": "ARS",
+   "precio": 17400000,
+   "financ": "",
+   "estado": "vendido",
+   "fotos": [
+    "img:v9a",
+    "img:v9b"
+   ],
+   "desc": "",
+   "destacado": false
+  },
+  {
+   "id": "v10",
+   "marca": "Iveco",
+   "modelo": "Daily",
+   "version": "70C16 caja furgón",
+   "anio": 2014,
+   "km": 240000,
+   "cat": "util",
+   "combustible": "Diésel",
+   "caja": "Manual",
+   "color": "Blanco",
+   "moneda": "ARS",
+   "precio": 27000000,
+   "financ": "",
+   "estado": "disponible",
+   "fotos": [
+    "img:v10a",
+    "img:v10b"
+   ],
+   "desc": "Caja térmica en muy buen estado. Lista para trabajar.",
+   "destacado": false
+  },
+  {
+   "id": "v11",
+   "marca": "Renault",
+   "modelo": "Kangoo",
+   "version": "Furgón 1.6",
+   "anio": 2020,
+   "km": 88000,
+   "cat": "util",
+   "combustible": "Nafta",
+   "caja": "Manual",
+   "color": "Blanco",
+   "moneda": "ARS",
+   "precio": 14900000,
+   "financ": "Tomamos tu usado",
+   "estado": "disponible",
+   "fotos": [
+    "img:v11a",
+    "img:v11b"
+   ],
+   "desc": "Puerta lateral, ideal reparto.",
+   "destacado": false
+  }
+ ],
+ "ofertas": [
+  {
+   "id": "o1",
+   "vehId": "v4",
+   "antes": 61500000,
+   "ahora": 58000000,
+   "etiqueta": "Tope de gama",
+   "banda": "100% financiada",
+   "bandaColor": "sky",
+   "hasta": "",
+   "activa": true
+  },
+  {
+   "id": "o2",
+   "vehId": "v2",
+   "antes": null,
+   "ahora": 52000000,
+   "etiqueta": "Oportunidad",
+   "banda": "Tomamos tu usado",
+   "bandaColor": "go",
+   "hasta": "",
+   "activa": true
+  },
+  {
+   "id": "o3",
+   "vehId": "v7",
+   "antes": 21500000,
+   "ahora": 19900000,
+   "etiqueta": "Precio de contado",
+   "banda": "Solo este mes",
+   "bandaColor": "hot",
+   "hasta": "2026-12-07",
+   "activa": true
+  }
+ ]
+}</script>
+<script type="application/json" id="app-img">{"logo": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22380%22%20height%3D%22228%22%20viewBox%3D%220%200%20380%20228%22%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%22368%22%20height%3D%22216%22%20rx%3D%2240%22%20fill%3D%22%23053661%22%20stroke%3D%22%23C9D2DC%22%20stroke-width%3D%2210%22%2F%3E%3Cpath%20d%3D%22M150%2C34%20L230%2C34%20L268%2C112%20L112%2C112%20Z%22%20fill%3D%22%230B3A66%22%20stroke%3D%22%23C9D2DC%22%20stroke-width%3D%224%22%2F%3E%3Cpath%20d%3D%22M186%2C44%20L194%2C44%20L196%2C62%20L184%2C62%20Z%20M183%2C74%20L197%2C74%20L200%2C100%20L180%2C100%20Z%22%20fill%3D%22%23F5B301%22%2F%3E%3Ctext%20x%3D%22190%22%20y%3D%22166%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%20Black%2CArial%2CHelvetica%2Csans-serif%22%20font-weight%3D%22900%22%20font-size%3D%2254%22%20fill%3D%22%23fff%22%20letter-spacing%3D%222%22%3ERUTA%20SUR%3C%2Ftext%3E%3Ctext%20x%3D%22190%22%20y%3D%22200%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2CHelvetica%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2224%22%20fill%3D%22%23C9D2DC%22%20letter-spacing%3D%227%22%3EAUTOMOTORES%3C%2Ftext%3E%3C%2Fsvg%3E", "v1a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22%23F3F5F8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M318%2C262%20L338%2C250%20L404%2C250%20L404%2C316%20L282%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M418%2C250%20L466%2C250%20Q480%2C250%20486%2C262%20L506%2C316%20L418%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22280%22%20y1%3D%22350%22%20x2%3D%22532%22%20y2%3D%22350%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v1b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22%23F3F5F8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M318%2C262%20L338%2C250%20L404%2C250%20L404%2C316%20L282%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M418%2C250%20L466%2C250%20Q480%2C250%20486%2C262%20L506%2C316%20L418%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22280%22%20y1%3D%22350%22%20x2%3D%22532%22%20y2%3D%22350%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v2a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22%236B7480%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M318%2C262%20L338%2C250%20L404%2C250%20L404%2C316%20L282%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M418%2C250%20L466%2C250%20Q480%2C250%20486%2C262%20L506%2C316%20L418%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22280%22%20y1%3D%22350%22%20x2%3D%22532%22%20y2%3D%22350%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v2b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22%236B7480%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M318%2C262%20L338%2C250%20L404%2C250%20L404%2C316%20L282%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M418%2C250%20L466%2C250%20Q480%2C250%20486%2C262%20L506%2C316%20L418%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22280%22%20y1%3D%22350%22%20x2%3D%22532%22%20y2%3D%22350%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v3a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22%231F4F8F%22%20stroke%3D%22%23123158%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M318%2C262%20L338%2C250%20L404%2C250%20L404%2C316%20L282%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%23123158%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M418%2C250%20L466%2C250%20Q480%2C250%20486%2C262%20L506%2C316%20L418%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%23123158%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%23123158%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22280%22%20y1%3D%22350%22%20x2%3D%22532%22%20y2%3D%22350%22%20stroke%3D%22%23123158%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v3b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22%231F4F8F%22%20stroke%3D%22%23123158%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M90%2C430%20L90%2C362%20Q95%2C336%20132%2C330%20L248%2C322%20L298%2C250%20Q310%2C236%20334%2C236%20L470%2C236%20Q490%2C236%20500%2C255%20L522%2C322%20L716%2C322%20L716%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M318%2C262%20L338%2C250%20L404%2C250%20L404%2C316%20L282%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%23123158%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M418%2C250%20L466%2C250%20Q480%2C250%20486%2C262%20L506%2C316%20L418%2C316%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%23123158%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%23123158%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22280%22%20y1%3D%22350%22%20x2%3D%22532%22%20y2%3D%22350%22%20stroke%3D%22%23123158%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2259%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2250%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2228%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v4a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C366%20Q93%2C338%20134%2C332%20L234%2C322%20L290%2C246%20Q300%2C232%20326%2C232%20L642%2C232%20Q682%2C234%20697%2C272%20L714%2C332%20L716%2C430%20Z%22%20fill%3D%22%23C3CAD2%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C366%20Q93%2C338%20134%2C332%20L234%2C322%20L290%2C246%20Q300%2C232%20326%2C232%20L642%2C232%20Q682%2C234%20697%2C272%20L714%2C332%20L716%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M314%2C258%20L332%2C246%20L400%2C246%20L400%2C318%20L272%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M414%2C246%20L528%2C246%20L528%2C318%20L414%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M542%2C246%20L640%2C246%20Q662%2C248%20672%2C276%20L684%2C318%20L542%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22280%22%20y1%3D%22350%22%20x2%3D%22532%22%20y2%3D%22350%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2261%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2252%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2229%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2261%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2252%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2229%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v4b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C366%20Q93%2C338%20134%2C332%20L234%2C322%20L290%2C246%20Q300%2C232%20326%2C232%20L642%2C232%20Q682%2C234%20697%2C272%20L714%2C332%20L716%2C430%20Z%22%20fill%3D%22%23C3CAD2%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C366%20Q93%2C338%20134%2C332%20L234%2C322%20L290%2C246%20Q300%2C232%20326%2C232%20L642%2C232%20Q682%2C234%20697%2C272%20L714%2C332%20L716%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M314%2C258%20L332%2C246%20L400%2C246%20L400%2C318%20L272%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M414%2C246%20L528%2C246%20L528%2C318%20L414%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M542%2C246%20L640%2C246%20Q662%2C248%20672%2C276%20L684%2C318%20L542%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22280%22%20y1%3D%22350%22%20x2%3D%22532%22%20y2%3D%22350%22%20stroke%3D%22%237F8996%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2261%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2252%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2229%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2261%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2252%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2229%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v5a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C366%20Q93%2C338%20134%2C332%20L234%2C322%20L290%2C246%20Q300%2C232%20326%2C232%20L642%2C232%20Q682%2C234%20697%2C272%20L714%2C332%20L716%2C430%20Z%22%20fill%3D%22%23C3262B%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C366%20Q93%2C338%20134%2C332%20L234%2C322%20L290%2C246%20Q300%2C232%20326%2C232%20L642%2C232%20Q682%2C234%20697%2C272%20L714%2C332%20L716%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M314%2C258%20L332%2C246%20L400%2C246%20L400%2C318%20L272%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M414%2C246%20L528%2C246%20L528%2C318%20L414%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M542%2C246%20L640%2C246%20Q662%2C248%20672%2C276%20L684%2C318%20L542%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22280%22%20y1%3D%22350%22%20x2%3D%22532%22%20y2%3D%22350%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2261%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2252%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2229%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2261%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2252%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2229%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v5b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C366%20Q93%2C338%20134%2C332%20L234%2C322%20L290%2C246%20Q300%2C232%20326%2C232%20L642%2C232%20Q682%2C234%20697%2C272%20L714%2C332%20L716%2C430%20Z%22%20fill%3D%22%23C3262B%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C366%20Q93%2C338%20134%2C332%20L234%2C322%20L290%2C246%20Q300%2C232%20326%2C232%20L642%2C232%20Q682%2C234%20697%2C272%20L714%2C332%20L716%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M314%2C258%20L332%2C246%20L400%2C246%20L400%2C318%20L272%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M414%2C246%20L528%2C246%20L528%2C318%20L414%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M542%2C246%20L640%2C246%20Q662%2C248%20672%2C276%20L684%2C318%20L542%2C318%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22280%22%20y1%3D%22350%22%20x2%3D%22532%22%20y2%3D%22350%22%20stroke%3D%22%237E1519%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2261%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2252%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%2229%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22200%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2261%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2252%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%2229%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22612%22%20cy%3D%22440%22%20r%3D%228%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v6a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22%23F3F5F8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M352%2C272%20L370%2C262%20L452%2C262%20L452%2C326%20L298%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M466%2C262%20L556%2C262%20Q584%2C264%20598%2C296%20L612%2C326%20L466%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22302%22%20y1%3D%22350%22%20x2%3D%22480%22%20y2%3D%22350%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v6b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22%23F3F5F8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M352%2C272%20L370%2C262%20L452%2C262%20L452%2C326%20L298%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M466%2C262%20L556%2C262%20Q584%2C264%20598%2C296%20L612%2C326%20L466%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22302%22%20y1%3D%22350%22%20x2%3D%22480%22%20y2%3D%22350%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v7a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22%23262C36%22%20stroke%3D%22%230E1116%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M352%2C272%20L370%2C262%20L452%2C262%20L452%2C326%20L298%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%230E1116%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M466%2C262%20L556%2C262%20Q584%2C264%20598%2C296%20L612%2C326%20L466%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%230E1116%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%230E1116%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22302%22%20y1%3D%22350%22%20x2%3D%22480%22%20y2%3D%22350%22%20stroke%3D%22%230E1116%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v7b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22%23262C36%22%20stroke%3D%22%230E1116%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M352%2C272%20L370%2C262%20L452%2C262%20L452%2C326%20L298%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%230E1116%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M466%2C262%20L556%2C262%20Q584%2C264%20598%2C296%20L612%2C326%20L466%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%230E1116%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%230E1116%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22302%22%20y1%3D%22350%22%20x2%3D%22480%22%20y2%3D%22350%22%20stroke%3D%22%230E1116%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v8a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M80%2C430%20L80%2C378%20Q85%2C355%20120%2C350%20L252%2C338%20L332%2C268%20Q344%2C256%20367%2C256%20L532%2C256%20Q562%2C258%20587%2C300%20L617%2C340%20L702%2C348%20Q724%2C352%20724%2C380%20L724%2C430%20Z%22%20fill%3D%22%236B7480%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M80%2C430%20L80%2C378%20Q85%2C355%20120%2C350%20L252%2C338%20L332%2C268%20Q344%2C256%20367%2C256%20L532%2C256%20Q562%2C258%20587%2C300%20L617%2C340%20L702%2C348%20Q724%2C352%20724%2C380%20L724%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M352%2C278%20L370%2C268%20L448%2C268%20L448%2C330%20L292%2C330%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M462%2C268%20L528%2C268%20Q552%2C270%20566%2C300%20L578%2C330%20L462%2C330%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22276%22%20y1%3D%22350%22%20x2%3D%22524%22%20y2%3D%22350%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2257%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2248%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2257%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2248%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v8b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M80%2C430%20L80%2C378%20Q85%2C355%20120%2C350%20L252%2C338%20L332%2C268%20Q344%2C256%20367%2C256%20L532%2C256%20Q562%2C258%20587%2C300%20L617%2C340%20L702%2C348%20Q724%2C352%20724%2C380%20L724%2C430%20Z%22%20fill%3D%22%236B7480%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M80%2C430%20L80%2C378%20Q85%2C355%20120%2C350%20L252%2C338%20L332%2C268%20Q344%2C256%20367%2C256%20L532%2C256%20Q562%2C258%20587%2C300%20L617%2C340%20L702%2C348%20Q724%2C352%20724%2C380%20L724%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M352%2C278%20L370%2C268%20L448%2C268%20L448%2C330%20L292%2C330%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M462%2C268%20L528%2C268%20Q552%2C270%20566%2C300%20L578%2C330%20L462%2C330%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22276%22%20y1%3D%22350%22%20x2%3D%22524%22%20y2%3D%22350%22%20stroke%3D%22%233F4650%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2257%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2248%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2257%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2248%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v9a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M80%2C430%20L80%2C378%20Q85%2C355%20120%2C350%20L252%2C338%20L332%2C268%20Q344%2C256%20367%2C256%20L532%2C256%20Q562%2C258%20587%2C300%20L617%2C340%20L702%2C348%20Q724%2C352%20724%2C380%20L724%2C430%20Z%22%20fill%3D%22%237A1F2B%22%20stroke%3D%22%234A0F18%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M80%2C430%20L80%2C378%20Q85%2C355%20120%2C350%20L252%2C338%20L332%2C268%20Q344%2C256%20367%2C256%20L532%2C256%20Q562%2C258%20587%2C300%20L617%2C340%20L702%2C348%20Q724%2C352%20724%2C380%20L724%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M352%2C278%20L370%2C268%20L448%2C268%20L448%2C330%20L292%2C330%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%234A0F18%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M462%2C268%20L528%2C268%20Q552%2C270%20566%2C300%20L578%2C330%20L462%2C330%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%234A0F18%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%234A0F18%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22276%22%20y1%3D%22350%22%20x2%3D%22524%22%20y2%3D%22350%22%20stroke%3D%22%234A0F18%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2257%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2248%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2257%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2248%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v9b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M80%2C430%20L80%2C378%20Q85%2C355%20120%2C350%20L252%2C338%20L332%2C268%20Q344%2C256%20367%2C256%20L532%2C256%20Q562%2C258%20587%2C300%20L617%2C340%20L702%2C348%20Q724%2C352%20724%2C380%20L724%2C430%20Z%22%20fill%3D%22%237A1F2B%22%20stroke%3D%22%234A0F18%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M80%2C430%20L80%2C378%20Q85%2C355%20120%2C350%20L252%2C338%20L332%2C268%20Q344%2C256%20367%2C256%20L532%2C256%20Q562%2C258%20587%2C300%20L617%2C340%20L702%2C348%20Q724%2C352%20724%2C380%20L724%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M352%2C278%20L370%2C268%20L448%2C268%20L448%2C330%20L292%2C330%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%234A0F18%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M462%2C268%20L528%2C268%20Q552%2C270%20566%2C300%20L578%2C330%20L462%2C330%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%234A0F18%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%234A0F18%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22276%22%20y1%3D%22350%22%20x2%3D%22524%22%20y2%3D%22350%22%20stroke%3D%22%234A0F18%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2257%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2248%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2257%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2248%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v10a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C334%20Q90%2C304%20120%2C294%20L172%2C240%20Q182%2C230%20202%2C230%20L262%2C230%20L262%2C430%20Z%20M272%2C150%20L722%2C150%20L722%2C430%20L272%2C430%20Z%22%20fill%3D%22%23F3F5F8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C334%20Q90%2C304%20120%2C294%20L172%2C240%20Q182%2C230%20202%2C230%20L262%2C230%20L262%2C430%20Z%20M272%2C150%20L722%2C150%20L722%2C430%20L272%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M180%2C250%20Q186%2C244%20196%2C244%20L248%2C244%20L248%2C300%20L134%2C300%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%222%22%2F%3E%3Ccircle%20cx%3D%22176%22%20cy%3D%22440%22%20r%3D%2255%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22176%22%20cy%3D%22440%22%20r%3D%2246%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22176%22%20cy%3D%22440%22%20r%3D%2225%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22176%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2255%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2246%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2225%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v10b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C334%20Q90%2C304%20120%2C294%20L172%2C240%20Q182%2C230%20202%2C230%20L262%2C230%20L262%2C430%20Z%20M272%2C150%20L722%2C150%20L722%2C430%20L272%2C430%20Z%22%20fill%3D%22%23F3F5F8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M88%2C430%20L88%2C334%20Q90%2C304%20120%2C294%20L172%2C240%20Q182%2C230%20202%2C230%20L262%2C230%20L262%2C430%20Z%20M272%2C150%20L722%2C150%20L722%2C430%20L272%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M180%2C250%20Q186%2C244%20196%2C244%20L248%2C244%20L248%2C300%20L134%2C300%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%222%22%2F%3E%3Ccircle%20cx%3D%22176%22%20cy%3D%22440%22%20r%3D%2255%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22176%22%20cy%3D%22440%22%20r%3D%2246%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22176%22%20cy%3D%22440%22%20r%3D%2225%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22176%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2255%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2246%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%2225%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v11a": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239CCBEF%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DDEFFB%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23B7BEC6%22%2F%3E%3Cpath%20d%3D%22M0%2C470%20L120%2C400%20L230%2C450%20L360%2C380%20L520%2C455%20L640%2C410%20L800%2C460%20L800%2C470%20Z%22%20fill%3D%22%238FA2B3%22%20opacity%3D%22.55%22%2F%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22%23F3F5F8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M352%2C272%20L370%2C262%20L452%2C262%20L452%2C326%20L298%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M466%2C262%20L556%2C262%20Q584%2C264%20598%2C296%20L612%2C326%20L466%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22302%22%20y1%3D%22350%22%20x2%3D%22480%22%20y2%3D%22350%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E", "v11b": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22600%22%20viewBox%3D%220%200%20800%20600%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23DCE6F0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F4F7FA%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.35%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.18%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20y%3D%22470%22%20width%3D%22800%22%20height%3D%22130%22%20fill%3D%22%23C9D1DA%22%2F%3E%3Cg%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22300%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3Crect%20x%3D%22560%22%20y%3D%2260%22%20width%3D%22200%22%20height%3D%22300%22%2F%3E%3C%2Fg%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22482%22%20rx%3D%22330%22%20ry%3D%2222%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22%23F3F5F8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M112%2C430%20L112%2C376%20Q117%2C350%20152%2C344%20L262%2C334%20L332%2C262%20Q344%2C250%20367%2C250%20L562%2C250%20Q602%2C252%20627%2C300%20L657%2C350%20L666%2C430%20Z%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cpath%20d%3D%22M352%2C272%20L370%2C262%20L452%2C262%20L452%2C326%20L298%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M466%2C262%20L556%2C262%20Q584%2C264%20598%2C296%20L612%2C326%20L466%2C326%20Z%22%20fill%3D%22%232A3A4C%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2290%22%20y%3D%22378%22%20width%3D%2234%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23FFE9A8%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%22302%22%20y1%3D%22350%22%20x2%3D%22480%22%20y2%3D%22350%22%20stroke%3D%22%239AA6B4%22%20stroke-width%3D%223%22%20opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22222%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2256%22%20fill%3D%22%231A1F26%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2247%22%20fill%3D%22%23262B33%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%2226%22%20fill%3D%22%23B9C1CB%22%20stroke%3D%22%237D8794%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%22560%22%20cy%3D%22440%22%20r%3D%227%22%20fill%3D%22%235B6470%22%2F%3E%3C%2Fsvg%3E"}</script>
+<script id="app-app">(function(){
+"use strict";
+var state = JSON.parse(document.getElementById("app-data").textContent);
+var IMGS = JSON.parse(document.getElementById("app-img").textContent);
+var saved = JSON.stringify(state);
+var imgsDirty = false;
+var COLORS = {navy:"#0E5AA7", sky:"#1E9BE0", go:"#22C55E", hot:"#E23B2E", sun:"#F5B301", violet:"#7C5CF0", slate:"#64748B", orange:"#F97316"};
+var COLOR_NAMES = {navy:"Azul", sky:"Celeste", go:"Verde", hot:"Rojo", sun:"Amarillo", violet:"Violeta", slate:"Gris", orange:"Naranja"};
+var LIGHT_TEXT = {navy:1, hot:1, violet:1, slate:1};
+var ESTADOS = [["disponible","Disponible"],["reservado","Reservado"],["vendido","Vendido"],["oculto","Oculto (no se muestra)"]];
+var ui = {q:"", cat:"all", sort:"dest", limit:12, open:null, gi:0, adminOpen:false, tab:"vehiculos", editing:null, confirmDel:null,
+  canEdit:false, standalone:false, msg:"", msgType:"", aq:"", bulk:{pct:"", round:"100000", inc:true, confirm:false},
+  perm:{auto:"", anio:"", km:"", interes:"", pago:"Permuta + diferencia", nombre:"", fotos:[]}, permErr:""};
+
+/* ------------------------------ helpers ------------------------------ */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+function $(s,r){return (r||document).querySelector(s);}
+function uid(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function today(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function expired(o){ return o.hasta && o.hasta < today(); }
+function col(n){ return COLORS[n]||COLORS.navy; }
+function catById(id){ for(var i=0;i<state.categorias.length;i++) if(state.categorias[i].id===id) return state.categorias[i]; return state.categorias[0]||{id:"",nombre:"Otros",color:"navy"}; }
+function vehById(id){ for(var i=0;i<state.vehiculos.length;i++) if(state.vehiculos[i].id===id) return state.vehiculos[i]; return null; }
+function title(v){ return ((v.marca||"")+" "+(v.modelo||"")).trim() || "Vehículo"; }
+function fullName(v){ return (title(v)+(v.version?" "+v.version:"")).trim(); }
+function src(ref){ if(!ref) return ""; if(ref.indexOf("img:")===0) return IMGS[ref.slice(4)]||""; return ref; }
+function fotos(v){ return (v.fotos||[]).map(src).filter(Boolean); }
+function num(n){ return Number(n).toLocaleString("es-AR",{maximumFractionDigits:0}); }
+function money(n,m){ if(n==null||n===""||isNaN(n)) return ""; return (m==="USD"?"US$ ":"$ ")+num(n); }
+function short(n,m){
+  if(n==null||n===""||isNaN(n)) return "";
+  if(m==="USD") return "US$ "+num(n);
+  if(n>=1000000){ var x=n/1000000; return "$"+x.toLocaleString("es-AR",{maximumFractionDigits:(x<100 && Math.round(x*10)!==Math.round(x)*10)?1:0})+"M"; }
+  return "$ "+num(n);
+}
+function kmTxt(v){ if(v.km==null||v.km==="") return ""; return v.km===0?"0 km":num(v.km)+" km"; }
+function specLine(v){ return [v.anio, kmTxt(v)].filter(Boolean).join(" | "); }
+function visible(v){ return v.estado!=="oculto"; }
+function selling(v){ return v.estado!=="oculto" && v.estado!=="vendido"; }
+function liveOffers(){ return state.ofertas.filter(function(o){ var v=vehById(o.vehId); return o.activa && !expired(o) && v && selling(v); }); }
+function offerFor(vid){ var l=liveOffers(); for(var i=0;i<l.length;i++) if(l[i].vehId===vid) return l[i]; return null; }
+function priceOf(v){ var o=offerFor(v.id); if(o && o.ahora) return o.ahora; return v.precio||null; }
+function pct(a,b){ if(!a||!b||b>=a) return 0; return Math.round((1-b/a)*100); }
+function fmtDate(s){ if(!s) return ""; var p=s.split("-"); return p[2]+"/"+p[1]; }
+function bandOf(v,o){ var t=(o&&o.banda)||v.financ||""; var c=(o&&o.bandaColor)||"go"; return t?{t:t,c:c}:null; }
+function bandHtml(b){ return b?'<span class="band" style="--b:'+col(b.c)+';--bt:'+(LIGHT_TEXT[b.c]?"#fff":"#04121F")+'">'+esc(b.t)+'</span>':''; }
+function wa(text){ var n=(state.settings.whatsapp||"").replace(/\D/g,""); return "https://wa.me/"+n+"?text="+encodeURIComponent(text); }
+function slug(s){ return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+function vehMsg(v){ var p=priceOf(v); return "¡Hola Ruta Sur! Me interesa el "+fullName(v)+(v.anio?" "+v.anio:"")+(p?" ("+money(p,v.moneda)+")":"")+". ¿Sigue disponible?"; }
+
+var WA_ICON = '<svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true"><path fill="#fff" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-3.9-.5-5.6-1.5l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.7 8.7 0 0 1-4.3-3.8c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.8 1.2 3.2 1.4 3.5c.2.2 2.4 3.7 5.8 5.2 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5s.3-1.3.2-1.5c-.1-.1-.3-.2-.6-.4z"/></svg>';
+var CAR_SVG = '<svg viewBox="0 0 120 50" aria-hidden="true"><path d="M8 34c0-6 4-9 10-10l14-3 14-10c4-3 8-4 13-4h22c5 0 9 2 12 5l9 10 8 2c4 1 6 4 6 8v6H8z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><circle cx="30" cy="40" r="7" fill="#0A2744" stroke="#fff" stroke-width="3"/><circle cx="92" cy="40" r="7" fill="#0A2744" stroke="#fff" stroke-width="3"/><path d="M50 22l10-8h14v8zM80 14h10l6 8H80z" fill="#fff" opacity=".5"/></svg>';
+
+function photo(v, i){
+  var f=fotos(v), s=f[i||0];
+  if(s) return '<img src="'+s+'" alt="'+esc(fullName(v))+'" loading="lazy">';
+  return '<div class="ph" style="--c:'+col(catById(v.cat).color)+'" role="img" aria-label="'+esc(fullName(v))+' (sin foto)">'+CAR_SVG+'</div>';
+}
+
+/* ------------------------------ carrusel de fotos en tarjetas ------------------------------ */
+var CI = {};
+function slidesInner(v){
+  var fs=fotos(v), n=fs.length, i=n?((CI[v.id]||0)%n+n)%n:0, nm=esc(fullName(v));
+  if(n<2) return photo(v,0);
+  return photo(v,i)+
+    '<button class="tapnext" data-act="cnext" data-id="'+v.id+'" aria-label="Ver la foto siguiente de '+nm+'"></button>'+
+    '<button class="cnav cprev" data-act="cprev" data-id="'+v.id+'" aria-label="Foto anterior de '+nm+'">‹</button>'+
+    '<button class="cnav cnext" data-act="cnext" data-id="'+v.id+'" aria-label="Foto siguiente de '+nm+'">›</button>'+
+    '<span class="cctr">'+(i+1)+' / '+n+'</span>'+
+    '<span class="dots" aria-hidden="true">'+fs.map(function(_,k){ return '<i'+(k===i?' class="on"':'')+'></i>'; }).join("")+'</span>';
+}
+function slides(v){ return '<div class="slides" data-media="'+v.id+'">'+slidesInner(v)+'</div>'; }
+function stepCard(id,d){
+  var v=vehById(id); if(!v) return; var n=fotos(v).length; if(n<2) return;
+  CI[id]=(((CI[id]||0)+d)%n+n)%n;
+  var focusAct=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.act:null;
+  document.querySelectorAll('[data-media="'+id+'"]').forEach(function(el){
+    var had=el.contains(document.activeElement);
+    el.innerHTML=slidesInner(v);
+    if(had && focusAct){ var b=el.querySelector('.cnav[data-act="'+focusAct+'"]')||el.querySelector('.cnav.cnext'); if(b) b.focus(); }
+  });
+}
+var touchX=null, touchEl=null;
+document.addEventListener("touchstart",function(e){ var el=e.target.closest("[data-media],.gal .main"); touchEl=el; touchX=el?e.touches[0].clientX:null; },{passive:true});
+document.addEventListener("touchend",function(e){
+  if(touchX==null||!touchEl) return; var dx=e.changedTouches[0].clientX-touchX, el=touchEl; touchX=null; touchEl=null;
+  if(Math.abs(dx)<40) return;
+  if(el.dataset && el.dataset.media){ stepCard(el.dataset.media, dx<0?1:-1); }
+  else if(ui.open){ var n=fotos(vehById(ui.open)).length; if(n>1){ ui.gi=(ui.gi+(dx<0?1:-1)+n)%n; renderDetail(); } }
+},{passive:true});
+
+/* ------------------------------ public render ------------------------------ */
+function storyCard(v,o){
+  var p=(o&&o.ahora)||v.precio, m=v.moneda, d=o?pct(o.antes,o.ahora):0;
+  return '<article class="story">'+
+    '<div class="media">'+slides(v)+(o&&o.etiqueta?'<span class="tag">'+esc(o.etiqueta)+'</span>':'')+(d?'<span class="sticker">-'+d+'%</span>':'')+'</div>'+
+    '<div class="body"><h3>'+esc(title(v))+'</h3>'+(v.version?'<p class="ver">'+esc(v.version)+'</p>':'')+
+    (specLine(v)?'<p class="spec">'+esc(specLine(v))+'</p>':'')+
+    (p?'<div class="big price">'+short(p,m)+'</div>'+(o&&o.antes&&o.ahora&&o.antes>o.ahora?'<div class="old price">'+money(o.antes,m)+'</div>':''):'<div class="big ask">Consultá precio</div>')+
+    bandHtml(bandOf(v,o))+
+    (o&&o.hasta?'<span class="until">Válida hasta el '+fmtDate(o.hasta)+'</span>':'')+
+    '<div class="actions"><button class="btn btn-chrome btn-sm" data-open="'+v.id+'">Ver detalle</button>'+
+    '<a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="'+wa(vehMsg(v))+'">'+WA_ICON+'Consultar</a></div></div></article>';
+}
+function carCard(v){
+  var o=offerFor(v.id), p=priceOf(v), c=catById(v.cat), n=fotos(v).length;
+  var sold=v.estado==="vendido", res=v.estado==="reservado";
+  var flag = sold?'<span class="ribbon">Vendido</span>':res?'<span class="flag res">Reservado</span>':o?'<span class="flag">Oferta</span>':(v.destacado?'<span class="flag star">Destacado</span>':'');
+  var chips=[v.anio, kmTxt(v), v.caja, v.combustible].filter(Boolean);
+  return '<article class="car'+(sold?' sold':'')+'"><div class="media">'+slides(v)+flag+'</div>'+
+    '<div class="body"><span class="cat"><i style="background:'+col(c.color)+'"></i>'+esc(c.nombre)+'</span>'+
+    '<h3><button class="open" data-open="'+v.id+'">'+esc(title(v))+'</button></h3>'+(v.version?'<p class="ver">'+esc(v.version)+'</p>':'')+
+    (chips.length?'<div class="specs">'+chips.map(function(x){return '<span>'+esc(x)+'</span>';}).join("")+'</div>':'')+
+    (v.financ&&!sold?'<p class="fin">'+esc(v.financ)+'</p>':'')+
+    '<div class="foot">'+(sold?'<span class="pr ask">Vendido</span>':(p?'<span class="pr price">'+short(p,v.moneda)+'</span>':'<span class="pr ask">Consultá precio</span>'))+
+    (sold?'':'<a class="btn btn-wa btn-sm btn-icon" aria-label="Consultar por WhatsApp" target="_blank" rel="noopener" href="'+wa(vehMsg(v))+'">'+WA_ICON+'</a>')+'</div></div></article>';
+}
+
+function render(){
+  var s = state.settings;
+  var offers = liveOffers();
+  var feat = offers[0] ? {v:vehById(offers[0].vehId), o:offers[0]} : null;
+  var showOffers = offers.length>1;
+  if(!feat){ var dv=state.vehiculos.filter(function(v){return selling(v)&&v.destacado;})[0]; if(dv) feat={v:dv,o:null}; }
+  var h = '';
+  if(ui.canEdit && s.ejemplo) h += '<div class="sample-note">Faltan datos de ejemplo (año, km, precios). Completalos desde Administrar.</div>';
+  h += '<header class="top"><div class="wrap">'+
+       '<a href="#inicio" class="logo" aria-label="Ruta Sur Automotores, inicio"><img src="'+IMGS.logo+'" alt="Ruta Sur Automotores" width="87" height="52"></a>'+
+       '<nav class="nav" aria-label="Secciones">'+(showOffers?'<a href="#ofertas">Ofertas</a>':'')+
+       '<a href="#vehiculos">Vehículos</a><a href="#financiacion">Financiación y permuta</a><a href="#contacto">Contacto</a></nav>'+
+       '<a class="btn btn-wa btn-sm" href="'+wa("¡Hola Ruta Sur! Quería hacer una consulta.")+'" target="_blank" rel="noopener">'+WA_ICON+'<span>WhatsApp</span></a>'+
+       '</div></header>';
+
+  h += '<section class="hero" id="inicio"><div class="wrap"><div>'+
+       '<h1>'+esc(s.heroTitulo)+'</h1>'+
+       '<p class="lead">'+esc(s.heroTexto)+'</p>'+
+       '<div class="ctas"><a class="btn btn-chrome" href="#vehiculos">Ver vehículos</a><a class="btn btn-ghost" href="#financiacion">Cotizar mi usado</a></div></div>'+
+       (feat?'<div class="feat">'+storyCard(feat.v,feat.o)+'</div>':'<div></div>')+
+       '</div></section>';
+
+  h += '<div class="strip" aria-label="Servicios"><div class="wrap"><span>Venta</span><i></i><span>Permuta</span><i></i><span>Financiación</span></div></div>';
+
+  if(showOffers){
+    h += '<section class="block" id="ofertas"><div class="wrap"><div class="sec-head"><div><h2>Más ofertas</h2><p>Precios especiales y unidades con financiación. Consultá antes de que se vendan.</p></div></div><div class="stories">'+
+      offers.slice(1).map(function(o){ return storyCard(vehById(o.vehId),o); }).join("")+'</div></div></section>';
+  }
+
+  h += '<section class="block" id="vehiculos"'+(showOffers?' style="padding-top:16px"':'')+'><div class="wrap"><div class="sec-head"><div><h2>Vehículos disponibles</h2><p>Si no ves el que buscás, escribinos: te avisamos cuando entre uno.</p></div></div>'+
+       '<div class="tools"><label class="search"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="#0B1A2B" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="#0B1A2B" stroke-width="2.4" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Buscar marca, modelo o año" value="'+esc(ui.q)+'" aria-label="Buscar vehículo"></label>'+
+       '<select class="sort" id="sort" aria-label="Ordenar">'+[["dest","Destacados primero"],["pasc","Menor precio"],["pdesc","Mayor precio"],["anio","Más nuevos"],["km","Menos kilómetros"]].map(function(o){return '<option value="'+o[0]+'"'+(ui.sort===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join("")+'</select></div>'+
+       '<div class="cats" id="cats"></div><div class="grid" id="grid"></div></div></section>';
+
+  var avail = state.vehiculos.filter(selling);
+  h += '<section class="block fin-sec" id="financiacion" style="padding-top:8px"><div class="wrap">'+
+       '<div class="fin-card"><h2>Financiación y permuta</h2><p>'+esc(s.financTexto)+'</p>'+
+       '<ol class="steps"><li><div><b>Elegí el vehículo</b><span>De nuestro stock o contanos qué buscás.</span></div></li>'+
+       '<li><div><b>Cotizamos tu usado</b><span>Lo tomamos como parte de pago.</span></div></li>'+
+       '<li><div><b>Armamos la financiación</b><span>Te pasamos las cuotas y los requisitos.</span></div></li></ol></div>'+
+       '<div class="form-card" id="permuta"><h3>Cotizá tu usado</h3><p class="sub">Completá lo que sepas y te respondemos por WhatsApp.</p><div class="fgrid">'+
+       '<div class="field full"><label for="pm-auto">Tu vehículo (marca, modelo y versión)</label><input id="pm-auto" type="text" value="'+esc(ui.perm.auto)+'" placeholder="Ej. Toyota Hilux SRV 3.0"></div>'+
+       '<div class="field"><label for="pm-anio">Año</label><input id="pm-anio" type="text" inputmode="numeric" value="'+esc(ui.perm.anio)+'"></div>'+
+       '<div class="field"><label for="pm-km">Kilómetros</label><input id="pm-km" type="text" inputmode="numeric" value="'+esc(ui.perm.km)+'"></div>'+
+       '<div class="field full"><label for="pm-interes">Te interesa</label><select id="pm-interes"><option value="">Todavía no sé</option>'+avail.map(function(v){return '<option value="'+v.id+'"'+(ui.perm.interes===v.id?' selected':'')+'>'+esc(fullName(v)+(v.anio?" "+v.anio:""))+'</option>';}).join("")+'</select></div>'+
+       '<div class="field"><label for="pm-pago">Cómo pensás pagar</label><select id="pm-pago">'+["Permuta + diferencia","Permuta + financiación","Financiación","Contado","Quiero ver opciones"].map(function(x){return '<option'+(ui.perm.pago===x?' selected':'')+'>'+x+'</option>';}).join("")+'</select></div>'+
+       '<div class="field"><label for="pm-nombre">Tu nombre</label><input id="pm-nombre" type="text" value="'+esc(ui.perm.nombre)+'"></div>'+
+       '<div class="field full"><label for="pm-file">Fotos de tu vehículo (opcional, hasta 6)</label><div class="pmf" id="pm-fotos">'+pmFotosHtml()+'</div></div>'+
+       '</div><p class="err" id="pm-err"'+(ui.permErr?'':' hidden')+'>'+esc(ui.permErr)+'</p><button class="btn btn-wa" data-act="permsend">'+WA_ICON+'Enviar por WhatsApp</button><div class="pmstep" id="pm-step" hidden></div></div>'+
+       '</div></section>';
+
+  h += '<section class="contact" id="contacto"><div class="wrap"><div><h2>Pasá por la agencia</h2>'+
+       '<p>Escribinos por WhatsApp con el vehículo que te interesa o el que querés entregar y te respondemos con precio y disponibilidad.</p>'+
+       '<a class="btn btn-wa" style="margin-top:6px" target="_blank" rel="noopener" href="'+wa("¡Hola Ruta Sur! Quería hacer una consulta.")+'">'+WA_ICON+'Escribinos por WhatsApp</a></div>'+
+       '<div class="cinfo">'+
+         '<div class="item"><div class="k">WhatsApp</div><div class="v"><span>'+esc(s.whatsappVisible)+'</span><button class="copy" data-copy="'+esc(s.whatsappVisible)+'">Copiar</button></div></div>'+
+         (s.instagram?'<div class="item"><div class="k">Instagram</div><div class="v"><a href="https://www.instagram.com/'+esc(s.instagram)+'/" target="_blank" rel="noopener">@'+esc(s.instagram)+'</a></div></div>':'')+
+         '<div class="item"><div class="k">Dirección</div><div class="v">'+esc(s.direccion||s.ciudad)+'</div></div>'+
+         (s.horario?'<div class="item"><div class="k">Horario</div><div class="v">'+esc(s.horario)+'</div></div>':'')+
+       '</div></div></section>';
+  h += '<footer class="foot"><div class="wrap"><img src="'+IMGS.logo+'" alt="Ruta Sur Automotores" width="67" height="40"><span>© '+new Date().getFullYear()+' Ruta Sur Automotores · '+esc(s.ciudad)+'</span><span>Venta, permuta y financiación</span></div></footer>';
+  h += '<a class="fab" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp" href="'+wa("¡Hola Ruta Sur! Quería hacer una consulta.")+'">'+WA_ICON.replace('width="20" height="20"','')+'</a>';
+  if(ui.canEdit) h += '<button class="btn btn-navy admin-pill" id="openAdmin">⚙ Administrar</button>';
+  h += '<div id="detail"></div><div id="toast"></div><div id="admin"></div>';
+  $("#root").innerHTML = h;
+  renderCats(); renderGrid(); renderDetail(); renderAdmin();
+}
+
+function renderCats(){
+  var list=state.vehiculos.filter(visible), counts={};
+  list.forEach(function(v){counts[v.cat]=(counts[v.cat]||0)+1;});
+  var h='<button class="chip" data-cat="all" aria-pressed="'+(ui.cat==="all")+'"><i style="background:var(--silver)"></i>Todos <small>'+list.length+'</small></button>';
+  state.categorias.forEach(function(c){
+    if(!counts[c.id] && ui.cat!==c.id) return;
+    h+='<button class="chip" data-cat="'+esc(c.id)+'" aria-pressed="'+(ui.cat===c.id)+'"><i style="background:'+col(c.color)+'"></i>'+esc(c.nombre)+' <small>'+(counts[c.id]||0)+'</small></button>';
+  });
+  $("#cats").innerHTML=h;
+}
+function renderGrid(){
+  var q=ui.q.trim().toLowerCase();
+  var list=state.vehiculos.filter(function(v){
+    if(!visible(v)) return false;
+    if(ui.cat!=="all" && v.cat!==ui.cat) return false;
+    if(q && (fullName(v)+" "+(v.anio||"")+" "+catById(v.cat).nombre+" "+(v.combustible||"")+" "+(v.caja||"")).toLowerCase().indexOf(q)<0) return false;
+    return true;
+  });
+  var big=Number.MAX_SAFE_INTEGER;
+  list.sort(function(a,b){
+    var sa=a.estado==="vendido"?1:0, sb=b.estado==="vendido"?1:0; if(sa!==sb) return sa-sb;
+    if(ui.sort==="pasc") return (priceOf(a)||big)-(priceOf(b)||big);
+    if(ui.sort==="pdesc") return (priceOf(b)||0)-(priceOf(a)||0);
+    if(ui.sort==="anio") return (b.anio||0)-(a.anio||0);
+    if(ui.sort==="km") return (a.km==null?big:a.km)-(b.km==null?big:b.km);
+    function sc(v){ return (v.destacado?4:0)+(offerFor(v.id)?2:0)+(fotos(v).length?1:0); }
+    return sc(b)-sc(a);
+  });
+  var total=list.length; list=list.slice(0,ui.limit);
+  if(!list.length){ $("#grid").innerHTML='<div class="empty" style="grid-column:1/-1">No hay vehículos publicados con esa búsqueda. <a href="'+wa("¡Hola Ruta Sur! Estoy buscando: "+ui.q)+'" target="_blank" rel="noopener"><b>Contanos qué buscás por WhatsApp</b></a> y te avisamos.</div>'; return; }
+  $("#grid").innerHTML=list.map(carCard).join("")+(total>list.length?'<div class="more"><button class="btn btn-navy" data-act="more">Ver más vehículos ('+(total-list.length)+')</button></div>':'');
+}
+
+/* ------------------------------ detail ------------------------------ */
+function renderDetail(){
+  var box=$("#detail"); if(!box) return;
+  var v=ui.open?vehById(ui.open):null;
+  if(!v){ box.innerHTML=""; syncLock(); return; }
+  var fs=fotos(v), i=Math.max(0,Math.min(ui.gi,fs.length-1)), o=offerFor(v.id), p=priceOf(v), c=catById(v.cat);
+  var sold=v.estado==="vendido", res=v.estado==="reservado";
+  var rows=[["Año",v.anio],["Kilómetros",kmTxt(v)],["Transmisión",v.caja],["Combustible",v.combustible],["Color",v.color],["Tipo",c.nombre]].filter(function(r){return r[1];});
+  var h='<div class="dlg" data-act="closebg" role="dialog" aria-modal="true" aria-label="'+esc(fullName(v))+'"><div class="panel">'+
+    '<button class="x" data-act="close" aria-label="Cerrar">×</button>'+
+    '<div class="gal"><div class="main">'+photo(v,i)+(sold?'<span class="ribbon">Vendido</span>':'')+
+      (fs.length>1?'<button class="nav-b prev" data-act="gprev" aria-label="Foto anterior">‹</button><button class="nav-b next" data-act="gnext" aria-label="Foto siguiente">›</button><span class="ctr">'+(i+1)+' / '+fs.length+'</span>':'')+'</div>'+
+      (fs.length>1?'<div class="thumbs">'+fs.map(function(s,k){return '<button data-act="gto" data-i="'+k+'" aria-label="Foto '+(k+1)+'" aria-current="'+(k===i)+'"><img src="'+s+'" alt=""></button>';}).join("")+'</div>':'')+
+    '</div><div class="info"><span class="cat">'+esc(c.nombre)+'</span><h2>'+esc(title(v))+'</h2>'+(v.version?'<p class="ver">'+esc(v.version)+'</p>':'')+
+    (sold?'<div class="st-note sold">Esta unidad ya se vendió. Escribinos y te avisamos si entra una similar.</div>':
+      (res?'<div class="st-note">Unidad reservada. Consultá por disponibilidad.</div>':'')+
+      (p?'<div><div class="big price">'+short(p,v.moneda)+'</div><div class="full price">'+money(p,v.moneda)+(o&&o.antes&&o.ahora&&o.antes>o.ahora?' · <span class="old">'+money(o.antes,v.moneda)+'</span>':'')+'</div></div>':'<div class="big" style="font-size:26px">Consultá precio</div>')+
+      bandHtml(bandOf(v,o)))+
+    (rows.length?'<dl class="sp">'+rows.map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+esc(r[1])+'</dd></div>';}).join("")+'</dl>':'')+
+    (v.desc?'<p class="desc">'+esc(v.desc)+'</p>':'')+
+    '<div class="acts"><a class="btn btn-wa" target="_blank" rel="noopener" href="'+wa(sold?"¡Hola Ruta Sur! Vi que el "+fullName(v)+" se vendió. ¿Tienen algo similar?":vehMsg(v))+'">'+WA_ICON+(sold?'Buscar uno similar':'Consultar por WhatsApp')+'</a>'+
+    '<div class="row2">'+(sold?'':'<button class="btn btn-navy" data-act="permfrom" data-id="'+v.id+'">Entregar mi usado</button>')+'<button class="btn btn-ghost" data-act="share" data-id="'+v.id+'"'+(sold?' style="grid-column:1/-1"':'')+'>Compartir</button></div></div>'+
+    '</div></div></div>';
+  box.innerHTML=h; syncLock();
+}
+function syncLock(){ document.body.classList.toggle("lock", !!(ui.open || ui.adminOpen)); }
+function openDetail(id){ ui.open=id; ui.gi=0; renderDetail(); try{ history.replaceState(null,"","#v="+id); }catch(_){} var x=$(".dlg .x"); if(x) x.focus(); }
+function closeDetail(){ var id=ui.open; ui.open=null; renderDetail(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(_){} var b=document.querySelector('[data-open="'+id+'"]'); if(b) b.focus({preventScroll:true}); }
+function shareVeh(id){
+  var v=vehById(id); if(!v) return;
+  var url=location.href.split("#")[0]+"#v="+id, text=fullName(v)+(v.anio?" "+v.anio:"")+" en Ruta Sur Automotores";
+  if(navigator.share){ navigator.share({title:fullName(v), text:text, url:url}).catch(function(){}); return; }
+  try{ navigator.clipboard.writeText(url).then(function(){ toast("Enlace copiado"); }, function(){ toast(url); }); }catch(_){ toast(url); }
+}
+var toastT; function toast(msg){ var t=$("#toast"); if(!t) return; t.innerHTML='<div class="toast" role="status">'+esc(msg)+'</div>'; clearTimeout(toastT); toastT=setTimeout(function(){ t.innerHTML=""; },2400); }
+
+function sendPermuta(){
+  var p=ui.perm;
+  if(!p.auto.trim() && !p.interes){ ui.permErr="Contanos qué vehículo querés entregar o cuál te interesa."; var e=$("#pm-err"); if(e){ e.textContent=ui.permErr; e.hidden=false; } return; }
+  ui.permErr=""; var e2=$("#pm-err"); if(e2) e2.hidden=true;
+  var v=p.interes?vehById(p.interes):null;
+  var m="¡Hola Ruta Sur! Quiero cotizar una operación.\n\n";
+  if(p.auto.trim()) m+="Mi usado: "+p.auto.trim()+(p.anio?" · "+p.anio:"")+(p.km?" · "+p.km+" km":"")+"\n";
+  m+="Me interesa: "+(v?fullName(v)+(v.anio?" "+v.anio:""):"todavía no sé")+"\n";
+  m+="Forma de pago: "+p.pago+"\n";
+  if(p.nombre.trim()) m+="Mi nombre: "+p.nombre.trim()+"\n";
+  var n=p.fotos.length;
+  if(n) m+="\nAhora les mando "+n+" foto"+(n>1?"s":"")+" de mi vehículo.";
+  window.open(wa(m),"_blank","noopener");
+  var st=$("#pm-step"); if(!st) return;
+  if(!n){ st.hidden=true; return; }
+  st.innerHTML='<p><b>Último paso: mandá las fotos.</b> '+(IS_MOBILE?'Tocá el botón, elegí WhatsApp y el chat de Ruta Sur Automotores.':'Tocá el botón: se copia una imagen con tus fotos. En el chat de WhatsApp pegala con <b>Ctrl + V</b> (o Cmd + V en Mac).')+'</p>'+
+    '<button class="btn btn-wa" data-act="pmshare">'+WA_ICON+(IS_MOBILE?'Compartir fotos':'Copiar fotos')+'</button><p class="pmnote" id="pm-note"></p>';
+  st.hidden=false;
+}
+function pmFotosHtml(){
+  var f=ui.perm.fotos||[];
+  return f.map(function(d,i){ return '<div class="t"><img src="'+d+'" alt="Foto '+(i+1)+' de tu vehículo"><button data-act="pmdel" data-i="'+i+'" aria-label="Quitar foto '+(i+1)+'">×</button></div>'; }).join("")+
+    (f.length<6?'<label class="addp">+ Fotos<input id="pm-file" type="file" accept="image/*" multiple></label>':'');
+}
+function refreshPmFotos(){ var b=$("#pm-fotos"); if(b) b.innerHTML=pmFotosHtml(); var st=$("#pm-step"); if(st) st.hidden=true; }
+function dataFile(d,name){ var p=d.split(","), bin=atob(p[1]), n=bin.length, u=new Uint8Array(n); while(n--) u[n]=bin.charCodeAt(n); return new File([u],name,{type:"image/jpeg"}); }
+function pmCollage(){
+  var f=ui.perm.fotos, p=ui.perm, W=1080, cols=f.length>1?2:1, cw=cols===2?496:1000, chh=Math.round(cw*.75), rows=Math.ceil(f.length/cols), top=250;
+  var H=top+rows*(chh+16)+40, cv=document.createElement("canvas"); cv.width=W; cv.height=H; var x=cv.getContext("2d");
+  return Promise.all([loadImg(IMGS.logo)].concat(f.map(loadImg))).then(function(im){
+    x.fillStyle="#EDF1F5"; x.fillRect(0,0,W,H); x.fillStyle="#062B4D"; x.fillRect(0,0,W,top-30);
+    if(im[0]){ var lh=110, lw=im[0].width*lh/im[0].height; x.drawImage(im[0],40,30,lw,lh); }
+    x.fillStyle="#fff"; setF(x,"800",40,true); x.fillText("MI USADO PARA COTIZAR",250,80);
+    x.fillStyle="#C6D3E1"; setF(x,"600",30,false);
+    var l1=[p.auto,p.anio,p.km?p.km+" km":""].filter(Boolean).join(" · ")||"Vehículo a cotizar";
+    x.fillText(l1.length>52?l1.slice(0,50)+"…":l1,250,130); if(p.nombre) x.fillText(p.nombre,250,172);
+    im.slice(1).forEach(function(m,i){ if(!m) return; var c=i%cols, r=Math.floor(i/cols); cover(x,m,40+c*(cw+8),top+r*(chh+16),cw,chh); });
+    return new Promise(function(res){ cv.toBlob(res,"image/png"); });
+  });
+}
+function pmShare(){
+  var note=function(h){ var e=$("#pm-note"); if(e) e.innerHTML=h; };
+  var f=ui.perm.fotos; if(!f.length) return;
+  if(IS_MOBILE && navigator.share && navigator.canShare){
+    var files=f.map(function(d,i){ return dataFile(d,"mi-usado-"+(i+1)+".jpg"); });
+    if(navigator.canShare({files:files})){
+      navigator.share({files:files}).then(function(){ note("Listo. Si no elegiste el chat de la agencia, tocá el botón de nuevo."); }, function(e){ if(e&&e.name==="NotAllowedError") note("Tocá el botón de nuevo para compartir."); });
+      return;
+    }
+  }
+  var chat=wa("¡Hola Ruta Sur! Les mando las fotos de mi usado.");
+  var fallback=function(){ pmCollage().then(function(b){ downloadBlob(b,"mi-usado.png"); note('Se descargó <b>mi-usado.png</b>. En el chat de WhatsApp tocá el clip y adjuntala. <a href="'+chat+'" target="_blank" rel="noopener">Abrir el chat</a>'); }); };
+  try{
+    if(navigator.clipboard && window.ClipboardItem){
+      navigator.clipboard.write([new ClipboardItem({"image/png":pmCollage()})]).then(function(){ note('Imagen copiada. Pegala en el chat con <b>Ctrl + V</b> y enviala. <a href="'+chat+'" target="_blank" rel="noopener">Abrir el chat</a>'); }, fallback);
+    } else fallback();
+  }catch(_){ fallback(); }
+}
+
+/* ------------------------------ historia (1080x1920) ------------------------------ */
+function loadImg(s){ return new Promise(function(res){ if(!s) return res(null); var i=new Image(); i.onload=function(){res(i);}; i.onerror=function(){res(null);}; i.src=s; }); }
+function cover(x,im,dx,dy,dw,dh){ var r=Math.max(dw/im.width,dh/im.height), sw=dw/r, sh=dh/r; x.drawImage(im,(im.width-sw)/2,(im.height-sh)/2,sw,sh,dx,dy,dw,dh); }
+function setF(x,w,px,wide){ x.font=w+" "+px+"px Archivo, Arial, sans-serif"; if("fontStretch" in x) x.fontStretch=wide?"expanded":"normal"; }
+function fitF(x,text,w,px,wide,maxW){ setF(x,w,px,wide); while(x.measureText(text).width>maxW && px>20){ px-=2; setF(x,w,px,wide); } return px; }
+function storyImage(v,o){
+  var W=1080,H=1920,cv=document.createElement("canvas"); cv.width=W; cv.height=H; var x=cv.getContext("2d");
+  var ready=(document.fonts&&document.fonts.load)?Promise.all([document.fonts.load("900 100px Archivo"),document.fonts.load("600 40px Archivo")]).catch(function(){}):Promise.resolve();
+  var fs=fotos(v);
+  return ready.then(function(){ return Promise.all([loadImg(fs[0]),loadImg(IMGS.logo),loadImg(fs[1]),loadImg(fs[2])]); }).then(function(im){
+    var s=state.settings, ph=880, p=(o&&o.ahora)||v.precio, b=bandOf(v,o);
+    x.fillStyle="#070D16"; x.fillRect(0,0,W,H);
+    if(im[0] && im[2] && im[3]){ cover(x,im[0],0,0,W,540); cover(x,im[2],0,546,W/2-3,ph-546); cover(x,im[3],W/2+3,546,W/2-3,ph-546); }
+    else if(im[0]) cover(x,im[0],0,0,W,ph); else { x.fillStyle="#0B3A66"; x.fillRect(0,0,W,ph); }
+    var sold=v.estado==="vendido";
+    if(sold){ x.save(); x.translate(W/2,ph/2); x.rotate(-0.24); x.fillStyle="#fff"; x.fillRect(-W,-78,2*W,156); x.fillStyle="#E23B2E"; x.fillRect(-W,-70,2*W,140); x.fillStyle="#fff"; setF(x,"900",100,true); x.textAlign="center"; x.textBaseline="middle"; x.fillText("VENDIDO",0,6); x.restore(); x.textAlign="left"; x.textBaseline="alphabetic"; }
+    var g=x.createLinearGradient(0,ph-200,0,ph); g.addColorStop(0,"rgba(7,13,22,0)"); g.addColorStop(1,"rgba(7,13,22,1)"); x.fillStyle=g; x.fillRect(0,ph-200,W,200);
+    if(o && o.etiqueta){ setF(x,"700",34,false); var tw=x.measureText(o.etiqueta).width+48; x.fillStyle="#fff"; x.beginPath(); if(x.roundRect) x.roundRect(40,40,tw,62,31); else x.rect(40,40,tw,62); x.fill(); x.fillStyle="#062B4D"; x.textBaseline="middle"; x.fillText(o.etiqueta,64,72); x.textBaseline="alphabetic"; }
+    var lw=440, lh=im[1]?lw*im[1].height/im[1].width:260, bx=(W-560)/2, by=ph+10;
+    x.fillStyle="#053661"; x.fillRect(bx,by,560,lh+50);
+    if(im[1]) x.drawImage(im[1],(W-lw)/2,by+25,lw,lh);
+    var y=by+lh+50+100;
+    x.textAlign="center"; x.fillStyle="#fff";
+    fitF(x,title(v).toUpperCase(),"900",80,true,W-100); x.fillText(title(v).toUpperCase(),W/2,y);
+    var sub=[v.version,specLine(v)].filter(Boolean).join(" | ");
+    if(sub){ y+=62; x.fillStyle="#C3CEDA"; fitF(x,sub.toUpperCase(),"600",38,false,W-120); x.fillText(sub.toUpperCase(),W/2,y); }
+    if(sold){ p=null; b=null; }
+    y+=p?200:130; x.fillStyle="#fff";
+    var pt=sold?"¡GRACIAS POR ELEGIRNOS!":(p?short(p,v.moneda):"CONSULTÁ PRECIO");
+    fitF(x,pt,"900",p?210:90,true,W-100); x.fillText(pt,W/2,y);
+    if(b){ y+=40; var bh=96; x.fillStyle=col(b.c); x.fillRect(110,y,W-220,bh); x.fillStyle=LIGHT_TEXT[b.c]?"#fff":"#04121F"; fitF(x,b.t.toUpperCase(),"800",50,true,W-280); x.textBaseline="middle"; x.fillText(b.t.toUpperCase(),W/2,y+bh/2+3); x.textBaseline="alphabetic"; }
+    x.fillStyle="#1FB855"; x.fillRect(0,H-150,W,80); x.fillStyle="#fff"; setF(x,"800",44,true); x.textBaseline="middle"; x.fillText("WHATSAPP: "+(s.whatsappVisible||""),W/2,H-110);
+    x.fillStyle="#9FB0C2"; setF(x,"600",30,false); x.fillText("RUTA SUR AUTOMOTORES | "+String(s.ciudad||"").toUpperCase(),W/2,H-38);
+    return new Promise(function(res){ cv.toBlob(function(bl){ res(bl); },"image/png"); });
+  });
+}
+var IS_MOBILE=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints>1 && /Mac/.test(navigator.platform||""));
+function downloadBlob(blob,name){ var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },1500); }
+function makeStory(vid,oid){
+  var v=vehById(vid); if(!v) return; var o=null; state.ofertas.forEach(function(x){ if(x.id===oid) o=x; });
+  if(!o) o=offerFor(vid);
+  ui.msg="Generando la historia…"; ui.msgType=""; refreshStatus();
+  storyImage(v,o).then(function(blob){
+    var name="historia-"+slug(fullName(v))+".png";
+    var done=function(m){ ui.msg=m; ui.msgType=""; refreshStatus(); };
+    if(IS_MOBILE && navigator.share && navigator.canShare){
+      var f=null; try{ f=new File([blob],name,{type:"image/png"}); }catch(_){}
+      if(f && navigator.canShare({files:[f]})){
+        navigator.share({files:[f]}).then(function(){ done("Historia lista."); }, function(e){ if(!e||e.name!=="AbortError"){ downloadBlob(blob,name); done("Se guardó "+name+" en el teléfono."); } else done(""); });
+        return;
+      }
+    }
+    downloadBlob(blob,name); done("Se descargó "+name+". Subila como historia en Instagram o WhatsApp.");
+  });
+}
+
+/* ------------------------------ admin ------------------------------ */
+function dirty(){ return imgsDirty || JSON.stringify(state)!==saved; }
+function statusLine(){
+  if(ui.msg) return '<span class="status '+ui.msgType+'">'+esc(ui.msg)+'</span>';
+  var size=((JSON.stringify(state).length+JSON.stringify(IMGS).length)/1048576).toFixed(1);
+  return dirty()?'<span class="status dirty">Tenés cambios sin descargar. Tocá “Descargar index.html” y subilo a Netlify.</span>':'<span class="status">Sin cambios · página de '+size+' MB</span>';
+}
+function renderAdmin(){
+  var box=$("#admin"); if(!box) return;
+  if(!ui.adminOpen){ box.innerHTML=""; syncLock(); return; }
+  var tabs=[["vehiculos","Vehículos"],["ofertas","Ofertas"],["historias","Historias"],["datos","Datos y tipos"]];
+  var h='<div class="adm" role="dialog" aria-modal="true" aria-label="Administrar"><div class="panel"><header>'+
+    '<div class="hrow"><h2>Administrar</h2>'+
+    '<button class="btn btn-chrome btn-sm" id="publish"'+(!dirty()?' disabled style="opacity:.5"':'')+'>Descargar index.html</button>'+
+    (dirty()?'<button class="btn btn-ghost btn-sm" id="discard" style="color:#fff">Descartar</button>':'')+
+    '<button class="btn btn-ghost btn-sm" id="closeAdmin" style="color:#fff">Cerrar</button></div>'+
+    '<div class="hrow"><div class="tabs" role="tablist">'+tabs.map(function(t){return '<button class="tab" role="tab" data-tab="'+t[0]+'" aria-selected="'+(ui.tab===t[0])+'">'+t[1]+'</button>';}).join("")+'</div></div>'+
+    '<div id="status">'+statusLine()+'</div></header><div class="content">';
+  if(ui.tab==="vehiculos") h+=admVehiculos();
+  if(ui.tab==="ofertas") h+=admOfertas();
+  if(ui.tab==="datos") h+=admDatos();
+  if(ui.tab==="historias") h+=admHistorias();
+  h+='</div></div></div>';
+  var sc=$(".adm .content"), top=sc?sc.scrollTop:0;
+  box.innerHTML=h; syncLock();
+  var sc2=$(".adm .content"); if(sc2) sc2.scrollTop=top;
+}
+function refreshStatus(){ saveDraft(); var s=$("#status"); if(s) s.innerHTML=statusLine(); var pb=$("#publish"); if(pb){ var d=!dirty(); pb.disabled=d; pb.style.opacity=d?".5":""; } }
+function field(label,coll,id,key,val,type,extra,full){
+  var fid="f-"+coll+"-"+id+"-"+key, inp;
+  if(type==="textarea") inp='<textarea id="'+fid+'" data-c="'+coll+'" data-id="'+id+'" data-k="'+key+'">'+esc(val)+'</textarea>';
+  else if(type==="select") inp='<select id="'+fid+'" data-c="'+coll+'" data-id="'+id+'" data-k="'+key+'">'+extra.map(function(o){return '<option value="'+esc(o[0])+'"'+(String(o[0])===String(val==null?"":val)?' selected':'')+'>'+esc(o[1])+'</option>';}).join("")+'</select>';
+  else inp='<input id="'+fid+'" type="'+(type||"text")+'" '+(type==="number"?'inputmode="numeric" min="0" step="1"':'')+' data-c="'+coll+'" data-id="'+id+'" data-k="'+key+'" value="'+esc(val==null?"":val)+'"'+(extra?' placeholder="'+esc(extra)+'"':'')+'>';
+  return '<div class="field'+(type==="textarea"||full?' full':'')+'"><label for="'+fid+'">'+label+'</label>'+inp+'</div>';
+}
+function checkbox(label,coll,id,key,val){ var fid="f-"+coll+"-"+id+"-"+key; return '<label class="check" for="'+fid+'"><input type="checkbox" id="'+fid+'" data-c="'+coll+'" data-id="'+id+'" data-k="'+key+'"'+(val?' checked':'')+'>'+label+'</label>'; }
+function delButtons(coll,id){
+  var k=coll+":"+id;
+  if(ui.confirmDel===k) return '<span style="font-size:14px;font-weight:600">¿Eliminar?</span><button class="btn btn-sm danger solid" data-act="del-yes" data-c="'+coll+'" data-id="'+id+'">Sí, eliminar</button><button class="btn btn-sm btn-ghost" data-act="del-no">No</button>';
+  return '<button class="btn btn-sm danger" data-act="del" data-c="'+coll+'" data-id="'+id+'">Eliminar</button>';
+}
+function swatches(coll,id,key,val,keys){ return '<div class="swatches">'+(keys||Object.keys(COLORS)).map(function(k){return '<button class="sw" title="'+COLOR_NAMES[k]+'" aria-label="'+COLOR_NAMES[k]+'" aria-pressed="'+(val===k)+'" style="background:'+COLORS[k]+'" data-act="color" data-c="'+coll+'" data-id="'+id+'" data-key="'+key+'" data-v="'+k+'"></button>';}).join("")+'</div>'; }
+function estadoPill(v){ if(v.estado==="vendido") return '<span class="pill">Vendido</span>'; if(v.estado==="oculto") return '<span class="pill">Oculto</span>'; if(v.estado==="reservado") return '<span class="pill res">Reservado</span>'; return '<span class="pill on">Disponible</span>'; }
+
+function bulkTargets(){
+  var b=ui.bulk, vs=state.vehiculos.filter(function(v){ return v.precio && v.moneda!=="USD"; }), ofs=[];
+  if(b.inc) ofs=state.ofertas.filter(function(o){ var v=vehById(o.vehId); return v && v.moneda!=="USD" && (o.ahora||o.antes); });
+  return {vs:vs, ofs:ofs};
+}
+function bulkBox(){
+  var b=ui.bulk, p=parseFloat(String(b.pct).replace(",",".")), tg=bulkTargets();
+  var h='<div class="form" id="bulkBox"><div class="ftitle"><strong>Ajuste de precios en pesos</strong></div><div class="fgrid">'+
+    '<div class="field"><label for="bulkPct">Porcentaje (ej. 5 o -3)</label><input type="number" step="0.1" id="bulkPct" value="'+esc(b.pct)+'" inputmode="decimal"></div>'+
+    '<div class="field"><label for="bulkRound">Redondear a</label><select id="bulkRound">'+[["1","Sin redondeo"],["10000","$ 10.000"],["100000","$ 100.000"],["500000","$ 500.000"],["1000000","$ 1.000.000"]].map(function(o){return '<option value="'+o[0]+'"'+(o[0]===b.round?' selected':'')+'>'+o[1]+'</option>';}).join("")+'</select></div>'+
+    '<div class="field full"><label class="check" for="bulkInc"><input type="checkbox" id="bulkInc"'+(b.inc?' checked':'')+'>Incluir precios de ofertas</label></div></div>'+
+    '<p class="hint">Cambia solo precios en pesos ('+tg.vs.length+' vehículos'+(b.inc?' y '+tg.ofs.length+' ofertas':'')+'). Los precios en dólares no se tocan.</p>';
+  if(b.confirm && p) h+='<div class="acts" style="justify-content:flex-start"><span style="font-weight:700">¿'+(p>0?'Subir':'Bajar')+' '+Math.abs(p)+'% los precios?</span><button class="btn btn-sm danger solid" data-act="bulkyes">Sí, aplicar</button><button class="btn btn-sm btn-ghost" data-act="bulkno">Cancelar</button></div>';
+  else h+='<div><button class="btn btn-sm btn-navy" data-act="bulkask"'+(p&&(tg.vs.length+tg.ofs.length)?'':' disabled style="opacity:.5"')+'>Aplicar '+(p?(p>0?'+':'')+p+'%':'ajuste')+'</button></div>';
+  return h+'</div>';
+}
+function applyBulk(){
+  var b=ui.bulk, p=parseFloat(String(b.pct).replace(",",".")); if(!p) return;
+  var f=1+p/100, r=parseInt(b.round,10)||1, tg=bulkTargets();
+  function adj(x){ return x?Math.max(0,Math.round(x*f/r)*r):x; }
+  tg.vs.forEach(function(v){ v.precio=adj(v.precio); });
+  tg.ofs.forEach(function(o){ o.antes=adj(o.antes); o.ahora=adj(o.ahora); });
+  var n=tg.vs.length+tg.ofs.length; ui.bulk.confirm=false; ui.bulk.pct="";
+  afterChange(); ui.msg="Listo: se actualizaron "+n+" precios. Revisalos y descargá el archivo."; refreshStatus();
+}
+function admVehiculos(){
+  return bulkBox()+'<div class="acts" style="justify-content:space-between"><p class="hint">'+state.vehiculos.length+' vehículos. Sin precio se muestra “Consultá precio”. “Historia” genera la imagen para Instagram o WhatsApp.</p><button class="btn btn-navy btn-sm" data-act="add" data-c="vehiculos">+ Agregar vehículo</button></div>'+
+    '<div class="field"><label for="aq">Buscar en la lista</label><input type="text" id="aq" value="'+esc(ui.aq)+'" placeholder="Marca, modelo, año o “sin foto”"></div><div id="alist" style="display:grid;gap:12px">'+admRows()+'</div>';
+}
+function admRows(){
+  var h="", q=ui.aq.trim().toLowerCase();
+  var cats=state.categorias.map(function(c){return [c.id,c.nombre];});
+  state.vehiculos.forEach(function(v){
+    if(q && ui.editing!==v.id){ var hay=(fullName(v)+" "+(v.anio||"")+" "+catById(v.cat).nombre+(fotos(v).length?"":" sin foto")).toLowerCase(); if(hay.indexOf(q)<0) return; }
+    if(ui.editing===v.id){
+      var fs=v.fotos||[];
+      h+='<div class="form" id="edit-'+v.id+'"><div class="ftitle"><strong>Editar vehículo</strong><div class="acts"><button class="btn btn-sm btn-navy" data-act="done">Listo</button>'+delButtons("vehiculos",v.id)+'</div></div>'+
+        '<div class="gedit">'+fs.map(function(r,i){ var s=src(r); return '<div class="gi">'+(s?'<img src="'+s+'" alt="">':'')+'<button class="del" data-act="fdel" data-id="'+v.id+'" data-i="'+i+'" aria-label="Quitar foto '+(i+1)+'">×</button>'+(i===0?'<span class="mk on">Principal</span>':'<button class="mk" data-act="fmain" data-id="'+v.id+'" data-i="'+i+'">Hacer principal</button>')+'</div>'; }).join("")+
+        '<label class="gi add filebtn">+ Agregar fotos<input type="file" accept="image/*" multiple data-act="photo" data-id="'+v.id+'" aria-label="Agregar fotos"></label></div>'+
+        '<div class="fgrid">'+field("Marca","vehiculos",v.id,"marca",v.marca,"text","Ej. Toyota")+field("Modelo","vehiculos",v.id,"modelo",v.modelo,"text","Ej. Hilux")+
+        field("Versión","vehiculos",v.id,"version",v.version,"text","Ej. SRX 2.8 4x4 AT",true)+
+        field("Año","vehiculos",v.id,"anio",v.anio,"number")+field("Kilómetros","vehiculos",v.id,"km",v.km,"number")+
+        field("Tipo","vehiculos",v.id,"cat",v.cat,"select",cats)+field("Estado","vehiculos",v.id,"estado",v.estado,"select",ESTADOS)+
+        field("Transmisión","vehiculos",v.id,"caja",v.caja,"select",[["",""],["Manual","Manual"],["Automática","Automática"]])+
+        field("Combustible","vehiculos",v.id,"combustible",v.combustible,"select",[["",""],["Nafta","Nafta"],["Diésel","Diésel"],["GNC","GNC"],["Híbrido","Híbrido"],["Eléctrico","Eléctrico"]])+
+        field("Color","vehiculos",v.id,"color",v.color)+field("Moneda","vehiculos",v.id,"moneda",v.moneda,"select",[["ARS","Pesos ($)"],["USD","Dólares (US$)"]])+
+        field("Precio (vacío = consultar)","vehiculos",v.id,"precio",v.precio,"number",null,true)+
+        field("Financiación (texto de la banda verde)","vehiculos",v.id,"financ",v.financ,"text","Ej. 100% financiada BNA",true)+
+        field("Descripción","vehiculos",v.id,"desc",v.desc,"textarea")+'</div>'+
+        checkbox("Destacado (aparece primero)","vehiculos",v.id,"destacado",v.destacado)+'</div>';
+    } else {
+      var p=priceOf(v);
+      h+='<div class="arow"><div class="thumb">'+photo(v)+'</div><div class="meta"><strong>'+esc(fullName(v))+'</strong><span>'+esc([v.anio,kmTxt(v),p?money(p,v.moneda):"Consultá precio"].filter(Boolean).join(" · "))+(fotos(v).length?'':' · sin foto')+'</span></div>'+
+        '<div class="acts">'+estadoPill(v)+'<button class="btn btn-sm btn-ghost" data-act="story" data-id="'+v.id+'">Historia</button><button class="btn btn-sm btn-navy" data-act="edit" data-id="'+v.id+'">Editar</button></div>'+
+        '<div class="quick"><label class="money" for="q-precio-'+v.id+'"><span>'+(v.moneda==="USD"?"US$":"$")+'</span><input id="q-precio-'+v.id+'" type="number" inputmode="numeric" min="0" step="1" data-c="vehiculos" data-id="'+v.id+'" data-k="precio" value="'+esc(v.precio==null?"":v.precio)+'" placeholder="Consultá precio" aria-label="Precio de '+esc(fullName(v))+'"></label>'+
+        (v.precio!=null||(offerFor(v.id)&&offerFor(v.id).ahora)?'<button class="btn btn-sm btn-ghost" data-act="noprice" data-id="'+v.id+'">Poner “Consultá precio”</button>':'')+
+        '<select id="q-estado-'+v.id+'" data-c="vehiculos" data-id="'+v.id+'" data-k="estado" aria-label="Estado de '+esc(fullName(v))+'">'+ESTADOS.map(function(o){return '<option value="'+o[0]+'"'+(v.estado===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join("")+'</select>'+
+        (offerFor(v.id)&&offerFor(v.id).ahora?'<span class="hint">En oferta a '+money(offerFor(v.id).ahora,v.moneda)+' (se cambia en Ofertas)</span>':'')+'</div></div>';
+    }
+  });
+  return h||'<div class="empty">No hay vehículos que coincidan.</div>';
+}
+function admOfertas(){
+  var vs=state.vehiculos.map(function(v){return [v.id,fullName(v)+(v.anio?" "+v.anio:"")];});
+  var h='<div class="acts" style="justify-content:space-between"><p class="hint">Elegí un vehículo y el precio de oferta. Si ponés el precio anterior, se muestra el % de descuento. La oferta desaparece sola al vencer.</p><button class="btn btn-navy btn-sm" data-act="add" data-c="ofertas">+ Nueva oferta</button></div>';
+  if(!state.ofertas.length) h+='<div class="empty">Todavía no hay ofertas. Tocá “Nueva oferta” para crear la primera.</div>';
+  state.ofertas.forEach(function(o){
+    var v=vehById(o.vehId);
+    var st=expired(o)?'<span class="pill exp">Vencida</span>':(v&&!selling(v)?'<span class="pill">Vehículo no disponible</span>':(o.activa?'<span class="pill on">Visible</span>':'<span class="pill">Oculta</span>'));
+    h+='<div class="form"><div class="ftitle"><strong>'+esc(v?fullName(v):"Oferta")+'</strong><div class="acts">'+st+(v?'<button class="btn btn-sm btn-ghost" data-act="story" data-id="'+v.id+'" data-o="'+o.id+'">Historia</button>':'')+delButtons("ofertas",o.id)+'</div></div><div class="fgrid">'+
+      field("Vehículo","ofertas",o.id,"vehId",o.vehId,"select",vs,true)+
+      field("Precio anterior (opcional)","ofertas",o.id,"antes",o.antes,"number")+field("Precio de oferta (vacío = precio del vehículo)","ofertas",o.id,"ahora",o.ahora,"number")+
+      field("Etiqueta","ofertas",o.id,"etiqueta",o.etiqueta,"text","Ej. Oferta de la semana")+field("Válida hasta (opcional)","ofertas",o.id,"hasta",o.hasta,"date")+
+      field("Texto de la banda","ofertas",o.id,"banda",o.banda,"text","Ej. 100% financiada BNA",true)+
+      '<div class="field full"><label>Color de la banda</label>'+swatches("ofertas",o.id,"bandaColor",o.bandaColor||"go",["go","sky","sun","hot","navy"])+'</div>'+
+      '</div>'+checkbox("Mostrar en la página","ofertas",o.id,"activa",o.activa)+'</div>';
+  });
+  return h;
+}
+var HIST={sel:{}, modo:"cada", titulo:"Unidades disponibles", urls:[], blobs:[], busy:false, note:""};
+function histSel(){ return state.vehiculos.filter(function(v){ return HIST.sel[v.id] && v.estado!=="oculto"; }); }
+function admHistorias(){
+  var n=histSel().length, col=HIST.modo==="todos", tooMany=col&&n>6;
+  var h='<div class="form"><div class="ftitle"><strong>Historias para WhatsApp e Instagram</strong></div>'+
+    '<p class="hint">Tildá los vehículos y elegí cómo armarlas. Después las compartís desde el celular o las descargás.</p>'+
+    '<div class="seg" role="radiogroup" aria-label="Tipo de historia">'+
+      '<label><input type="radio" name="hmodo" value="cada"'+(!col?' checked':'')+'><span><b>Una por vehículo</b><small>Como las de siempre, una imagen por unidad</small></span></label>'+
+      '<label><input type="radio" name="hmodo" value="todos"'+(col?' checked':'')+'><span><b>Una sola con todos</b><small>Hasta 6 vehículos en la misma imagen</small></span></label></div>'+
+    (col?'<div class="field"><label for="h-titulo">Título de la historia</label><input id="h-titulo" type="text" value="'+esc(HIST.titulo)+'" maxlength="32"></div>':'')+
+    '<div class="acts" style="justify-content:flex-start"><button class="btn btn-sm btn-ghost" data-act="hall">Todos los disponibles</button><button class="btn btn-sm btn-ghost" data-act="hoff">Solo ofertas</button><button class="btn btn-sm btn-ghost" data-act="hnone">Ninguno</button></div></div>';
+  h+='<div class="hlist">'+state.vehiculos.filter(function(v){return v.estado!=="oculto";}).map(function(v){
+    var p=priceOf(v);
+    return '<label class="hitem'+(HIST.sel[v.id]?' on':'')+'" for="h-'+v.id+'"><input type="checkbox" id="h-'+v.id+'" data-hsel="'+v.id+'"'+(HIST.sel[v.id]?' checked':'')+'>'+
+      '<span class="thumb">'+photo(v)+'</span><span class="meta"><strong>'+esc(fullName(v))+'</strong><span>'+esc([v.anio,kmTxt(v),v.estado==="vendido"?"Vendido":(p?money(p,v.moneda):"Consultá precio")].filter(Boolean).join(" · "))+'</span></span>'+(offerFor(v.id)?'<span class="pill on">Oferta</span>':'')+'</label>';
+  }).join("")+'</div>';
+  h+='<div class="hbar"><span><b>'+n+'</b> seleccionado'+(n===1?'':'s')+(tooMany?' · <span style="color:var(--hot)">máximo 6 en una sola historia</span>':'')+'</span>'+
+    '<button class="btn btn-navy" data-act="hgen"'+(!n||tooMany||HIST.busy?' disabled style="opacity:.5"':'')+'>'+(HIST.busy?'Generando…':'Generar historia'+(!col&&n>1?'s':''))+'</button></div>';
+  if(HIST.urls.length){
+    h+='<div class="form" id="hres"><div class="ftitle"><strong>Listas para publicar</strong></div><div class="hprev">'+HIST.urls.map(function(u,i){ return '<img src="'+u+'" alt="Historia '+(i+1)+'">'; }).join("")+'</div>'+
+      '<div class="acts" style="justify-content:flex-start">'+(IS_MOBILE?'<button class="btn btn-wa" data-act="hshare">'+WA_ICON+'Compartir en WhatsApp</button>':'')+'<button class="btn '+(IS_MOBILE?'btn-ghost':'btn-navy')+'" data-act="hdown">Descargar '+(HIST.urls.length>1?'las '+HIST.urls.length+' imágenes':'imagen')+'</button></div>'+
+      '<p class="hint">'+(IS_MOBILE?'Al compartir, elegí WhatsApp y después “Mi estado” para subirlas como historia.':'Pasalas al celular y subilas desde WhatsApp en “Mi estado”, o desde Instagram.')+'</p>'+(HIST.note?'<p class="hint"><b>'+esc(HIST.note)+'</b></p>':'')+'</div>';
+  }
+  return h;
+}
+function clearHist(){ HIST.urls.forEach(function(u){ URL.revokeObjectURL(u); }); HIST.urls=[]; HIST.blobs=[]; HIST.note=""; }
+function genHist(){
+  var vs=histSel(); if(!vs.length) return;
+  clearHist(); HIST.busy=true; renderAdmin();
+  var job = HIST.modo==="todos" ? storyCollage(vs,HIST.titulo).then(function(b){ return [b]; })
+    : vs.reduce(function(pr,v){ return pr.then(function(arr){ return storyImage(v,offerFor(v.id)).then(function(b){ arr.push(b); return arr; }); }); }, Promise.resolve([]));
+  job.then(function(blobs){
+    HIST.blobs=blobs; HIST.urls=blobs.map(function(b){ return URL.createObjectURL(b); }); HIST.busy=false; renderAdmin();
+    var r=$("#hres"); if(r) r.scrollIntoView({block:"start",behavior:"smooth"});
+  }, function(){ HIST.busy=false; HIST.note="No se pudieron generar. Probá de nuevo."; renderAdmin(); });
+}
+function histFiles(){ return HIST.blobs.map(function(b,i){ return new File([b],"historia-"+(i+1)+".png",{type:"image/png"}); }); }
+function shareHist(){
+  var files=histFiles();
+  if(navigator.share && navigator.canShare && navigator.canShare({files:files})){
+    navigator.share({files:files}).then(function(){ HIST.note="Listo."; renderAdmin(); }, function(e){ if(e && e.name!=="AbortError"){ downHist(); } });
+  } else downHist();
+}
+function downHist(){
+  HIST.blobs.forEach(function(b,i){ setTimeout(function(){ downloadBlob(b,"historia-"+(i+1)+".png"); }, i*400); });
+  HIST.note=HIST.blobs.length>1?"Si el navegador pregunta, permití descargar varios archivos.":""; renderAdmin();
+}
+function storyCollage(vs,titulo){
+  var W=1080,H=1920,cv=document.createElement("canvas"); cv.width=W; cv.height=H; var x=cv.getContext("2d");
+  var ready=(document.fonts&&document.fonts.load)?Promise.all([document.fonts.load("900 100px Archivo"),document.fonts.load("600 40px Archivo")]).catch(function(){}):Promise.resolve();
+  return ready.then(function(){ return Promise.all([loadImg(IMGS.logo)].concat(vs.map(function(v){ return loadImg(fotos(v)[0]); }))); }).then(function(im){
+    var s=state.settings;
+    x.fillStyle="#070D16"; x.fillRect(0,0,W,H);
+    x.fillStyle="#053661"; x.fillRect(0,0,W,300);
+    if(im[0]){ var lh=200, lw=im[0].width*lh/im[0].height; x.drawImage(im[0],40,50,lw,lh); }
+    x.fillStyle="#fff"; x.textAlign="left"; fitF(x,String(titulo||"").toUpperCase(),"900",64,true,W-430); x.fillText(String(titulo||"").toUpperCase(),400,150);
+    x.fillStyle="#C6D3E1"; fitF(x,"VENTA · PERMUTA · FINANCIACIÓN","700",30,true,W-430); x.fillText("VENTA · PERMUTA · FINANCIACIÓN",400,205);
+    var n=vs.length, cols=n<=2?1:2, rows=Math.ceil(n/cols), mx=30, gap=18, top=330, gh=H-170-top-20;
+    var th=(gh-(rows-1)*gap)/rows;
+    vs.forEach(function(v,i){
+      var r=Math.floor(i/cols), c=i%cols, span=(cols===2 && n%2===1 && i===n-1);
+      var tw=span?W-2*mx:(W-2*mx-(cols-1)*gap)/cols, tx=mx+(span?0:c*(tw+gap)), ty=top+r*(th+gap);
+      x.save(); x.beginPath(); if(x.roundRect) x.roundRect(tx,ty,tw,th,18); else x.rect(tx,ty,tw,th); x.clip();
+      if(im[i+1]) cover(x,im[i+1],tx,ty,tw,th); else { x.fillStyle="#0B3A66"; x.fillRect(tx,ty,tw,th); }
+      var g=x.createLinearGradient(0,ty+th*.38,0,ty+th); g.addColorStop(0,"rgba(7,13,22,0)"); g.addColorStop(1,"rgba(7,13,22,.94)"); x.fillStyle=g; x.fillRect(tx,ty,tw,th);
+      var sold=v.estado==="vendido", o=offerFor(v.id), p=sold?null:priceOf(v), b=sold?null:bandOf(v,o);
+      if(sold){ x.save(); x.translate(tx+tw/2,ty+th*.4); x.rotate(-0.24); x.fillStyle="#fff"; x.fillRect(-tw,-38,2*tw,76); x.fillStyle="#E23B2E"; x.fillRect(-tw,-33,2*tw,66); x.fillStyle="#fff"; setF(x,"900",46,true); x.textAlign="center"; x.textBaseline="middle"; x.fillText("VENDIDO",0,3); x.restore(); }
+      if(b){ setF(x,"800",24,true); var bt=b.t.toUpperCase(), bw=Math.min(tw-36,x.measureText(bt).width+28); x.fillStyle=col(b.c); x.fillRect(tx+18,ty+18,bw,44); x.fillStyle=LIGHT_TEXT[b.c]?"#fff":"#04121F"; x.textBaseline="middle"; x.textAlign="left"; fitF(x,bt,"800",24,true,bw-28); x.fillText(bt,tx+32,ty+41); x.textBaseline="alphabetic"; }
+      var ps=Math.min(90,th*.17), ns=Math.min(50,th*.1), ss=Math.round(ns*.62), px=tx+24, mw=tw-48;
+      var py=ty+th-26, sy=py-(p?ps:ns*.9)-10, ny=sy-ss-10;
+      x.textAlign="left"; x.fillStyle="#fff";
+      fitF(x,title(v).toUpperCase(),"900",ns,true,mw); x.fillText(title(v).toUpperCase(),px,ny);
+      var sub=[v.version,specLine(v)].filter(Boolean).join(" | ");
+      x.fillStyle="#C3CEDA"; fitF(x,sub.toUpperCase(),"600",ss,false,mw); x.fillText(sub.toUpperCase(),px,sy);
+      x.fillStyle="#fff"; var pt=sold?"¡GRACIAS!":(p?short(p,v.moneda):"CONSULTÁ PRECIO"); fitF(x,pt,"900",p?ps:ns*.9,true,mw); x.fillText(pt,px,py);
+      x.restore();
+    });
+    x.textAlign="center"; x.fillStyle="#1FB855"; x.fillRect(0,H-150,W,80); x.fillStyle="#fff"; setF(x,"800",44,true); x.textBaseline="middle"; x.fillText("WHATSAPP: "+(s.whatsappVisible||""),W/2,H-110);
+    x.fillStyle="#9FB0C2"; setF(x,"600",30,false); x.fillText("RUTA SUR AUTOMOTORES | "+String(s.ciudad||"").toUpperCase(),W/2,H-38);
+    return new Promise(function(res){ cv.toBlob(res,"image/png"); });
+  });
+}
+function admDatos(){
+  var s=state.settings;
+  var h='<div class="form"><div class="ftitle"><strong>Datos de la agencia</strong></div><div class="fgrid">'+
+    field("WhatsApp (549 + característica + número)","settings","s","whatsapp",s.whatsapp)+field("WhatsApp como se muestra","settings","s","whatsappVisible",s.whatsappVisible)+
+    field("Instagram (sin @)","settings","s","instagram",s.instagram)+field("Horario","settings","s","horario",s.horario,"text","Ej. Lun a vie 9 a 13 y 16 a 20")+
+    field("Ciudad","settings","s","ciudad",s.ciudad)+field("Dirección","settings","s","direccion",s.direccion)+
+    field("Título principal","settings","s","heroTitulo",s.heroTitulo,"text",null,true)+
+    field("Texto principal","settings","s","heroTexto",s.heroTexto,"textarea")+
+    field("Texto de financiación y permuta","settings","s","financTexto",s.financTexto,"textarea")+'</div>'+
+    checkbox("Mostrar aviso de “datos de ejemplo” (solo lo ves vos)","settings","s","ejemplo",s.ejemplo)+'</div>';
+  h+='<div class="form"><div class="ftitle"><strong>Tipos de vehículo</strong><button class="btn btn-navy btn-sm" data-act="add" data-c="categorias">+ Agregar tipo</button></div>';
+  state.categorias.forEach(function(c){
+    var n=state.vehiculos.filter(function(v){return v.cat===c.id;}).length;
+    h+='<div class="arow" style="flex-wrap:wrap"><div class="field" style="flex:1 1 200px"><label for="f-categorias-'+c.id+'-nombre">Nombre · '+n+' vehículos</label><input type="text" id="f-categorias-'+c.id+'-nombre" data-c="categorias" data-id="'+c.id+'" data-k="nombre" value="'+esc(c.nombre)+'"></div>'+
+      swatches("categorias",c.id,"color",c.color)+(state.categorias.length>1?'<div class="acts">'+delButtons("categorias",c.id)+'</div>':'')+'</div>';
+  });
+  h+='<p class="hint">Si eliminás un tipo, sus vehículos pasan al primero de la lista.</p></div>';
+  h+='<div class="form"><div class="ftitle"><strong>Clave del panel</strong></div><div class="fgrid">'+
+    '<div class="field"><label for="pw1">Nueva clave (mínimo 6 caracteres)</label><input id="pw1" type="password" autocomplete="new-password"></div>'+
+    '<div class="field"><label for="pw2">Repetir clave</label><input id="pw2" type="password" autocomplete="new-password"></div></div>'+
+    '<p class="err" id="pw-err" hidden></p><div><button class="btn btn-sm btn-navy" data-act="setpw">Cambiar clave</button></div>'+
+    '<p class="hint">La clave nueva empieza a funcionar cuando descargás index.html y lo subís a Netlify.</p></div>';
+  return h;
+}
+function findItem(c,id){ if(c==="settings") return state.settings; var a=state[c]; for(var i=0;i<a.length;i++) if(a[i].id===id) return a[i]; return null; }
+
+var NUMS={anio:1,km:1,precio:1,antes:1,ahora:1};
+function onInput(e){
+  var t=e.target;
+  if(t.id==="q"){ ui.q=t.value; ui.limit=12; renderGrid(); return; }
+  if(t.id==="sort"){ ui.sort=t.value; renderGrid(); return; }
+  if(t.id==="pm-file") return;
+  if(t.id && t.id.indexOf("pm-")===0){ ui.perm[t.id.slice(3)]=t.value; return; }
+  if(t.id && t.id.indexOf("bulk")===0){ var b=ui.bulk; if(t.id==="bulkPct") b.pct=t.value; if(t.id==="bulkRound") b.round=t.value; if(t.id==="bulkInc") b.inc=t.checked; b.confirm=false; var bc=$("#bulkBox"); if(bc) bc.outerHTML=bulkBox(); return; }
+  if(t.dataset && t.dataset.hsel){ if(t.checked) HIST.sel[t.dataset.hsel]=true; else delete HIST.sel[t.dataset.hsel]; clearHist(); renderAdmin(); focusBack(t.id); return; }
+  if(t.name==="hmodo"){ HIST.modo=t.value; clearHist(); renderAdmin(); var r=document.querySelector('input[name="hmodo"][value="'+t.value+'"]'); if(r) r.focus(); return; }
+  if(t.id==="h-titulo"){ HIST.titulo=t.value; return; }
+  if(t.id==="pw1"||t.id==="pw2"||t.id==="lk-pass") return;
+  if(t.id==="aq"){ ui.aq=t.value; var l=$("#alist"); if(l) l.innerHTML=admRows(); return; }
+  if(!t.dataset || !t.dataset.c || !t.dataset.k) return;
+  var it=findItem(t.dataset.c,t.dataset.id); if(!it) return;
+  var k=t.dataset.k, v;
+  if(t.type==="checkbox") v=t.checked;
+  else if(t.type==="number" || NUMS[k]) v=t.value===""?null:Math.max(0,Math.round(Number(t.value)));
+  else v=t.value;
+  if(t.type==="number" && isNaN(v)) return;
+  it[k]=v; ui.msg="";
+  if(t.dataset.c==="ofertas" && k==="vehId"){ var nv=vehById(v); if(nv && !it.banda) it.banda=nv.financ||""; }
+  refreshStatus();
+  if(t.type==="checkbox" || t.tagName==="SELECT"){ renderPublicOnly(); renderAdmin(); focusBack(t.id); }
+  else renderPublicSoon();
+}
+var pubT; function renderPublicSoon(){ clearTimeout(pubT); pubT=setTimeout(renderPublicOnly,400); }
+function renderPublicOnly(){
+  var node=$("#admin"); if(node) node.parentNode.removeChild(node);
+  var y=window.scrollY; render();
+  var fresh=$("#admin"); if(fresh && node) fresh.parentNode.replaceChild(node,fresh);
+  window.scrollTo(0,y); syncLock();
+}
+function focusBack(id){ var el=document.getElementById(id); if(el) el.focus(); }
+function resizeImage(file){
+  return new Promise(function(res){
+    var r=new FileReader();
+    r.onload=function(){ var img=new Image();
+      img.onload=function(){ var max=1000, w=img.naturalWidth, h=img.naturalHeight, s=Math.min(1,max/Math.max(w,h));
+        var cv=document.createElement("canvas"); cv.width=Math.round(w*s); cv.height=Math.round(h*s);
+        var ctx=cv.getContext("2d"); ctx.fillStyle="#fff"; ctx.fillRect(0,0,cv.width,cv.height); ctx.drawImage(img,0,0,cv.width,cv.height);
+        res(cv.toDataURL("image/jpeg",0.72)); };
+      img.onerror=function(){ res(null); }; img.src=r.result; };
+    r.onerror=function(){ res(null); }; r.readAsDataURL(file);
+  });
+}
+function selectText(el){ if(!el) return; var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+function afterChange(){ saveDraft(); ui.msg=""; renderPublicOnly(); renderAdmin(); }
+
+function onClick(e){
+  var t=e.target.closest("button,[data-act],[data-open]"); if(!t) return;
+  if(t.dataset.open){ openDetail(t.dataset.open); return; }
+  var a=t.dataset.act;
+  if(a==="cnext"||a==="cprev"){ e.preventDefault(); stepCard(t.dataset.id, a==="cnext"?1:-1); return; }
+  if(a==="closebg"){ if(e.target===t) closeDetail(); return; }
+  if(a==="close"){ closeDetail(); return; }
+  if(a==="gprev"||a==="gnext"){ var n=fotos(vehById(ui.open)).length; ui.gi=(ui.gi+(a==="gnext"?1:-1)+n)%n; renderDetail(); var nb=$(".gal ."+(a==="gnext"?"next":"prev")); if(nb) nb.focus(); return; }
+  if(a==="gto"){ ui.gi=+t.dataset.i; renderDetail(); return; }
+  if(a==="share"){ shareVeh(t.dataset.id); return; }
+  if(a==="permfrom"){ ui.perm.interes=t.dataset.id; closeDetail(); var sel=$("#pm-interes"); if(sel) sel.value=t.dataset.id; var pm=$("#permuta"); if(pm){ pm.scrollIntoView({behavior:"smooth",block:"start"}); setTimeout(function(){ var f=$("#pm-auto"); if(f) f.focus({preventScroll:true}); },450); } return; }
+  if(a==="permsend"){ sendPermuta(); return; }
+  if(a==="pmdel"){ ui.perm.fotos.splice(+t.dataset.i,1); refreshPmFotos(); return; }
+  if(a==="pmshare"){ pmShare(); return; }
+  if(t.dataset.cat){ ui.cat=t.dataset.cat; ui.limit=12; renderCats(); renderGrid(); return; }
+  if(a==="more"){ ui.limit+=12; renderGrid(); return; }
+  if(t.dataset.copy!=null){ var txt=t.dataset.copy, done=function(){ t.textContent="Copiado"; setTimeout(function(){t.textContent="Copiar";},1500); };
+    try{ navigator.clipboard.writeText(txt).then(done,function(){ selectText(t.previousElementSibling); }); }catch(_){ selectText(t.previousElementSibling); } return; }
+  if(t.id==="openAdmin"){ ui.adminOpen=true; renderAdmin(); return; }
+  if(t.id==="closeAdmin"){ ui.adminOpen=false; ui.editing=null; ui.confirmDel=null; render(); return; }
+  if(t.id==="discard"){ state=JSON.parse(saved); imgsDirty=false; ui.editing=null; ui.confirmDel=null; ui.msg=""; try{ localStorage.removeItem(DRAFT_KEY); }catch(_){} render(); return; }
+  if(t.id==="publish"){ download(); return; }
+  if(t.dataset.tab){ ui.tab=t.dataset.tab; ui.editing=null; ui.confirmDel=null; renderAdmin(); return; }
+  if(!a) return;
+  var c=t.dataset.c, id=t.dataset.id;
+  if(a==="story"){ makeStory(id,t.dataset.o); return; }
+  if(a==="hall"||a==="hoff"||a==="hnone"){ HIST.sel={}; if(a!=="hnone") state.vehiculos.forEach(function(v){ if(selling(v) && (a==="hall"||offerFor(v.id))) HIST.sel[v.id]=true; }); clearHist(); renderAdmin(); return; }
+  if(a==="hgen"){ genHist(); return; }
+  if(a==="hshare"){ shareHist(); return; }
+  if(a==="hdown"){ downHist(); return; }
+  if(a==="setpw"){
+    var p1=($("#pw1")||{}).value||"", p2=($("#pw2")||{}).value||"", pe=$("#pw-err");
+    var bad=p1.length<6?"La clave tiene que tener al menos 6 caracteres.":(p1!==p2?"Las dos claves no coinciden.":"");
+    if(bad){ if(pe){ pe.textContent=bad; pe.hidden=false; } return; }
+    var salt=Math.random().toString(36).slice(2,12)+Date.now().toString(36);
+    state.settings.adminSalt=salt; state.settings.adminHash=passHash(salt,p1);
+    afterChange(); ui.msg="Clave cambiada. Descargá index.html y subilo a Netlify para que quede activa."; refreshStatus(); return;
+  }
+  if(a==="noprice"){ var vp=findItem("vehiculos",id); if(vp){ vp.precio=null; state.ofertas.forEach(function(o){ if(o.vehId===id) o.ahora=null; }); afterChange(); } return; }
+  if(a==="bulkask"){ ui.bulk.confirm=true; var bb=$("#bulkBox"); if(bb) bb.outerHTML=bulkBox(); return; }
+  if(a==="bulkno"){ ui.bulk.confirm=false; var bb2=$("#bulkBox"); if(bb2) bb2.outerHTML=bulkBox(); return; }
+  if(a==="bulkyes"){ applyBulk(); return; }
+  if(a==="edit"){ ui.editing=id; ui.confirmDel=null; renderAdmin(); var f=$("#edit-"+id); if(f) f.scrollIntoView({block:"nearest"}); return; }
+  if(a==="done"){ ui.editing=null; ui.confirmDel=null; renderAdmin(); return; }
+  if(a==="del"){ ui.confirmDel=c+":"+id; renderAdmin(); return; }
+  if(a==="del-no"){ ui.confirmDel=null; renderAdmin(); return; }
+  if(a==="del-yes"){
+    state[c]=state[c].filter(function(x){return x.id!==id;});
+    if(c==="vehiculos"){ state.ofertas=state.ofertas.filter(function(o){return o.vehId!==id;}); if(ui.open===id) ui.open=null; }
+    if(c==="categorias"){ var first=state.categorias[0].id; state.vehiculos.forEach(function(v){ if(v.cat===id) v.cat=first; }); if(ui.cat===id) ui.cat="all"; }
+    ui.confirmDel=null; ui.editing=null; afterChange(); return;
+  }
+  if(a==="add"){
+    if(c==="vehiculos"){ var n={id:uid("v"),marca:"",modelo:"Nuevo vehículo",version:"",anio:null,km:null,cat:(state.categorias[0]||{}).id||"",combustible:"",caja:"",color:"",moneda:"ARS",precio:null,financ:"",estado:"disponible",fotos:[],desc:"",destacado:false}; state.vehiculos.unshift(n); ui.editing=n.id; ui.aq=""; }
+    if(c==="ofertas"){ var v0=state.vehiculos.filter(selling)[0]||state.vehiculos[0]; if(!v0){ ui.msg="Primero cargá un vehículo."; refreshStatus(); return; } state.ofertas.unshift({id:uid("o"),vehId:v0.id,antes:v0.precio||null,ahora:null,etiqueta:"Oferta",banda:v0.financ||"",bandaColor:"go",hasta:"",activa:true}); }
+    if(c==="categorias"){ state.categorias.push({id:uid("k"),nombre:"Nuevo tipo",color:"slate"}); }
+    afterChange(); var sc=$(".adm .content"); if(sc && c!=="categorias") sc.scrollTop=0; return;
+  }
+  if(a==="color"){ var it=findItem(c,id); if(it){ it[t.dataset.key||"color"]=t.dataset.v; afterChange(); } return; }
+  if(a==="fdel"){ var v1=findItem("vehiculos",id); if(v1){ v1.fotos.splice(+t.dataset.i,1); afterChange(); } return; }
+  if(a==="fmain"){ var v2=findItem("vehiculos",id); if(v2){ var fm=v2.fotos.splice(+t.dataset.i,1)[0]; v2.fotos.unshift(fm); afterChange(); } return; }
+}
+function onChange(e){
+  var t=e.target;
+  if(t.id==="pm-file" && t.files && t.files.length){
+    var room=6-ui.perm.fotos.length, fl=[].slice.call(t.files,0,Math.max(0,room));
+    fl.reduce(function(pr,f){ return pr.then(function(){ return resizeImage(f).then(function(u){ if(u) ui.perm.fotos.push(u); }); }); },Promise.resolve()).then(refreshPmFotos);
+    return;
+  }
+  if(t.id==="sort"||t.id==="pm-interes"||t.id==="pm-pago"){ onInput(e); return; }
+  if(t.dataset && t.dataset.act==="photo" && t.files && t.files.length){
+    var v=findItem("vehiculos",t.dataset.id), files=[].slice.call(t.files), ok=0;
+    ui.msg="Procesando "+files.length+" foto"+(files.length>1?"s":"")+"…"; ui.msgType=""; refreshStatus();
+    files.reduce(function(p,f){ return p.then(function(){ return resizeImage(f).then(function(url){ if(url){ var k=uid("u"); IMGS[k]=url; v.fotos.push("img:"+k); imgsDirty=true; ok++; } }); }); }, Promise.resolve()).then(function(){
+      if(!ok){ ui.msg="No se pudo leer esa imagen. Probá con una foto JPG o PNG."; ui.msgType="err"; refreshStatus(); return; }
+      afterChange(); if(ok<files.length){ ui.msg=(files.length-ok)+" foto(s) no se pudieron leer."; ui.msgType="err"; refreshStatus(); }
+    });
+  }
+}
+
+/* ------------------------------ download ------------------------------ */
+var SITE_URL="";
+function ldData(){
+  var s=state.settings, n=String(s.whatsapp||"").replace(/\D/g,""), addr={"@type":"PostalAddress",addressLocality:s.ciudad||"",addressCountry:"AR"};
+  if(s.direccion) addr.streetAddress=s.direccion;
+  var d={"@context":"https://schema.org","@type":"AutoDealer",name:"Ruta Sur Automotores",url:SITE_URL,image:SITE_URL+"portada.jpg",description:"Venta, permuta y financiación de vehículos en "+(s.ciudad||"")+".",address:addr,areaServed:s.ciudad||""};
+  if(n) d.telephone="+"+n;
+  if(s.horario) d.description+=" Horario: "+s.horario+".";
+  if(s.instagram) d.sameAs=["https://www.instagram.com/"+String(s.instagram).replace(/^@/,"")+"/"];
+  return d;
+}
+function updateLd(){ return; var el=document.getElementById("app-ld"); if(el) el.textContent=JSON.stringify(ldData()).replace(/</g,"\\u003c"); }
+function buildDocument(){
+  updateLd();
+  var nos=document.querySelector("body > noscript"), NOS=nos?nos.outerHTML+"\n":"";
+  var json=JSON.stringify(state,null,1).replace(/</g,"\\u003c");
+  var keep={logo:IMGS.logo};
+  state.vehiculos.forEach(function(v){ (v.fotos||[]).forEach(function(r){ if(r.indexOf("img:")===0 && IMGS[r.slice(4)]) keep[r.slice(4)]=IMGS[r.slice(4)]; }); });
+  var SC="<"+"/script>";
+  var head=document.documentElement.outerHTML.split("<body")[0];
+  return "<!doctype html>\n"+head.replace(/<style id="app-style">[\s\S]*?<\/style>/, "<style id=\"app-style\">"+document.getElementById("app-style").textContent+"</style>")+
+    "<body>\n"+NOS+"<div id=\"root\"></div>\n<script type=\"application/json\" id=\"app-data\">"+json+SC+"\n"+
+    "<script type=\"application/json\" id=\"app-img\">"+JSON.stringify(keep)+SC+"\n"+
+    "<script id=\"app-app\">"+document.getElementById("app-app").textContent+SC+"\n</body></html>";
+}
+var DRAFT_KEY="demo-automotora-borrador";
+function saveDraft(){
+  if(!ui.standalone) return;
+  try{
+    if(!dirty()){ localStorage.removeItem(DRAFT_KEY); return; }
+    var mine={}; Object.keys(IMGS).forEach(function(k){ if(k.charAt(0)==="u") mine[k]=IMGS[k]; });
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({state:state, imgs:mine}));
+  }catch(_){ }
+}
+function loadDraft(){
+  try{
+    var d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null"); if(!d||!d.state) return;
+    state=d.state; Object.keys(d.imgs||{}).forEach(function(k){ IMGS[k]=d.imgs[k]; imgsDirty=true; });
+    ui.msg="Recuperamos cambios que no habías descargado."; ui.msgType="";
+  }catch(_){ }
+}
+function download(){
+  try{
+    buildDocument();
+    saved=JSON.stringify(state); imgsDirty=false; try{ localStorage.removeItem(DRAFT_KEY); }catch(_){}
+    ui.msg="En el sitio real, acá se descarga el sitio actualizado y se publica en un minuto. En la demo no se descarga nada."; ui.msgType="";
+  }catch(err){ ui.msg="No se pudo generar el archivo. Probá desde otro navegador."; ui.msgType="err"; }
+  renderAdmin();
+}
+
+/* ------------------------------ boot ------------------------------ */
+document.addEventListener("input", onInput);
+document.addEventListener("change", onChange);
+document.addEventListener("click", onClick);
+document.addEventListener("keydown", function(e){
+  if(e.key==="Escape"){ if(ui.open){ closeDetail(); return; } if(ui.adminOpen){ ui.adminOpen=false; ui.editing=null; render(); return; } }
+  if(ui.open && !ui.adminOpen && (e.key==="ArrowRight"||e.key==="ArrowLeft")){ var n=fotos(vehById(ui.open)).length; if(n>1){ ui.gi=(ui.gi+(e.key==="ArrowRight"?1:-1)+n)%n; renderDetail(); } }
+});
+/* ------------------------------ clave de acceso ------------------------------ */
+function sha256(str){
+  var ascii=unescape(encodeURIComponent(str));
+  function rr(v,a){return (v>>>a)|(v<<(32-a));}
+  var mp=Math.pow, mw=mp(2,32), i, j, result="", words=[], bl=ascii.length*8, hash=[], k=[], pc=0, ic={};
+  for(var c=2; pc<64; c++){ if(!ic[c]){ for(i=0;i<313;i+=c) ic[i]=c; hash[pc]=(mp(c,.5)*mw)|0; k[pc++]=(mp(c,1/3)*mw)|0; } }
+  hash=hash.slice(0,8);
+  ascii+="\x80";
+  while(ascii.length%64-56) ascii+="\x00";
+  for(i=0;i<ascii.length;i++){ j=ascii.charCodeAt(i); words[i>>2]|=j<<((3-i)%4)*8; }
+  words[words.length]=((bl/mw)|0); words[words.length]=(bl);
+  for(j=0;j<words.length;){
+    var w=words.slice(j,j+=16), oh=hash; hash=hash.slice(0,8);
+    for(i=0;i<64;i++){
+      var w15=w[i-15], w2=w[i-2], a=hash[0], e=hash[4];
+      var t1=hash[7]+(rr(e,6)^rr(e,11)^rr(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]+(w[i]=(i<16)?w[i]:(w[i-16]+(rr(w15,7)^rr(w15,18)^(w15>>>3))+w[i-7]+(rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);
+      var t2=(rr(a,2)^rr(a,13)^rr(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+      hash=[(t1+t2)|0].concat(hash); hash[4]=(hash[4]+t1)|0;
+    }
+    for(i=0;i<8;i++) hash[i]=(hash[i]+oh[i])|0;
+  }
+  for(i=0;i<8;i++) for(j=3;j+1;j--){ var b=(hash[i]>>(j*8))&255; result+=((b<16)?0:"")+b.toString(16); }
+  return result;
+}
+function passHash(salt,pw){ return sha256(salt+":"+pw); }
+var lockFails=0, lockUntil=0, FILE_HASH=state.settings.adminHash, FILE_SALT=state.settings.adminSalt;
+function authed(){ try{ return sessionStorage.getItem("demo-auth")===FILE_HASH; }catch(_){ return false; } }
+function enterAdmin(){ var l=document.getElementById("lock"); if(l) l.remove(); ui.standalone=true; ui.canEdit=true; loadDraft(); ui.adminOpen=true; render(); }
+function showLock(){
+  if(document.getElementById("lock")) return;
+  var d=document.createElement("div"); d.id="lock"; d.className="lock-wrap";
+  d.innerHTML='<div class="lock-card" role="dialog" aria-modal="true" aria-labelledby="lk-t"><img src="'+IMGS.logo+'" alt="Ruta Sur Automotores" width="120" height="72"><h2 id="lk-t">Administración</h2>'+
+    '<div class="field"><label for="lk-pass">Clave</label><input id="lk-pass" type="password" autocomplete="current-password"></div>'+
+    '<p class="err" id="lk-err" hidden></p><button class="btn btn-navy" id="lk-go">Entrar</button><a class="lk-back" href="#" id="lk-back">Volver al sitio</a></div>';
+  document.body.appendChild(d); document.body.classList.add("lock");
+  var inp=document.getElementById("lk-pass"); inp.focus();
+  function tryIt(){
+    var err=document.getElementById("lk-err");
+    if(Date.now()<lockUntil){ err.textContent="Demasiados intentos. Esperá "+Math.ceil((lockUntil-Date.now())/1000)+" segundos."; err.hidden=false; return; }
+    if(passHash(FILE_SALT,inp.value)===FILE_HASH){ try{ sessionStorage.setItem("demo-auth",FILE_HASH); }catch(_){} enterAdmin(); return; }
+    lockFails++; if(lockFails>=5){ lockUntil=Date.now()+30000; lockFails=0; }
+    err.textContent="Clave incorrecta."; err.hidden=false; inp.select();
+  }
+  document.getElementById("lk-go").onclick=tryIt;
+  inp.onkeydown=function(e){ if(e.key==="Enter") tryIt(); };
+  document.getElementById("lk-back").onclick=function(e){ e.preventDefault(); d.remove(); document.body.classList.remove("lock"); try{ history.replaceState(null,"",location.pathname+location.search); }catch(_){} };
+}
+function fromHash(){
+  var hsh=location.hash||"";
+  if(/admin/i.test(hsh) && !ui.canEdit){ enterAdmin(); return; }
+  var m=hsh.match(/^#v=(.+)$/); if(m && vehById(decodeURIComponent(m[1]))){ ui.open=decodeURIComponent(m[1]); ui.gi=0; renderDetail(); }
+}
+updateLd();
+render();
+fromHash();
+window.addEventListener("hashchange", fromHash);
+})();
+</script>
+</body></html>
