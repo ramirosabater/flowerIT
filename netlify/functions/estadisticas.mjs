@@ -21,7 +21,7 @@ const b64u = (s) => Buffer.from(s).toString('base64url')
 let tokenGA = null, tokenVence = 0
 async function accesoGA() {
   if (tokenGA && Date.now() < tokenVence - 60000) return tokenGA
-  const email = process.env.GA_CLIENT_EMAIL, key = (process.env.GA_PRIVATE_KEY || '').replace(/\\n/g, '\n')
+  const email = process.env.GA_CLIENT_EMAIL || process.env.GA_CLIENT_MAIL, key = (process.env.GA_PRIVATE_KEY || '').replace(/\\n/g, '\n')
   if (!email || !key) throw new Error('Falta configurar GA_CLIENT_EMAIL o GA_PRIVATE_KEY en Netlify.')
   const ahora = Math.floor(Date.now() / 1000)
   const sinFirma = b64u(JSON.stringify({ alg: 'RS256', typ: 'JWT' })) + '.' + b64u(JSON.stringify({
