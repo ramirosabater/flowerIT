@@ -204,6 +204,23 @@ a.btnl{display:inline-flex;align-items:center;text-decoration:none;border-radius
  html.print-cs header.top,html.print-cs .noprint,html.print-cs .proto,html.print-rep header.top,html.print-rep .proto,html.print-rep main .bar,html.print-rep main .tabs{display:none!important}
  html.print-cs .paper.csp{break-inside:avoid;box-shadow:none}html.print-cs .paper.csp+div+.paper.csp{break-before:page}
  html.print-rep .tw.sticky{max-height:none;overflow:visible}}
+/* nov-2026: menú por pasos (segunda fila del encabezado) */
+header.top{flex-wrap:wrap;row-gap:8px}
+.pasos{order:5;flex:0 0 100%;display:flex;gap:4px;align-items:center;padding:0;margin:0;overflow-x:auto;scrollbar-width:none}
+.pasos::-webkit-scrollbar{display:none}
+.pasos-t{font-size:12px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:.4px;margin-right:6px;white-space:nowrap}
+a.paso{display:flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px 6px 6px;font-weight:700;font-size:14px;color:var(--ink);text-decoration:none;white-space:nowrap;background:var(--chip);flex:none}
+a.paso+a.paso{margin-left:14px;position:relative}
+a.paso+a.paso::before{content:"›";position:absolute;left:-12px;color:var(--mute);font-weight:800}
+a.paso .num{width:22px;height:22px;border-radius:50%;background:var(--card);border:1.5px solid var(--acc);color:var(--acc);display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+a.paso:hover{background:var(--acc-soft)}
+a.paso.on{background:var(--acc);color:var(--on-acc)}
+a.paso.on .num{background:var(--on-acc);color:var(--acc);border-color:var(--on-acc)}
+a.paso .cnt{background:var(--haz);color:#fff;border-radius:10px;padding:0 7px;font-size:12px;font-weight:800}
+a.paso .cnt:empty,.dm .cnt:empty{display:none}
+a.paso .ls{display:none}
+@media (max-width:1240px){a.paso .lf{display:none}a.paso .ls{display:inline}}
+@media (max-width:900px){.pasos-t{display:none}a.paso{font-size:13px}}
 </style>
 </head>
 <body>
@@ -214,15 +231,9 @@ a.btnl{display:inline-flex;align-items:center;text-decoration:none;border-radius
  <nav class="menu" aria-label="Menú principal">
   <a class="dl" href="#tablero" data-v="tablero">Tablero</a>
   <div class="dd"><button class="dt" aria-expanded="false">Manifiestos <span class="chev">▾</span></button><div class="dm">
-   <a href="#nuevo" data-v="nuevo"><b>Nuevo manifiesto</b><small>Cargar e imprimir en el formulario</small></a>
-   <a href="#manifiestos" data-v="manifiestos"><b>Buscar manifiestos</b><small>Recorrido de cada residuo</small></a>
+   <a href="#manifiestos" data-v="manifiestos"><b>Buscar manifiestos</b><small>Recorrido de cada residuo, corregir o anular</small></a>
+   <a href="#nacion/all" data-v="nacion/all"><b>Manifiestos Nación</b><small>Todos los viajes y sus certificados</small></a>
    <a href="#agenda" data-v="agenda"><b>Agenda</b><small>Retiros y vencimientos del mes</small></a></div></div>
-  <div class="dd"><button class="dt" aria-expanded="false">Planta <span class="gdot" id="gPlanta"></span><span class="chev">▾</span></button><div class="dm">
-   <a href="#ing" data-v="ing"><b>Por ingresar <span class="cnt" id="nIng"></span></b><small>Cargar los residuos que llegan (sección 3)</small></a>
-   <a href="#alma" data-v="alma"><b>Armar viajes <span class="cnt ok" id="nAlma"></span></b><small>Lo almacenado, en viajes a disposición final</small></a>
-   <a href="#nacion" data-v="nacion"><b>Esperando certificado <span class="cnt" id="nPend"></span></b><small>Registrar el certificado del operador</small></a>
-   <a href="#nacion/all" data-v="nacion/all"><b>Manifiestos Nación</b><small>Todos los envíos y sus certificados</small></a>
-   <a href="#cs" data-v="cs"><b>Certificados al generador <span class="cnt" id="nCs"></span></b><small>El certificado numerado para cada cliente</small></a></div></div>
   <div class="dd"><button class="dt" aria-expanded="false">Reportes <span class="chev">▾</span></button><div class="dm">
    <a href="#rep/prod" data-v="rep/prod"><b>Cantidad transportada por producto</b><small>Semanal, quincenal o mensual</small></a>
    <a href="#rep/prov" data-v="rep/prov"><b>Libro provincial</b><small>Por operador principal</small></a>
@@ -230,6 +241,7 @@ a.btnl{display:inline-flex;align-items:center;text-decoration:none;border-radius
    <a href="#rep/tra" data-v="rep/tra"><b>Libro de transporte</b><small>Retiros por transportista</small></a>
    <a href="#rep/est" data-v="rep/est"><b>Estadísticas</b><small>Rankings por corriente, generador y destino</small></a></div></div>
   <div class="dd"><button class="dt" aria-expanded="false">Altas <span class="gdot" id="gAltas"></span><span class="chev">▾</span></button><div class="dm">
+   <a href="#venc" data-v="venc"><b>Vencimientos</b><small>Habilitaciones y flota, vencidas o por vencer</small></a>
    <a href="#gen" data-v="gen"><b>Generadores</b><small>Clientes y sus direcciones de retiro</small></a>
    <a href="#ent" data-v="ent"><b>Transportistas y operadores</b><small>Empresas habilitadas</small></a>
    <a href="#flota" data-v="flota"><b>Flota y choferes <span class="cnt" id="nVenc"></span></b><small>Camiones, choferes y vencimientos</small></a>
@@ -237,6 +249,7 @@ a.btnl{display:inline-flex;align-items:center;text-decoration:none;border-radius
  </nav>
  <button class="helpb" id="helpB" aria-label="Ayuda">? Ayuda</button>
  <a class="client" href="#portal" data-v="portal">Vista del cliente</a>
+ <span class="pasos" aria-label="Circuito de un residuo"><span class="pasos-t">Circuito de un residuo</span><a class="paso" href="#nuevo" data-v="nuevo" title="Paso 1 · Emitir e imprimir el manifiesto en el formulario azul" aria-label="Paso 1 · Emitir e imprimir el manifiesto en el formulario azul"><span class="num" aria-hidden="true">1</span><span class="lf">Emitir</span><span class="ls">Emitir</span></a><a class="paso" href="#ing" data-v="ing" title="Paso 2 · Cuando llega la carga: cargar los residuos (sección 3)" aria-label="Paso 2 · Cuando llega la carga: cargar los residuos (sección 3)"><span class="num" aria-hidden="true">2</span><span class="lf">Ingreso a planta</span><span class="ls">Ingreso</span><span class="cnt" id="nIng"></span></a><a class="paso" href="#alma" data-v="alma" title="Paso 3 · Armar el viaje a disposición final (Manifiesto Nación) e imprimirlo" aria-label="Paso 3 · Armar el viaje a disposición final (Manifiesto Nación) e imprimirlo"><span class="num" aria-hidden="true">3</span><span class="lf">Armar viaje</span><span class="ls">Viaje</span></a><a class="paso" href="#nacion" data-v="nacion" title="Paso 4 · Cuando vuelve el certificado del operador: registrarlo" aria-label="Paso 4 · Cuando vuelve el certificado del operador: registrarlo"><span class="num" aria-hidden="true">4</span><span class="lf">Certificado del operador</span><span class="ls">Operador</span><span class="cnt" id="nPend"></span></a><a class="paso" href="#cs" data-v="cs" title="Paso 5 · Emitir e imprimir el certificado para cada generador" aria-label="Paso 5 · Emitir e imprimir el certificado para cada generador"><span class="num" aria-hidden="true">5</span><span class="lf">Certificado al cliente</span><span class="ls">Cliente</span><span class="cnt" id="nCs"></span></a><span id="gPlanta" hidden></span><span id="nAlma" hidden></span></span>
 </header>
 <main id="main"></main>
 </div>
@@ -423,7 +436,7 @@ const umL=u=>({KGS:'kg',LTS:'l',MS3:'m³'}[u]||u.toLowerCase());
 const cliName=id=>DATA.cli[id]?.n||('Cliente '+id);
 DATA.man.sort((a,b)=>b.f.localeCompare(a.f)||b.id.localeCompare(a.id));
 function docState(v){if(!v)return{c:'',t:'Sin cargar'};if(v<'2000')return{c:'bad',t:'Fecha inválida'};const days=(new Date(v)-new Date(TODAY))/864e5;if(days<0)return{c:'bad',t:'Vencido '+fd(v)};if(days<=45)return{c:'haz',t:'Vence '+fd(v)};return{c:'ok',t:'Vigente '+fd(v)}}
-const worst=x=>{const s=Object.values(x.docs).map(docState);return s.some(d=>d.c==='bad'||d.c==='')?'bad':s.some(d=>d.c==='haz')?'haz':'ok'};
+const worst=x=>{const s=Object.keys(x.docs).map(k=>docStateX(x,k));return s.some(d=>d.c==='bad'||d.c==='')?'bad':s.some(d=>d.c==='haz')?'haz':'ok'};
 const venc=[...DATA.ch,...DATA.ca].filter(x=>worst(x)!=='ok').length;
 $('#nVenc').textContent=venc;
 const stV=st=>`--sc:var(--s${st});--sb:var(--s${st}b)`;
@@ -609,10 +622,10 @@ function wirePrint(){const sh=$('#sheet');if(!sh)return;const fit=()=>{const w=s
 const OPNAMES=DEMO_DATA.plantas.map(p=>p.n);
 const nextMTN=()=>String(Math.max(...DATA.man.flatMap(m=>m.it.map(i=>+(i.mtn||0))))+1);
 const habPills=h=>Object.entries(h).map(([k,v])=>{const s=docState(v);return `<span class="pill ${s.c}">${k}: ${s.t}</span>`}).join('');
-function counts(){const a=DATA.man.reduce((n,m)=>n+(m.ini?0:m.it.filter(i=>i.st==='Almacenado').length),0);const p=new Set(DATA.man.flatMap(m=>m.it.filter(i=>i.st==='En Transito'&&i.mtn).map(i=>i.mtn))).size;$('#nAlma').textContent=a;$('#nPend').textContent=p;const ni=DATA.man.filter(m=>m.ini).length,nc=csPend().length;$('#nIng').textContent=ni||'';$('#nCs').textContent=nc||'';$('#gPlanta').classList.toggle('on',p>0||ni>0||nc>0);$('#gAltas').classList.toggle('on',+($('#nVenc').textContent||0)>0)}
+function counts(){const a=DATA.man.reduce((n,m)=>n+(m.ini||m.anul?0:m.it.filter(i=>i.st==='Almacenado').length),0);const p=new Set(DATA.man.flatMap(m=>m.it.filter(i=>i.st==='En Transito'&&i.mtn).map(i=>i.mtn))).size;$('#nAlma').textContent=a;$('#nPend').textContent=p;const ni=DATA.man.filter(m=>m.ini&&!m.anul).length,nc=csPend().length;$('#nIng').textContent=ni||'';$('#nCs').textContent=nc||'';$('#gPlanta').classList.toggle('on',p>0||ni>0||nc>0);$('#gAltas').classList.toggle('on',+($('#nVenc').textContent||0)>0)}
 let almaSel=new Set(),almaOp=DEMO_DATA.empresa.key,almaUm='KGS',almaOmit='';
 function vAlmaManual(){
- const its=DATA.man.flatMap(m=>m.it.map((i,k)=>({m,i,key:m.id+'|'+k}))).filter(x=>x.i.st==='Almacenado'&&!x.m.ini&&(x.m.gp||DEMO_DATA.empresa.key).startsWith(almaOp.slice(0,6))&&x.i.um===almaUm&&(!almaOmit||String(x.m.cli)!==almaOmit));
+ const its=DATA.man.flatMap(m=>m.it.map((i,k)=>({m,i,key:m.id+'|'+k}))).filter(x=>x.i.st==='Almacenado'&&!x.m.ini&&!x.m.anul&&(x.m.gp||DEMO_DATA.empresa.key).startsWith(almaOp.slice(0,6))&&x.i.um===almaUm&&(!almaOmit||String(x.m.cli)!==almaOmit));
  const byY={};its.forEach(x=>{(byY[x.i.y]=byY[x.i.y]||[]).push(x)});
  const tot=its.filter(x=>almaSel.has(x.key)).reduce((a,x)=>a+x.i.q,0);
  const clis=[...new Set(its.map(x=>x.m.cli))];
@@ -633,7 +646,7 @@ const estadoOf=y=>{const e=(DATA.cor[y]?.e||'').toLowerCase();return e.startsWit
 const EST={liq:'Líquido',semi:'Semisólido',sol:'Sólido'};
 const addDays=(f,n)=>{const d=new Date(f+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
 const daysTo=f=>Math.round((new Date(f+'T12:00:00')-new Date(TODAY+'T12:00:00'))/864e5);
-function stock(){return DATA.man.flatMap(m=>m.it.map((i,k)=>({m,i,key:m.id+'|'+k}))).filter(x=>x.i.st==='Almacenado'&&!x.m.ini&&(x.m.gp||DEMO_DATA.empresa.key).startsWith(planCfg.op.slice(0,6))).map(x=>({...x,est:estadoOf(x.i.y),venc:addDays(x.m.f,planCfg.plazo)}))}
+function stock(){return DATA.man.flatMap(m=>m.it.map((i,k)=>({m,i,key:m.id+'|'+k}))).filter(x=>x.i.st==='Almacenado'&&!x.m.ini&&!x.m.anul&&(x.m.gp||DEMO_DATA.empresa.key).startsWith(planCfg.op.slice(0,6))).map(x=>({...x,est:estadoOf(x.i.y),venc:addDays(x.m.f,planCfg.plazo)}))}
 function groupOf(x){if(x.est==='liq')return 'L:'+x.i.y;if(INCOMP.test(x.i.y))return 'X:'+x.i.y;if(x.est==='semi')return planCfg.mixSemi?'M:semi':'M:'+x.i.y;return planCfg.mixSol?'S:sol':'S:'+x.i.y}
 const capOf=g=>g.startsWith('L:')?planCfg.capL:planCfg.capS;
 function odfFor(y){const okO=DATA.ops.map(o=>o.n).filter(n=>habOdf(n,y));const c={};DATA.man.forEach(m=>m.it.forEach(i=>{if(i.y===y&&i.odf)c[i.odf]=(c[i.odf]||0)+1}));const b=Object.entries(c).filter(([n])=>okO.includes(n)).sort((a,b)=>b[1]-a[1])[0];return b?b[0]:(okO[0]||DEMO_DATA.operadores[0].n)}
@@ -673,7 +686,7 @@ function wireAlmaPlan(){const set=(k,v)=>{planCfg[k]=v;plan=null;_it=null;const 
  document.querySelectorAll('.odf').forEach(s=>s.onchange=()=>{plan.loads.find(l=>l.id==s.dataset.l).odf=s.value;keep()});
  document.querySelectorAll('.go').forEach(b=>b.onclick=()=>{const l=plan.loads.find(x=>x.id==b.dataset.l);const n=nextMTN();const keys=new Set(l.parts.map(p=>p.key));
   DATA.man.forEach(m=>m.it.forEach((i,k)=>{if(keys.has(m.id+'|'+k)){i.st='En Transito';i.mtn=n;i.mtnF=TODAY;i.odf=l.odf;logEv(m.id,'Incluido en Manifiesto Nación '+fnum(n)+' · En tránsito')}}));plan.loads=plan.loads.filter(x=>x!==l);_it=null;counts();toast('Manifiesto Nación '+n+' armado');keep()})}
-function vAlma(){return `<h1>Armar viajes</h1><p class="sub">Residuos en planta y cómo conviene armar los viajes a disposición final, según vencimiento y capacidad del camión.</p>
+function vAlma(){return `<h1>Paso 3 · Armar viaje</h1><p class="sub">Residuos en planta y cómo conviene armar los viajes a disposición final, según vencimiento y capacidad del camión.</p>
  <div class="tabs"><button data-at="plan" class="${almaTab==='plan'?'on':''}">Cargas sugeridas</button><button data-at="man" class="${almaTab==='man'?'on':''}">Selección manual</button></div>${almaTab==='plan'?vAlmaPlan():vAlmaManual()}`}
 function wireAlma(){document.querySelectorAll('[data-at]').forEach(b=>b.onclick=()=>{almaTab=b.dataset.at;route()});almaTab==='plan'?wireAlmaPlan():wireAlmaManual()}
 
@@ -2032,9 +2045,9 @@ function wireEtiq(){document.querySelectorAll('.lc').forEach(i=>i.onchange=()=>{
 const TOURS=[
  {c:'Manifiestos',t:'Emitir un manifiesto',d:'Cargar un retiro e imprimirlo',s:[
   ['nuevo','.steps .st:nth-child(1)','Transporte y formulario','Elegí el transporte. El número del formulario preimpreso se sugiere solo: es el siguiente del talonario.'],
-  ['nuevo','.steps .st:nth-child(2)','Generador y operador','Elegí el generador. Si su habilitación municipal está vencida, el sistema te avisa.'],
+  ['nuevo','.steps .st:nth-child(2)','Generador y operador','Elegí el generador. Si su habilitación de generador está vencida, el sistema te avisa.'],
   ['nuevo','.steps .st:nth-child(3)','Vehículo y chofer','Al elegir patente y chofer ves sus documentos. Si algo está vencido, no deja emitir.'],
-  ['nuevo','#rows','Residuos','Cargá cada residuo. Si la corriente no está habilitada para el transporte o la planta, lo marca en rojo.'],
+  ['nuevo','#rows','Residuos','Elegí la corriente de cada residuo: descripción, unidad y estado se completan solos. Si no está habilitada para el transporte o la planta, lo marca en rojo. La cantidad se carga al entrar a planta.'],
   ['nuevo','#nGo','Emitir e imprimir','Registra el manifiesto y abre la impresión sobre el formulario azul. A mano, solo las firmas.']]},
  {c:'Planta',t:'Armar un viaje a disposición final',d:'Cargas sugeridas desde planta',s:[
   ['alma','.cfg','Capacidad y plazo','Ajustá la capacidad de la batea y la cisterna y el plazo máximo en planta. El plan se recalcula solo.'],
@@ -2229,9 +2242,9 @@ function wireAgenda(){document.querySelectorAll('[data-ag]').forEach(b=>b.onclic
 let gQ='';
 function vGen(){const q=gQ.trim().toLowerCase();const cnt={};DATA.man.forEach(m=>cnt[m.cli]=(cnt[m.cli]||0)+1);
  const L=Object.entries(DATA.cli).map(([k,c])=>({k,c,n:cnt[k]||0,s:docState(c.hab)})).filter(x=>!q||(x.c.n+' '+x.c.cuit+' '+x.c.ciu+' '+x.c.act).toLowerCase().includes(q)).sort((a,b)=>b.n-a.n);
- return `<h1>Generadores</h1><p class="sub">Los clientes, sus direcciones de retiro, la habilitación municipal y quién entra al portal.</p>
+ return `<h1>Generadores</h1><p class="sub">Los clientes, sus direcciones de retiro, la habilitación de generador, el convenio y quién entra al portal.</p>
  <div class="bar"><input type="search" id="gq" placeholder="Buscar por nombre, CUIT o ciudad" value="${esc(gQ)}" style="flex:1;min-width:200px;max-width:380px" aria-label="Buscar generador"><span class="muted small">${L.length} generadores</span><button class="pri" id="gNew" style="margin-left:auto">Nuevo generador</button></div>
- <div class="card"><div class="tw"><table><thead><tr><th>Generador</th><th>CUIT</th><th>Ciudad</th><th>Retiros</th><th>Habilitación municipal</th></tr></thead><tbody>${L.map(x=>`<tr class="row" tabindex="0" data-g="${x.k}"><td><b>${esc(x.c.n)}</b><div class="small muted">${esc(x.c.act)}</div></td><td style="white-space:nowrap">${esc(x.c.cuit)}</td><td>${esc(x.c.ciu)}</td><td>${x.n}</td><td><span class="pill ${x.s.c}">${x.s.t}</span></td></tr>`).join('')}</tbody></table></div></div>`}
+ <div class="card"><div class="tw"><table><thead><tr><th>Generador</th><th>CUIT</th><th>Ciudad</th><th>Retiros</th><th>Habilitación de generador</th></tr></thead><tbody>${L.map(x=>`<tr class="row" tabindex="0" data-g="${x.k}"><td><b>${esc(x.c.n)}</b><div class="small muted">${esc(x.c.act)}</div></td><td style="white-space:nowrap">${esc(x.c.cuit)}</td><td>${esc(x.c.ciu)}</td><td>${x.n}</td><td><span class="pill ${x.s.c}">${x.s.t}</span></td></tr>`).join('')}</tbody></table></div></div>`}
 function wireGen(){const s=$('#gq');s.oninput=e=>{gQ=e.target.value;const p=s.selectionStart;route();const n=$('#gq');n.focus();n.setSelectionRange(p,p)};
  $('#gNew').onclick=()=>toast('En el sistema real se carga con CUIT validado, direcciones y habilitación. En la demo no se dan de alta generadores.');
  document.querySelectorAll('tr[data-g]').forEach(r=>{const go=()=>location.hash='#g/'+r.dataset.g;r.onclick=go;r.onkeydown=e=>{if(e.key==='Enter')go()}})}
@@ -2241,7 +2254,7 @@ function vG(id){const c=DATA.cli[id];if(!c)return '<p>No se encontró el generad
  const dirs=['Planta principal','Depósito','Base operativa'].slice(0,c.dirs).map((d,i)=>d+' · '+(i===2?'Parque industrial, lote '+(1+hashN(id+d)%60):calles[hashN(d+id)%6]+' '+(100+hashN(id+i)%2900))+', '+c.ciu.charAt(0)+c.ciu.slice(1).toLowerCase());
  const st=[0,0,0,0];ms.forEach(m=>st[manStage(m)]++);const ncs=DATA.cs.filter(x=>x.cli==id).length;
  return `<p><a href="#gen" style="color:var(--acc)">Volver</a></p><h1>${esc(c.n)}</h1><p class="sub">${esc(c.act)} · ${esc(c.ciu)}</p>
- <div class="grid c21"><div class="card"><h2>Datos y habilitación</h2><dl class="kv"><dt>CUIT</dt><dd>${esc(c.cuit)}</dd><dt>Actividad</dt><dd>${esc(c.act)}</dd><dt>Direcciones de retiro</dt><dd>${dirs.map(esc).join('<br>')}</dd><dt>Habilitación municipal</dt><dd><span class="pill ${s.c}">${s.t}</span></dd><dt>Cliente desde</dt><dd>${fd(c.alta)}</dd><dt>Usuario del portal</dt><dd>administracion@${slugMail(c.n)}.ejemplo.com.ar<div class="small muted">Último ingreso ${fd(plusDays(-(hashN(id)%20)))}</div></dd></dl></div>
+ <div class="grid c21"><div class="card"><h2>Datos y habilitación</h2><dl class="kv"><dt>CUIT</dt><dd>${esc(c.cuit)}</dd><dt>Actividad</dt><dd>${esc(c.act)}</dd><dt>Direcciones de retiro</dt><dd>${dirs.map(esc).join('<br>')}</dd><dt>Habilitación de generador</dt><dd><span class="pill ${s.c}">${s.t}</span></dd><dt>Convenio</dt><dd>${(()=>{const v=docState(c.conv);return `<span class="pill ${v.c==='ok'?'ok':'haz'}">${v.t}</span> <span class="small muted">avisa, no frena la emisión</span>`})()}</dd><dt>Cliente desde</dt><dd>${fd(c.alta)}</dd><dt>Usuario del portal</dt><dd>administracion@${slugMail(c.n)}.ejemplo.com.ar<div class="small muted">Último ingreso ${fd(plusDays(-(hashN(id)%20)))}</div></dd></dl></div>
  <div class="card"><h2>Qué retira</h2><div class="hbars">${ys.map(([y,v])=>`<div class="r"><span title="${esc(DATA.cor[y]?.d||'')}">${esc(y)}</span><div class="b" style="width:${Math.max(4,Math.round(v.n/mx*100))}%"></div><span class="small muted" style="text-align:right">${nf.format(v.q)} ${umL(v.um)}</span></div>`).join('')||'<p class="muted">Sin retiros en el período.</p>'}</div>
  <p class="small muted" style="margin:12px 0 0">${ms.length} manifiestos ${PER_TXT} · ${st[0]+st[1]} sin disposición final · ${ncs} certificados emitidos</p></div></div>
  <div class="card" style="margin-top:16px"><h2>Sus manifiestos</h2>${ms.length?tabla(ms.slice(0,12)):'<p class="muted">Sin manifiestos.</p>'}</div>`}
@@ -2258,10 +2271,10 @@ function wireEnt(){document.querySelectorAll('[data-et]').forEach(b=>b.onclick=(
 /* ---------- Flota y choferes, con los certificados que suben los choferes */
 let flPed=null;
 function flPedidos(){if(!flPed){const by=n=>DATA.ch.find(c=>c.n===n);flPed=[{ch:'P. Coronel',doc:'Licencia',v:plusDays(1460),f:plusDays(-1)},{ch:'A. Correa',doc:'Carga peligrosa',v:plusDays(365),f:TODAY}].filter(p=>by(p.ch))}return flPed}
-function vFlota(){const rows=(l,ca)=>l.map(x=>`<tr><td><b>${esc(ca?x.p:x.n)}</b><div class="small muted">${esc(x.tr)}</div></td>${Object.entries(x.docs).map(([k,v])=>{const s=docState(v);return `<td><span class="small muted" style="display:block">${esc(k)}</span><span class="pill ${s.c}">${s.t}</span></td>`}).join('')}</tr>`).join('');
+function vFlota(){const rows=(l,ca)=>l.map(x=>`<tr><td><b>${esc(ca?x.p:x.n)}</b><div class="small muted">${esc(x.tr)}</div></td>${Object.entries(x.docs).map(([k,v])=>{const s=docStateX(x,k);return `<td><span class="small muted" style="display:block">${esc(k)}</span><span class="pill ${s.c}">${s.t}</span></td>`}).join('')}</tr>`).join('');
  const all=[...DATA.ch,...DATA.ca];const bad=all.filter(x=>worst(x)==='bad').length,haz=all.filter(x=>worst(x)==='haz').length;
  const pedir=DATA.ch.filter(x=>Object.values(x.docs).some(v=>docState(v).c!=='ok'));const P=flPedidos();
- return `<h1>Flota y choferes</h1><p class="sub">Licencia, carga peligrosa, psicofísico, VTV y RUTA de cada camión y chofer. El sistema avisa por mail 45 días antes y no deja emitir un manifiesto con documentación vencida.</p>
+ return `<h1>Flota y choferes</h1><p class="sub">Licencia, carga peligrosa y psicofísico de cada chofer; VTV y carga peligrosa de cada camión. El sistema avisa por mail 45 días antes y no deja emitir un manifiesto con documentación vencida.</p>
  <div class="alert ${bad||haz?'':'okk'}"><b>${bad} con documentación vencida o sin cargar · ${haz} por vencer en los próximos 45 días</b></div>
  <div class="card" style="margin-top:16px"><h2>Camiones</h2><div class="tw"><table><tbody>${rows(DATA.ca,true)}</tbody></table></div></div>
  <div class="card" style="margin-top:16px"><h2>Choferes</h2><div class="tw"><table><tbody>${rows(DATA.ch,false)}</tbody></table></div></div>
@@ -2405,13 +2418,213 @@ TOURS.push(
   ['flota','.fpok','Revisar y aceptar','Mirá el archivo, confirmá el vencimiento y aceptalo: pasa a la ficha y deja de figurar como vencido.'],
   ['flota','#fpPed','Pedir por mail','Con un toque les llega el pedido a todos los que tienen algo vencido o por vencer.']]});
 
+/* =====================================================================
+   Agregado nov-2026: lo que pidió el cliente después de las pruebas.
+   Menú por pasos, residuos previstos al emitir, corregir y anular,
+   períodos presentados a provincia, anexo del Manifiesto Nación,
+   habilitación de generador y convenio, carga peligrosa en trámite,
+   vencimientos y escaneo firmado. Datos ficticios.
+   ===================================================================== */
+const mesTxt=k=>MESES[+k.slice(5,7)-1]+' '+k.slice(0,4);
+// Sin habilitación de ruta del camión: ya no se controla
+DATA.ca.forEach(c=>{delete c.docs.RUTA});
+// Carga peligrosa "en trámite": vale hasta 30 días después del vencimiento
+(function(){const c=DATA.ch.find(x=>x.n==='H. Lucero');if(c){c.docs['Carga peligrosa']=plusDays(-9);c.tram={'Carga peligrosa':true}}})();
+function tramHasta(x,k){return x.tram&&x.tram[k]&&x.docs[k]?addDays(x.docs[k],30):null}
+function docStateX(x,k){const v=x.docs[k],h=tramHasta(x,k);if(h&&v<TODAY)return h>=TODAY?{c:'haz',t:'En trámite · vale hasta '+fd(h)}:{c:'bad',t:'En trámite vencido '+fd(h)};return docState(v)}
+// Convenio del cliente: avisa en vencimientos pero no frena la emisión
+Object.entries(DATA.cli).forEach(([k,c])=>{const r=hashN('conv'+k)%100;c.conv=r<10?plusDays(-(5+r*3)):r<22?plusDays(5+r):plusDays(90+r*4)});
+// Escaneo del manifiesto firmado: los más recientes todavía no se subieron
+DATA.man.forEach(m=>{m.scan=m.f<plusDays(-4)&&hashN('sc'+m.id)%23!==0});
+// Libro provincial presentado a provincia (por planta): hasta dos meses atrás
+const PRES={};(function(){const s=new Set();const d=new Date(TODAY.slice(0,7)+'-15T12:00:00');for(let i=2;i<14;i++){const x=new Date(d);x.setMonth(d.getMonth()-i);s.add(x.toISOString().slice(0,7))}PRES[EMP.key]=s})();
+const isPres=m=>!!(PRES[m.gp||EMP.key]&&PRES[m.gp||EMP.key].has(m.f.slice(0,7)));
+recount();
+
+/* ---------- Listado de manifiestos: iniciados y anulados, formulario, Excel */
+function tabla(list,portal){return `<div class="tw"><table><thead><tr><th>Manifiesto</th><th>Fecha</th>${portal?'':'<th>Generador</th>'}<th>Corrientes</th><th>Cantidad</th><th>Etapa</th><th></th></tr></thead><tbody>${list.map(m=>{const st=manStage(m);const q=m.ini?'<span class="muted small">a cargar en planta</span>':m.it.map(i=>nf.format(i.q)+' '+umL(i.um)+(i.salv?'*':'')).join(' + ');
+ const et=m.anul?'<span class="pill bad">Anulado</span>':m.ini?'<span class="pill haz">Iniciado</span>':stPill(st);
+ return `<tr class="row" tabindex="0" data-id="${m.id}"><td><b>${fnum(m.id)}</b>${!portal&&!m.id.startsWith('837')?'<div class="small muted">formulario rosa</div>':''}</td><td>${fd(m.f)}</td>${portal?'':`<td>${esc(cliName(m.cli))}</td>`}<td>${m.it.map(i=>`<span class="pill">${esc(i.y)}</span>`).join(' ')}</td><td>${q}</td><td>${m.anul||m.ini?'':mini(st)}</td><td>${et}</td></tr>`}).join('')}</tbody></table></div>`}
+let filtForm='';
+function manFiltrados(){const q=filt.q.toLowerCase();return DATA.man.filter(m=>(!q||m.id.includes(q)||cliName(m.cli).toLowerCase().includes(q)||m.it.some(i=>i.y.toLowerCase().includes(q)))
+ &&(filt.st==='all'||(filt.st==='ini'?m.ini&&!m.anul:filt.st==='anul'?!!m.anul:(!m.ini&&!m.anul&&manStage(m)==+filt.st)))&&(!filt.d||m.f>=filt.d)&&(!filt.h||m.f<=filt.h)&&(!filtForm||(filtForm==='azul')===m.id.startsWith('837')))}
+function vManifiestos(){const list=manFiltrados();const so=(v,l)=>`<option value="${v}" ${String(filt.st)===String(v)?'selected':''}>${l}</option>`;
+ return `<h1>Manifiestos</h1><p class="sub">Tocá un manifiesto para ver su recorrido completo, corregirlo o anularlo.</p>
+ <div class="bar"><input id="fq" type="search" placeholder="Buscar por número, generador o corriente" value="${esc(filt.q)}" style="flex:1;min-width:220px" aria-label="Buscar"><select id="fform" aria-label="Formulario"><option value="">Todos los formularios</option><option value="azul" ${filtForm==='azul'?'selected':''}>Azul (propio)</option><option value="rosa" ${filtForm==='rosa'?'selected':''}>Rosa (otros)</option></select>
+ <select id="fst" aria-label="Filtrar por etapa">${so('all','Todas las etapas')}${so('ini','Iniciado (falta la sección 3)')}${STAGES.map((s,i)=>so(i,s)).join('')}${so('anul','Anulado')}</select><label class="small">Desde <input type="date" id="fd" value="${filt.d}"></label><label class="small">Hasta <input type="date" id="fh" value="${filt.h}"></label><button id="fx">Exportar a Excel</button><button id="fcl">Limpiar filtros</button><span class="muted small">${list.length} resultados</span></div>
+ <div class="card">${list.length?tabla(list.slice(0,60)):'<p class="muted">No hay manifiestos con ese criterio. Probá con otro número o generador.</p>'}${list.length>60?'<p class="small muted">Mostrando los 60 más recientes. El Excel trae todos.</p>':''}</div>`}
+function wireMan2(){$('#fform').onchange=e=>{filtForm=e.target.value;route()};$('#fcl').onclick=()=>{filt={q:'',st:'all',d:'',h:''};filtForm='';route()};
+ $('#fx').onclick=()=>{const L=manFiltrados();csvDl('manifiestos',[['Manifiesto','Formulario','Fecha','Generador','Dirección de retiro','Transportista','Corriente','Cantidad','Unidad','Etapa']].concat(L.flatMap(m=>m.it.map(i=>[fnum(m.id),m.id.startsWith('837')?'Azul':'Rosa',fd(m.f),cliName(m.cli),(m.dir||DATA.cli[m.cli]?.ciu+' · Planta principal'),m.tr,i.y,m.ini?'':i.q,umL(i.um),m.anul?'Anulado':m.ini?'Iniciado':STAGES[itStage(i)]]))))}}
+
+/* ---------- Paso 1 · Emitir: se eligen las corrientes; la cantidad se carga al entrar a planta */
+function vNuevo(){
+ const clis=Object.entries(DATA.cli).sort((a,b)=>a[1].n.localeCompare(b[1].n));
+ const nextN=fnum(String(Math.max(...DATA.man.filter(m=>m.id.startsWith('837')).map(m=>+m.id))+1));
+ const lvl=id=>`<select id="${id}"><option>Baja</option><option>Media</option><option>Alta</option></select>`;
+ const tg=(id,lab,on)=>`<label class="tg"><input type="checkbox" id="${id}" ${on?'checked':''}><span>${lab}</span></label>`;
+ return `<h1>Paso 1 · Emitir</h1><p class="sub">Se emite e imprime en el formulario azul. Los vencimientos se controlan solos. La cantidad real se carga después, cuando la carga llega a planta (paso 2).</p>
+ <div class="steps">
+ <section class="card st"><div class="sn">1</div><div class="sb"><h2>Transporte y formulario</h2><div class="form3">
+  <label>Transporte<select id="nTr"><option>${esc(DEMO_DATA.empresa.key)}</option></select></label>
+  <label>Nº de formulario preimpreso<input id="nN" value="${nextN}"></label>
+  <label>Fecha<input id="nF" type="date" value="${TODAY}"></label></div></div></section>
+ <section class="card st"><div class="sn">2</div><div class="sb"><h2>Generador y operador</h2><div class="form">
+  <label>Generador<select id="nCli"><option value="">Buscá o elegí un generador</option>${clis.map(([k,v])=>`<option value="${k}">${esc(v.n)}</option>`).join('')}</select><span class="err" id="eCli"></span></label>
+  <label>Operador<select id="nOp">${OPNAMES.map(o=>`<option>${esc(o)}</option>`).join('')}</select></label>
+  <label>Dirección de retiro<select id="nDir"><option>Elegí primero el generador</option></select></label><div class="hint" id="cliInfo"></div></div></div></section>
+ <section class="card st"><div class="sn">3</div><div class="sb"><h2>Vehículo y chofer</h2><div class="form">
+  <label>Patente<select id="nCa"></select><span class="docs" id="dCa"></span><span class="err" id="eCa"></span></label>
+  <label>Chofer<select id="nCh"></select><span class="docs" id="dCh"></span><span class="err" id="eCh"></span></label></div></div></section>
+ <section class="card st"><div class="sn">4</div><div class="sb"><h2>Instrucciones de manipulación</h2><div class="form3">
+  <label>Inhalación${lvl('iInh')}</label><label>Dérmica${lvl('iDer')}</label><label>Oral${lvl('iOra')}</label></div>
+  <div class="tgs">${tg('tInf','Inflamabilidad')}${tg('tRea','Reactividad')}${tg('tTox','Toxicidad')}${tg('tEsp','Instrucciones especiales')}</div>
+  <h3 class="mini-h">Instructivos adjuntos</h3><div class="tgs">${tg('a1','Manipulación para el operador',1)}${tg('a2','Planes de contingencia',1)}${tg('a3','Rol de emergencia',1)}${tg('a4','Hoja de ruta',1)}${tg('a5','Rutas alternativas')}</div></div></section>
+ <section class="card st"><div class="sn">5</div><div class="sb"><h2>Residuos · sección 3</h2><p class="small muted" style="margin:-6px 0 10px">Elegí la corriente de cada residuo: la descripción, la unidad y el estado físico se completan solos y salen impresos. El contenedor y la cantidad se escriben a mano y se cargan al entrar a planta.</p>
+  <div class="tw"><table class="res"><thead><tr><th>Corriente</th><th>Descripción</th><th>U.M.</th><th>Estado físico</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+  <button id="addR" style="margin-top:10px">Agregar otra corriente</button><span class="err" id="eQ"></span></div></section>
+ </div>
+ <div id="nMsg"></div><div class="bar" style="margin:14px 0 0"><button class="pri" id="nGo">Emitir e imprimir</button><span class="muted small">Se registra el manifiesto, se abre la impresión y queda en «Ingreso a planta» hasta que llegue la carga.</span></div>`}
+function wireNuevo(){
+ const docsHtml=x=>x?Object.keys(x.docs).map(k=>{const s=docStateX(x,k);return `<span class="pill ${s.c}">${esc(k)}: ${s.t}</span>`}).join(' '):'';
+ const fill=()=>{const t=$('#nTr').value;const f=(arr,lab)=>arr.filter(x=>x.tr===t).sort((a,b)=>'ohb'.indexOf(worst(a)[0])-'ohb'.indexOf(worst(b)[0])).map(x=>{const w=worst(x);return `<option value="${esc(lab(x))}" data-w="${w}">${esc(lab(x))}${w==='bad'?' · documentación vencida':w==='haz'?' · por vencer':''}</option>`}).join('');$('#nCh').innerHTML=f(DATA.ch,x=>x.n);$('#nCa').innerHTML=f(DATA.ca,x=>x.p);check()};
+ const check=()=>{const bad=[];const c=$('#nCh').selectedOptions[0],k=$('#nCa').selectedOptions[0];
+  $('#dCh').innerHTML=docsHtml(DATA.ch.find(x=>x.n===$('#nCh').value));$('#dCa').innerHTML=docsHtml(DATA.ca.find(x=>x.p===$('#nCa').value));
+  $('#eCh').textContent=c&&c.dataset.w==='bad'?'No puede transportar con documentación vencida.':'';$('#eCa').textContent=k&&k.dataset.w==='bad'?'No puede circular con documentación vencida.':'';
+  if(c&&c.dataset.w==='bad')bad.push('el chofer');if(k&&k.dataset.w==='bad')bad.push('el camión');
+  const opn=$('#nOp').value,trn=$('#nTr').value;const nh=[];document.querySelectorAll('#rows tr').forEach(tr=>{const y=tr.querySelector('.rY').value;const e=tr.querySelector('.rE');const why=!y?'':!habTr(trn,y)?'El transportista no está habilitado para '+y:!habGp(opn,y)?'El operador '+opn+' no está habilitado para '+y:'';e.textContent=why;if(why)nh.push(y)});
+  if(nh.length)bad.push('las corrientes '+[...new Set(nh)].join(', ')+' (no habilitadas)');
+  $('#nMsg').innerHTML=bad.length?`<div class="alert">No se puede emitir: revisá ${bad.join(', ')}. Los choferes y camiones se actualizan en Flota; las corrientes, en la habilitación de cada empresa.</div>`:'';$('#nGo').disabled=bad.length>0};
+ const corOpts='<option value="">Elegí la corriente</option>'+Object.entries(DATA.cor).map(([k,v])=>`<option value="${k}">${k}</option>`).join('');
+ const addRow=()=>{const tr=document.createElement('tr');tr.innerHTML=`<td><select class="rY" aria-label="Corriente">${corOpts}</select><div class="err rE"></div></td><td class="small rD muted">Se completa al elegir la corriente</td><td class="rU"></td><td class="rS"></td><td><button class="rm" aria-label="Quitar corriente">Quitar</button></td>`;$('#rows').appendChild(tr);
+  tr.querySelector('.rY').onchange=()=>{const c=DATA.cor[tr.querySelector('.rY').value];tr.querySelector('.rD').textContent=c?c.d:'Se completa al elegir la corriente';tr.querySelector('.rD').classList.toggle('muted',!c);tr.querySelector('.rU').textContent=c?umL(c.um):'';tr.querySelector('.rS').textContent=c?c.e.charAt(0)+c.e.slice(1).toLowerCase():'';$('#eQ').textContent='';check()};
+  tr.querySelector('.rm').onclick=()=>{if($('#rows').children.length>1){tr.remove();check()}}};
+ addRow();$('#addR').onclick=addRow;
+ $('#nCh').onchange=check;$('#nCa').onchange=check;$('#nOp').onchange=check;fill();
+ $('#nCli').onchange=()=>{$('#eCli').textContent='';const c=DATA.cli[$('#nCli').value];$('#nDir').innerHTML=c?`<option>${esc(c.ciu||'')} · Planta principal</option><option>${esc(c.ciu||'')} · Depósito</option>`:'<option>Elegí primero el generador</option>';
+  const hs=c?docState(c.hab):null,cs=c?docState(c.conv):null;$('#cliInfo').innerHTML=c?`<span class="pill ${hs.c}">Habilitación de generador: ${hs.t}</span> <span class="pill ${cs.c==='ok'?'ok':'haz'}">Convenio: ${cs.t}</span> <span class="muted small">${esc(c.act)}</span>${hs.c==='bad'?'<div class="alert" style="margin-top:8px;background:var(--haz-soft);border-left-color:var(--haz)">La habilitación del generador está vencida. Se puede emitir, pero queda registrado y conviene pedirle la renovación.</div>':''}`:''};
+ $('#nGo').onclick=()=>{let ok=true;if(!$('#nCli').value){$('#eCli').textContent='Elegí el generador.';ok=false}
+  const ys=[...new Set([...$('#rows').children].map(tr=>tr.querySelector('.rY').value).filter(Boolean))];if(!ys.length){$('#eQ').textContent=' Elegí la corriente de al menos un residuo (sección 3).';ok=false}if(!ok)return;
+  const mm=$('#nN').value.match(/(\d{3})\D*(\d+)/);const next=mm?mm[1]+String(+mm[2]).padStart(6,'0'):String(Math.max(...DATA.man.filter(m=>m.id.startsWith('837')).map(m=>+m.id))+1);
+  DATA.man.unshift({id:next,f:$('#nF').value||TODAY,cli:+$('#nCli').value,tr:$('#nTr').value,gp:DEMO_DATA.empresa.key,dir:$('#nDir').value,ini:true,scan:false,it:ys.map(y=>({y,um:DATA.cor[y].um,q:0,st:'Almacenado',mtn:null,cdf:null,ent:false}))});
+  logEv(next,'Manifiesto emitido con '+ys.length+(ys.length>1?' corrientes previstas':' corriente prevista')+' · Iniciado');counts();toast('Manifiesto '+fnum(next)+' emitido. Queda en Ingreso a planta (paso 2) hasta que llegue la carga.');location.hash='#p/'+next}}
+
+/* ---------- Paso 2 · Ingreso a planta: lo previsto ya viene puesto, se carga lo real */
+function vIng(){
+ const l=DATA.man.filter(m=>m.ini&&!m.anul);const m=ingSel&&DATA.man.find(x=>x.id===ingSel&&x.ini);
+ return `<h1>Paso 2 · Ingreso a planta</h1><p class="sub">Manifiestos emitidos cuya carga todavía no se registró en planta (sección 3). Las corrientes ya vienen del paso 1: solo falta el contenedor y la cantidad real. Hasta entonces no entran en los viajes.</p>
+ <div class="card">${l.length?`<div class="tw"><table><thead><tr><th>Manifiesto</th><th>Retiro</th><th>Generador</th><th>Corrientes previstas</th><th>Camión · chofer</th><th></th></tr></thead><tbody>${l.map(x=>{const d=-daysTo(x.f);return `<tr><td><b style="white-space:nowrap">${fnum(x.id)}</b></td><td style="white-space:nowrap">${fd(x.f)}<div class="small muted">${d===0?'hoy':d===1?'ayer':'hace '+d+' días'}</div></td><td>${esc(cliName(x.cli))}</td><td>${x.it.map(i=>`<span class="pill">${esc(i.y)}</span>`).join(' ')}</td><td style="white-space:nowrap">${esc(camionDe(x).p)} · ${esc(choferDe(x).n)}</td><td><button class="pri ingb" data-id="${x.id}">Cargar residuos</button></td></tr>`}).join('')}</tbody></table></div>`:'<p class="muted" style="margin:0">No hay cargas esperando ingreso. Todo lo emitido ya tiene sus residuos cargados.</p>'}</div>
+ ${m?`<div class="card" id="ingF" style="margin-top:16px"><h2>Sección 3 · Manifiesto ${fnum(m.id)}</h2><p class="small muted" style="margin:-6px 0 12px">${esc(cliName(m.cli))} · retiro del ${fd(m.f)}. Cargá el contenedor y lo que pesó o midió la planta.</p>
+  <div class="tw"><table class="res"><thead><tr><th>Corriente</th><th>Descripción</th><th>Contenedor</th><th>Cantidad real</th></tr></thead><tbody>${m.it.map((i,k)=>`<tr><td><b>${esc(i.y)}</b></td><td class="small">${esc(DATA.cor[i.y]?.d||'')}</td><td><select class="ingc" aria-label="Contenedor de ${esc(i.y)}"><option>Batea</option><option>Tambores</option><option>Bolsones</option><option>Cisterna</option><option>Tanque</option></select></td><td style="white-space:nowrap"><input type="number" class="ingq" data-k="${k}" min="0" step="10" value="${i.q||''}" placeholder="0" style="width:130px" aria-label="Cantidad recibida de ${esc(i.y)}"> ${umL(i.um)}</td></tr>`).join('')}</tbody></table></div>
+  <div class="bar" style="margin:14px 0 0"><button class="pri" id="ingGo">Registrar ingreso (sección 3)</button><button id="ingX">Cancelar</button><span class="err" id="ingE"></span></div></div>`:''}`}
+
+/* ---------- Detalle: corregir generador o dirección, salvar cantidad con *, anular, escaneo firmado */
+let corrMode=null;
+function detExtra(m){const pres=isPres(m),an=m.anul,per=m.f.slice(0,7);const lock=pres||an;
+ const rows=m.it.map((i,k)=>`<tr><td><b>${esc(i.y)}</b></td><td style="white-space:nowrap">${m.ini?'<span class="muted small">se carga en el ingreso a planta</span>':`${i.salv?`<s class="muted">${nf.format(i.salv)}</s> → `:''}${nf.format(i.q)} ${umL(i.um)}${i.salv?' <b title="Cantidad salvada">*</b>':''}`}</td><td>${m.ini?'':i.cdf?'<span class="small muted">Ya volvió el certificado del operador: no se salva, se anula.</span>':lock?'':`<span class="bar" style="margin:0;flex-wrap:nowrap"><input type="number" class="svq" data-k="${k}" min="1" step="10" value="${i.q}" style="width:110px" aria-label="Cantidad corregida de ${esc(i.y)}"><button class="svb" data-k="${k}">Salvar con *</button></span>`}</td></tr>`).join('');
+ const form=corrMode==='gen'?`<div class="card" style="margin-top:12px;background:var(--bg)"><h3 style="margin:0 0 6px;font-size:15px">Corregir generador o dirección de retiro</h3><p class="small muted" style="margin:0 0 10px">Se puede en cualquier etapa, mientras el libro provincial de ese período no se haya presentado. Queda en el historial.</p><div class="form"><label>Generador<select id="cgCli">${Object.entries(DATA.cli).sort((a,b)=>a[1].n.localeCompare(b[1].n)).map(([k,c])=>`<option value="${k}" ${+k===m.cli?'selected':''}>${esc(c.n)}</option>`).join('')}</select></label><label>Dirección de retiro<select id="cgDir"><option>Planta principal</option><option>Depósito</option><option>Base operativa</option></select></label></div><div class="bar" style="margin:12px 0 0"><button class="pri" id="cgGo">Guardar corrección</button><button id="cgX">Cancelar</button></div></div>`
+  :corrMode==='anul'?`<div class="card" style="margin-top:12px;background:var(--bad-soft)"><h3 style="margin:0 0 6px;font-size:15px">Anular el manifiesto ${fnum(m.id)}</h3><p class="small" style="margin:0 0 10px">Queda anulado en el historial y deja de contar en planta. No se borra.</p><label class="small" style="display:flex;flex-direction:column;gap:5px">Motivo (opcional)<input id="anMot" placeholder="Ej. se emitió con el cliente equivocado"></label><div class="bar" style="margin:12px 0 0"><button class="pri" id="anGo" style="background:var(--bad);border-color:var(--bad)">Sí, anular</button><button id="anX">Cancelar</button></div></div>`:'';
+ return `<div class="card" id="corr" style="margin-top:16px"><h2>Correcciones</h2>
+ ${an?`<div class="alert">Manifiesto anulado el ${fd(an.f)}${an.mot?' · '+esc(an.mot):''}.</div>`:pres?`<div class="alert" style="background:var(--haz-soft);border-left-color:var(--haz)">El libro provincial de ${mesTxt(per)} ya se presentó a provincia: no se puede corregir ni anular.</div>`:'<p class="small muted" style="margin:-6px 0 10px">Una cantidad mal cargada se salva con * mientras no vuelva el certificado del operador. Todo queda en el historial con quién, cuándo y el valor anterior.</p>'}
+ <div class="tw"><table><tbody>${rows}</tbody></table></div>
+ ${lock?'':`<div class="bar" style="margin:14px 0 0"><button id="cgBtn">Corregir generador o dirección</button><button id="anBtn" style="color:var(--bad);border-color:var(--bad)">Anular manifiesto</button></div>`}${form}
+ <div class="bar" style="margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line)"><span>Escaneo del manifiesto firmado</span>${m.scan?'<span class="pill ok">Subido</span><button id="scV">Ver escaneo firmado</button>':'<span class="pill haz">Escaneo sin subir</span><button id="scU">Subir escaneo</button>'}</div></div>`}
+function wireDet2(id){const m=DATA.man.find(x=>x.id===id);if(!m)return;const main=$('#main');const pr=main.querySelector('.proto');
+ if(m.anul){const h=main.querySelector('h1');if(h&&!h.querySelector('.pill'))h.insertAdjacentHTML('beforeend',' <span class="pill bad" style="vertical-align:middle;font-size:14px">Anulado</span>')}
+ if(m.ini){const h=main.querySelector('h1');if(h&&!h.querySelector('.pill'))h.insertAdjacentHTML('beforeend',' <span class="pill haz" style="vertical-align:middle;font-size:14px">Iniciado · falta la sección 3</span>')}
+ pr.insertAdjacentHTML('beforebegin',detExtra(m));const keep=()=>{const y=scrollY;route();scrollTo(0,y)};
+ document.querySelectorAll('.svb').forEach(b=>b.onclick=()=>{const i=m.it[+b.dataset.k];const v=+document.querySelector(`.svq[data-k="${b.dataset.k}"]`).value;if(!(v>0)){toast('Poné una cantidad mayor a cero');return}if(v===i.q){toast('Es la misma cantidad');return}
+  if(!i.salv)i.salv=i.q;logEv(m.id,'Cantidad salvada con * · '+i.y+': '+nf.format(i.q)+' → '+nf.format(v)+' '+umL(i.um));i.q=v;plan=null;_it=null;toast('Cantidad salvada con *. Queda en el historial.');keep()});
+ const cb=$('#cgBtn');if(cb)cb.onclick=()=>{corrMode='gen';keep()};const ab=$('#anBtn');if(ab)ab.onclick=()=>{corrMode='anul';keep()};
+ const cx=$('#cgX');if(cx)cx.onclick=()=>{corrMode=null;keep()};const ax=$('#anX');if(ax)ax.onclick=()=>{corrMode=null;keep()};
+ const cg=$('#cgGo');if(cg)cg.onclick=()=>{const nc=+$('#cgCli').value,nd=$('#cgDir').value;const ant=cliName(m.cli);const c=DATA.cli[nc];const dir=c.ciu+' · '+nd;
+  if(nc!==m.cli)logEv(m.id,'Generador corregido: '+ant+' → '+c.n);if(dir!==m.dir)logEv(m.id,'Dirección de retiro corregida: '+dir);m.cli=nc;m.dir=dir;corrMode=null;toast('Corrección guardada. Queda en el historial.');keep()};
+ const ag=$('#anGo');if(ag)ag.onclick=()=>{const mot=$('#anMot').value.trim();m.anul={f:TODAY,mot};logEv(m.id,'Manifiesto anulado'+(mot?' · '+mot:''));corrMode=null;plan=null;_it=null;counts();toast('Manifiesto anulado. No se borra: queda en el historial.');keep()};
+ const su=$('#scU');if(su)su.onclick=()=>{m.scan=true;logEv(m.id,'Escaneo del manifiesto firmado subido');toast('Escaneo subido. En la demo no se sube ningún archivo.');keep()};
+ const sv=$('#scV');if(sv)sv.onclick=()=>openDoc('Manifiesto firmado '+fnum(m.id),'ret:'+m.id)}
+
+/* ---------- Libro provincial: períodos presentados a provincia */
+function presCard(){const s=PRES[repOp]||(PRES[repOp]=new Set());const ms=[];const d=new Date(TODAY.slice(0,7)+'-15T12:00:00');for(let i=0;i<14;i++){const x=new Date(d);x.setMonth(d.getMonth()-i);ms.push(x.toISOString().slice(0,7))}
+ const pres=ms.filter(k=>s.has(k)),libres=ms.filter(k=>!s.has(k)&&k<TODAY.slice(0,7));
+ return `<div class="card" id="presC" style="margin-bottom:16px"><div class="bar" style="margin:0;justify-content:space-between"><div><b>Presentado a provincia</b><div class="small muted">Libros presentados de esta planta: ${pres.length?pres.slice(0,6).map(k=>`<span class="pill ok" style="margin:2px">${mesTxt(k)}</span>`).join(''):'ninguno'}${pres.length>6?' …':''}</div></div>
+ ${libres.length?`<span class="bar" style="margin:0"><label class="small">Período <select id="prM">${libres.map(k=>`<option value="${k}">${mesTxt(k)}</option>`).join('')}</select></label><button id="prB">Marcar como presentado a provincia</button></span>`:'<span class="small muted">No quedan meses cerrados sin presentar.</span>'}</div>
+ <p class="small muted" style="margin:8px 0 0">Una vez presentado, los manifiestos de ese período ya no se pueden corregir ni anular. Solo un administrador puede deshacer la marca.</p></div>`}
+function wirePres(){const b=$('#prB');if(!b)return;b.onclick=()=>{if(!b.dataset.ok){b.dataset.ok='1';b.textContent='Sí, ya se presentó';b.classList.add('pri');return}const k=$('#prM').value;(PRES[repOp]=PRES[repOp]||new Set()).add(k);toast('Libro de '+mesTxt(k)+' marcado como presentado a provincia.');const y=scrollY;route();scrollTo(0,y)}}
+
+/* ---------- Anexo del Manifiesto Nación: el detalle por cliente para acompañar el formulario */
+function vAnexo(n){const x=mtnList().find(y=>y.n===n);if(!x)return '<p>No existe este Manifiesto Nación.</p>';const by={};x.its.forEach(y=>{(by[y.m.cli]=by[y.m.cli]||[]).push(y)});
+ return `<p class="noprint"><a href="#mtn/${esc(n)}" style="color:var(--acc)">Volver al Manifiesto Nación</a></p><h1 class="noprint">Anexo · Manifiesto Nación ${esc(n)}</h1><p class="sub noprint">El detalle de los manifiestos que van en el viaje, por cliente, para acompañar el formulario. A4 vertical.</p><div class="bar noprint"><button class="pri" id="axP">Imprimir</button></div>
+ <div class="paper csp"><div class="ph"><b>MANIFIESTO TRANSPORTE DE NACIÓN Nº ${esc(n)} · ANEXO</b><span>${fd(x.f)} · operador ${esc(x.odf||'')}</span></div>
+ <div class="pg"><div><small>Generador (planta de almacenamiento)</small><b>${esc(EMP.razon)}</b></div><div><small>CUIT</small><b>${esc(EMP.cuit)}</b></div><div><small>Nro. Hab. Prov.</small><b>HP-${esc(EMP.rpg)}-0${esc(EMP.rpg)}</b></div><div><small>Nro. Hab. Nac.</small><b>RPGyOSP ${esc(EMP.rpg)}</b></div></div>
+ ${Object.entries(by).map(([c,its])=>`<h3 style="margin:16px 0 4px;font-size:14px">${esc(cliName(c))} <span class="small muted">· CUIT ${esc(DATA.cli[c]?.cuit||'')}</span></h3><table><thead><tr><th>Manifiesto</th><th>Retiro</th><th>Corriente</th><th style="text-align:right">Cantidad</th></tr></thead><tbody>${its.map(y=>`<tr><td>${fnum(y.m.id)}</td><td>${fd(y.m.f)}</td><td>${esc(y.i.y)}</td><td style="text-align:right">${nf.format(y.i.q)} ${umL(y.i.um)}</td></tr>`).join('')}</tbody></table>`).join('')}
+ <div class="pf"><span>Firma transportista</span><span>Firma operador</span></div><p class="small muted" style="margin:10px 0 0">Documento de ejemplo con datos ficticios.</p></div>`}
+
+/* ---------- Certificado al generador: un renglón por corriente (cantidad sumada) */
+function vCsp(n){const x=DATA.cs.find(c=>String(c.n)===String(n));if(!x)return '<p>No se encontró el certificado.</p>';const cl=DATA.cli[x.cli]||{};
+ const by={};x.its.forEach(y=>{const b=(by[y.i.y]=by[y.i.y]||{q:0,um:y.i.um,ms:new Set(),mtn:new Set()});b.q+=y.i.q;b.ms.add(fnum(y.m.id));if(y.i.mtn)b.mtn.add(fnum(y.i.mtn))});
+ const paper=copia=>`<div class="paper csp"><div class="ph"><b>CERTIFICADO DE DISPOSICIÓN FINAL · RESIDUOS PELIGROSOS Nº ${x.n}</b><span>${copia} · ${esc(EMP.razon)} · RPGyOSP Nº ${esc(EMP.rpg)}</span></div>
+ <div class="pg"><div><small>Fecha de emisión</small><b>${fd(x.f)}</b></div><div><small>Generador</small><b>${esc(cl.n||'')}</b></div><div><small>CUIT</small><b>${esc(cl.cuit||'')}</b></div><div><small>Localidad</small><b>${esc(cl.ciu||'')}</b></div><div><small>Operador de disposición final</small><b>${esc(x.odf||'')}</b></div><div><small>Certificado del operador</small><b>${esc(x.cdf)}</b></div></div>
+ <table><thead><tr><th>Corriente</th><th>Descripción</th><th>Manifiestos</th><th>Manifiesto Nación</th><th style="text-align:right">Cantidad</th></tr></thead><tbody>${Object.entries(by).map(([y,b])=>`<tr><td><b>${esc(y)}</b></td><td>${esc(DATA.cor[y]?.d||'')}</td><td>${[...b.ms].join(', ')}</td><td>${[...b.mtn].join(', ')||'—'}</td><td style="text-align:right">${nf.format(b.q)} ${umL(b.um)}</td></tr>`).join('')}</tbody></table>
+ <p class="small" style="margin:12px 0 0">Se certifica que los residuos detallados fueron retirados y transportados por ${esc(EMP.razon)} y tratados por ${esc(x.odf||'')} según el certificado del operador indicado.</p>
+ <div class="pf"><span>Responsable técnico</span><span>${esc(EMP.razon)}</span></div><p class="small muted" style="margin:10px 0 0">Documento de ejemplo con datos ficticios.</p></div>`;
+ return `<p class="noprint"><a href="#cs/emitidos" style="color:var(--acc)">Volver</a></p><h1 class="noprint">Certificado Nº ${x.n}</h1><p class="sub noprint">${esc(cl.n||'')} · ${qtyTxt(x.its)} · emitido el ${fd(x.f)}</p>
+ <div class="bar noprint"><button class="pri" id="cspP">Imprimir original y duplicado</button><button id="cspM">Enviar al cliente por mail</button></div>${paper('ORIGINAL')}<div style="height:16px"></div>${paper('DUPLICADO')}`}
+
+/* ---------- Vencimientos: flota, habilitación de generador y convenio */
+let vencF='todos';
+function vencRows(){const R=[];
+ DATA.ch.forEach(x=>Object.keys(x.docs).forEach(k=>{const s=docStateX(x,k);if(s.c!=='ok')R.push({g:'flota',q:'Chofer '+x.n,d:k,v:x.docs[k],s,fr:s.c==='bad'?'Sí':tramHasta(x,k)&&x.docs[k]<TODAY?'No, en trámite':'Todavía no',h:'#flota'})}));
+ DATA.ca.forEach(x=>Object.keys(x.docs).forEach(k=>{const s=docState(x.docs[k]);if(s.c!=='ok')R.push({g:'flota',q:'Camión '+x.p,d:k,v:x.docs[k],s,fr:s.c==='bad'?'Sí':'Todavía no',h:'#flota'})}));
+ Object.entries(DATA.cli).forEach(([k,c])=>{const a=docState(c.hab),b=docState(c.conv);if(a.c!=='ok')R.push({g:'gen',q:c.n,d:'Habilitación de generador',v:c.hab,s:a,fr:'No, avisa',h:'#g/'+k});if(b.c!=='ok')R.push({g:'gen',q:c.n,d:'Convenio',v:c.conv,s:b,fr:'No, avisa',h:'#g/'+k})});
+ return R.sort((a,b)=>(a.v||'9').localeCompare(b.v||'9'))}
+function vVenc(){const R=vencRows();const L=R.filter(r=>vencF==='todos'||r.g===vencF);
+ return `<h1>Vencimientos</h1><p class="sub">Todo lo que está vencido o vence en los próximos 45 días. La flota vencida no deja emitir; la habilitación del generador y el convenio avisan pero no frenan.</p>
+ <div class="tabs">${[['todos','Todos'],['flota','Flota y choferes'],['gen','Generadores']].map(([k,l])=>`<button data-vf="${k}" class="${vencF===k?'on':''}">${l} (${k==='todos'?R.length:R.filter(r=>r.g===k).length})</button>`).join('')}</div>
+ <div class="card"><div class="tw"><table><thead><tr><th>Quién</th><th>Documento</th><th>Estado</th><th>¿Frena la emisión?</th></tr></thead><tbody>${L.map(r=>`<tr class="row" tabindex="0" data-h="${r.h}"><td><b>${esc(r.q)}</b></td><td>${esc(r.d)}</td><td><span class="pill ${r.s.c}">${r.s.t}</span></td><td class="small">${r.fr}</td></tr>`).join('')||'<tr><td colspan="4" class="muted">Nada vencido ni por vencer.</td></tr>'}</tbody></table></div></div>`}
+function wireVenc(){document.querySelectorAll('[data-vf]').forEach(b=>b.onclick=()=>{vencF=b.dataset.vf;route()});document.querySelectorAll('tr[data-h]').forEach(r=>{const go=()=>location.hash=r.dataset.h;r.onclick=go;r.onkeydown=e=>{if(e.key==='Enter')go()}})}
+
+/* ---------- Agenda con convenios */
+function agIndex(mes){const ix={};const add=(d,c,t,h)=>{if(!d||d.slice(0,7)!==mes)return;const e=(ix[d]=ix[d]||{ret:[],ven:[],gen:[],pla:[]});e[c].push({t,h})};
+ DATA.man.filter(m=>!m.anul).forEach(m=>add(m.f,'ret',fnum(m.id)+' · '+cliName(m.cli),'#m/'+m.id));
+ DATA.ch.forEach(x=>Object.entries(x.docs).forEach(([k,v])=>add(v,'ven','Chofer '+x.n+' · '+k,'#flota')));
+ DATA.ca.forEach(x=>Object.entries(x.docs).forEach(([k,v])=>add(v,'ven','Camión '+x.p+' · '+k,'#flota')));
+ Object.entries(DATA.cli).forEach(([k,c])=>{add(c.hab,'gen','Habilitación de generador · '+c.n,'#g/'+k);add(c.conv,'gen','Convenio · '+c.n,'#g/'+k)});
+ stock().forEach(x=>add(x.venc,'pla','Plazo en planta · '+x.i.y+' de '+cliName(x.m.cli),'#alma'));return ix}
+
+/* ---------- Conexión */
+function wireNew2(v,id){
+ document.documentElement.classList.toggle('print-cs',v==='csp'||v==='anx');
+ if(v!=='m')corrMode=null;
+ if(v==='m'&&!portalMode)wireDet2(id);
+ if(v==='manifiestos')wireMan2();
+ if(v==='venc')wireVenc();
+ if(v==='anx'){const b=$('#axP');if(b)b.onclick=()=>window.print()}
+ if(v==='mtn'){const b=[...document.querySelectorAll('main button.pri')].find(x=>/Imprimir Manifiesto Nación/.test(x.textContent));if(b&&!$('#axB')){b.insertAdjacentHTML('afterend',`<button id="axB">Imprimir anexo por cliente</button>`);$('#axB').onclick=()=>location.hash='#anx/'+id}}
+ if(v==='rep'&&(id||'prod')==='prov'){const bar=document.querySelector('main .bar');if(bar&&!$('#presC')){bar.insertAdjacentHTML('afterend',presCard());wirePres()}}
+}
+TOURS.push(
+ {c:'Manifiestos',t:'Corregir o anular un manifiesto',d:'Generador, dirección, cantidad con * o anular',s:[
+  [()=>'m/'+(DATA.man.find(m=>!m.anul&&!m.ini&&!isPres(m)&&m.it.some(i=>!i.cdf))||DATA.man[0]).id,'#corr','Correcciones','Desde el manifiesto: corregir el generador o la dirección, salvar una cantidad con * o anularlo.'],
+  [()=>'m/'+(DATA.man.find(m=>!m.anul&&!m.ini&&!isPres(m)&&m.it.some(i=>!i.cdf))||DATA.man[0]).id,'.svb','Salvar con *','Mientras no volvió el certificado del operador, una cantidad mal cargada se corrige y queda marcada con *.'],
+  [()=>'m/'+(DATA.man.find(m=>!m.anul&&!m.ini&&!isPres(m)&&m.it.some(i=>!i.cdf))||DATA.man[0]).id,'#anBtn','Anular','Se puede anular en cualquier etapa. No se borra: queda en el historial.']]},
+ {c:'Reportes',t:'Marcar un libro presentado a provincia',d:'Y bloquear las correcciones',s:[
+  ['rep/prov','#presC','Presentado a provincia','Cuando se presenta el libro provincial de un mes, se marca acá. Desde ese momento, los manifiestos de ese mes no se pueden corregir ni anular.']]},
+ {c:'Registros',t:'Revisar los vencimientos',d:'Flota, habilitaciones y convenios',s:[
+  ['venc','.tabs','Vencimientos','Todo lo vencido o por vencer en una lista: la flota frena la emisión; la habilitación del generador y el convenio solo avisan.']]});
+
+function wireIng(){
+ document.querySelectorAll('.ingb').forEach(b=>b.onclick=()=>{ingSel=b.dataset.id;route();const f=$('#ingF');if(f){f.scrollIntoView({block:'start',behavior:'instant'});const q=f.querySelector('.ingq');if(q)q.focus()}});
+ const x=$('#ingX');if(x)x.onclick=()=>{ingSel=null;route()};
+ const g=$('#ingGo');if(g)g.onclick=()=>{const m=DATA.man.find(z=>z.id===ingSel);const qs=[...document.querySelectorAll('.ingq')].map(i=>+i.value);if(qs.some(v=>!(v>0))){$('#ingE').textContent=' Cada residuo necesita una cantidad mayor a cero.';return}
+  const prev=m.it.some(i=>i.q>0);const dif=prev&&m.it.some((i,k)=>qs[k]!==i.q);m.it.forEach((i,k)=>i.q=qs[k]);m.ini=false;ingSel=null;
+  logEv(m.id,'Ingreso en planta registrado (sección 3)'+(dif?' · con diferencias con lo declarado':'')+' · Almacenado');plan=null;_it=null;counts();toast('Ingreso registrado. Ya está disponible para armar el viaje (paso 3).');route()}}
+
 let helpShown=false;
 function route(){
  const h=location.hash.slice(1)||'tablero';const [v,id]=h.split('/');
- const act=(v==='csp'?'cs':v==='nacion'&&id==='all'?'nacion/all':v==='et'?'manifiestos':v==='p'&&String(id).startsWith('n:')?'nacion':v==='rep'?'rep/'+(id||'prod'):v==='mtn'?'nacion':v==='g'?'gen':v==='m'||v==='p'?(portalMode?'portal':'manifiestos'):v);markNav(act);
+ const act=(v==='anx'?'nacion/all':v==='csp'?'cs':v==='nacion'&&id==='all'?'nacion/all':v==='et'?'manifiestos':v==='p'&&String(id).startsWith('n:')?'nacion':v==='rep'?'rep/'+(id||'prod'):v==='mtn'?'nacion':v==='g'?'gen':v==='m'||v==='p'?(portalMode?'portal':'manifiestos'):v);markNav(act);
  if(v!=='m')portalMode=v==='portal';
  const main=$('#main');
- main.innerHTML=(v==='ing'?vIng():v==='cs'?vCs(id):v==='csp'?vCsp(id):v==='agenda'?vAgenda():v==='gen'?vGen():v==='g'?vG(id):v==='ent'?vEnt():v==='flota'?vFlota():v==='usr'?vUsr():v==='rep'?vRep(id||'prod'):v==='nacion'?(natF=id==='all'?'all':'pend',vNacion()):NODEMO[v]?vNoDemo(v):v==='et'?vEtiq(id):v==='alma'?vAlma():v==='nacion'?vNacion():v==='mtn'?vMtn(id):v==='p'?vPrint(id):v==='m'?vDetalle(id,portalMode):v==='manifiestos'?vManifiestos():v==='nuevo'?vNuevo():v==='portal'?vPortal():vTablero())+'<p class="proto">Demo con datos ficticios: generadores, transportistas, operadores, choferes, patentes, CUIT y documentos son inventados. Los cambios se ven al instante pero se pierden al recargar.</p>';
+ main.innerHTML=(v==='anx'?vAnexo(id):v==='venc'?vVenc():v==='ing'?vIng():v==='cs'?vCs(id):v==='csp'?vCsp(id):v==='agenda'?vAgenda():v==='gen'?vGen():v==='g'?vG(id):v==='ent'?vEnt():v==='flota'?vFlota():v==='usr'?vUsr():v==='rep'?vRep(id||'prod'):v==='nacion'?(natF=id==='all'?'all':'pend',vNacion()):NODEMO[v]?vNoDemo(v):v==='et'?vEtiq(id):v==='alma'?vAlma():v==='nacion'?vNacion():v==='mtn'?vMtn(id):v==='p'?vPrint(id):v==='m'?vDetalle(id,portalMode):v==='manifiestos'?vManifiestos():v==='nuevo'?vNuevo():v==='portal'?vPortal():vTablero())+'<p class="proto">Demo con datos ficticios: generadores, transportistas, operadores, choferes, patentes, CUIT y documentos son inventados. Los cambios se ven al instante pero se pierden al recargar.</p>';
  main.querySelectorAll('tr.row').forEach(r=>{const go=()=>location.hash='#m/'+r.dataset.id;r.onclick=go;r.onkeydown=e=>{if(e.key==='Enter')go()}});
  if(v==='manifiestos'){const fq=$('#fq');fq.oninput=e=>{filt.q=e.target.value;const p=fq.selectionStart;route();const n=$('#fq');n.focus();n.setSelectionRange(p,p)};$('#fst').onchange=e=>{filt.st=e.target.value;route()};$('#fd').onchange=e=>{filt.d=e.target.value;route()};$('#fh').onchange=e=>{filt.h=e.target.value;route()}}
  document.querySelectorAll('[data-dk]').forEach(b=>b.onclick=()=>openDoc(b.dataset.dt,b.dataset.dk));
@@ -2420,7 +2633,7 @@ function route(){
  if(v==='tablero'||!v)wireTab();
  if(v==='p')wirePrint();
  if(v==='alma')wireAlma();if(v==='nacion')wireNacion();if(v==='mtn')wireMtn(id);
- wireNew(v,id);counts();
+ wireNew(v,id);wireNew2(v,id);counts();
  if(v==='portal'){$('#pc').onchange=e=>{portalCli=+e.target.value;portalSt=null;route()};document.querySelectorAll('[data-pst]').forEach(b=>b.onclick=()=>{const k=+b.dataset.pst;portalSt=portalSt===k?null:k;const y=scrollY;route();scrollTo(0,y)});const a=$('#pAll');if(a)a.onclick=()=>{portalSt=null;const y=scrollY;route();scrollTo(0,y)}}
  window.scrollTo(0,0)}
 // Menú: secciones no incluidas en la demo, atenuadas
