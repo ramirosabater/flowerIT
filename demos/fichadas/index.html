@@ -28,9 +28,14 @@ input[type=number]::-webkit-inner-spin-button { opacity: .4; }
 .text-\[\#223c7e\]{--tw-text-opacity:1;color:rgb(34 60 126/var(--tw-text-opacity))}
 .w-28{width:7rem}
 </style>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T9XTVC6L');</script>
-<!-- End Google Tag Manager -->
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EN79W6GGYW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EN79W6GGYW');
+</script>
 <!-- Microsoft Clarity: estadísticas de visitas -->
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -40,13 +45,11 @@ input[type=number]::-webkit-inner-spin-button { opacity: .4; }
     })(window, document, "clarity", "script", "zf5kqgf5ny");
     // Marca los clics que importan: WhatsApp y demos
     document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"";
-      var ev=h.indexOf("wa.me/5492975212008")>-1?"clic_whatsapp":h.indexOf("demos/")===0?"abrir_demo_"+h.split("/")[1]:null;if(!ev)return;clarity("event",ev);(window.dataLayer=window.dataLayer||[]).push({event:ev});},true);
+      var ev=h.indexOf("wa.me/5492975212008")>-1?"clic_whatsapp":h.indexOf("demos/")===0?"abrir_demo_"+h.split("/")[1]:null;if(!ev)return;clarity("event",ev);if(window.gtag)gtag("event",ev);},true);
     clarity("set","demo","fichadas");
 </script>
 </head>
 <body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T9XTVC6L" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div id="demo-top">
   <div class="bg-[#1f2d38] text-white text-xs px-3 h-[38px] flex items-center justify-between gap-2">
     <span class="truncate"><b>Demo con datos ficticios</b> · FloWer</span>
